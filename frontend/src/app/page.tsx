@@ -24,7 +24,7 @@ export default function BubbleTeaShop() {
     return (
         <div className="min-h-screen bg-smoke-50 p-4 md:p-8">
             <h2 className="text-xl font-medium mt-6 mb-2 text-center">
-                Select Category
+                Select a Category
             </h2>
 
             {/* Drink Grid */}
