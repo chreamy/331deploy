@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "fen",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,10 +16,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "tailwindcss": "^4"
   }
 }
