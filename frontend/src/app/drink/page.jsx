@@ -1,10 +1,19 @@
 "use client";
 import { useState } from "react";
-import { FaHome, FaVolumeUp, FaShoppingCart, FaLanguage } from "react-icons/fa";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { useRouter } from "next/navigation"; // Import useRouter
+import {
+    FaHome,
+    FaVolumeUp,
+    FaShoppingCart,
+    FaSearch,
+    FaLanguage,
+} from "react-icons/fa";
+
 
 export default function DrinkDetails() {
     const [search, setSearch] = useState("");
+    const router = useRouter(); // Initialize useRouter
     const [selectedMods, setSelectedMods] = useState([]);
     const [modifications] = useState([
         { name: "Extra Boba", price: 0.5 },
@@ -30,25 +39,30 @@ export default function DrinkDetails() {
     };
 
     return (
-        <div className="min-h-screen bg-smoke-50 p-4 md:p-8">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+            {/* Back Button */}
+            <div className="mt-6">
+                <IoArrowBackCircleOutline className="text-3xl cursor-pointer" 
+                onClick={() => router.back()} // Navigate back
+                />
+            </div>
+
             {/* Subheading */}
-            <h2 className="text-xl font-medium mt-6 mb-4 text-center">
+            <h2 className="text-2xl font-bold mt-6 mb-4 text-center">
                 Modifications
             </h2>
 
             {/* Search Bar */}
             <div className="flex justify-center mb-4">
                 <div className="relative w-full max-w-md">
+                    <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
                     <input
                         type="text"
                         placeholder="Search modifications..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                     />
-                    <span className="absolute top-2.5 left-3 text-gray-400">
-                        🔍
-                    </span>
                 </div>
             </div>
 
@@ -66,20 +80,13 @@ export default function DrinkDetails() {
                     <div className="space-y-3">
                         {modifications
                             .filter((mod) =>
-                                mod.name
-                                    .toLowerCase()
-                                    .includes(search.toLowerCase())
+                                mod.name.toLowerCase().includes(search.toLowerCase())
                             )
                             .map((mod, idx) => (
-                                <div
-                                    key={idx}
-                                    className="flex items-center gap-2"
-                                >
+                                <div key={idx} className="flex items-center gap-2">
                                     <input
                                         type="checkbox"
-                                        checked={selectedMods.includes(
-                                            mod.name
-                                        )}
+                                        checked={selectedMods.includes(mod.name)}
                                         onChange={() => handleToggle(mod.name)}
                                         className="w-5 h-5"
                                     />
@@ -102,11 +109,6 @@ export default function DrinkDetails() {
                         Buy Now ${getTotalPrice()}
                     </button>
                 </div>
-            </div>
-
-            {/* Back Button */}
-            <div className="mt-6">
-                <IoArrowBackCircleOutline className="text-3xl cursor-pointer" />
             </div>
         </div>
     );
