@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { useRouter } from "next/navigation"; // Import useRouter
 import {
     FaHome,
     FaVolumeUp,
@@ -10,25 +12,31 @@ import {
 
 export default function SelectedCategoryPage() {
     const [search, setSearch] = useState("");
+    const router = useRouter(); // Initialize router
+
     const drinks = [
-        { name: "Classic Milk Tea", image: "/images/classic-milk-tea.png" },
-        { name: "Taro Milk Tea", image: "/images/taro-milk-tea.png" },
-        { name: "Matcha Latte", image: "/images/matcha-latte.png" },
-        { name: "Brown Sugar Boba", image: "/images/brown-sugar-boba.png" },
-        { name: "Passion Fruit Green Tea", image: "/images/passion-fruit.png" },
-        {
-            name: "Strawberry Smoothie",
-            image: "/images/strawberry-smoothie.png",
-        },
-        { name: "Oolong Milk Tea", image: "/images/oolong-milk-tea.png" },
-        { name: "Mango Yakult", image: "/images/mango-yakult.png" },
+        { name: "Classic Milk Tea", image: "/drink-images/classic-milk-tea.png" },
+        { name: "Taro Milk Tea", image: "/drink-images/taro-milk-tea.png" },
+        { name: "Matcha Latte", image: "/drink-images/matcha-latte.png" },
+        { name: "Brown Sugar Boba", image: "/drink-images/brown-sugar-boba.png" },
+        { name: "Passion Fruit Green Tea", image: "/drink-images/passion-fruit.png" },
+        { name: "Strawberry Smoothie", image: "/drink-images/strawberry-smoothie.png",},
+        { name: "Oolong Milk Tea", image: "/drink-images/oolong-milk-tea.png" },
+        { name: "Mango Yakult", image: "/drink-images/mango-yakult.png" },
     ];
     const [filteredDrinks, setFilteredDrinks] = useState({});
 
     return (
-        <div className="min-h-screen bg-smoke-50 p-4 md:p-8">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+            {/* Back Button */}
+            <div className="mt-6">
+                <IoArrowBackCircleOutline className="text-3xl cursor-pointer" 
+                onClick={() => router.back()} // Navigate back
+                />
+            </div>
+
             {/* Category Title */}
-            <h2 className="text-xl font-medium mt-6 mb-2 text-center">
+            <h2 className="text-2xl font-bold mt-6 mb-4 text-center text-white">
                 Drinks
             </h2>
 
@@ -47,15 +55,24 @@ export default function SelectedCategoryPage() {
             </div>
 
             {/* Drink Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {drinks.map((drink, index) => (
                     <a key={index} href="/drink">
                         <div
-                            className={`border rounded-md p-8 flex flex-col justify-center text-center text-gray-500 ${
-                                index === 2 ? "border-purple-500" : ""
+                            className={`border border-gray-400 rounded-xl p-6 text-center 
+                                        text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 
+                                        hover:scale-105 hover:shadow-xl transition-transform ${
+                                index === 2 ? "border-white-500" : ""
                             }`}
                         >
-                            <img src="/drink.png" /> {drink.name}
+                            <div className="w-full h-40 flex justify-center items-center">
+                                <img 
+                                    src={drink.image} 
+                                    alt={drink.name} 
+                                    className="max-w-full max-h-full object-contain rounded-md"
+                                />
+                            </div>
+                            <p className="mt-2">{drink.name}</p>
                         </div>
                     </a>
                 ))}
