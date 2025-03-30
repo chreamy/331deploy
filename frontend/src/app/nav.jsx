@@ -45,7 +45,9 @@ const Nav = () => {
                     className="text-2xl text-gray-700 hover:text-blue-500"
                     title="Cart"
                 >
-                    <FaShoppingCart />
+                    <a href="/cart" className="cursor-pointer">
+                        <FaShoppingCart />
+                    </a>
                 </button>
             </div>
         </header>
