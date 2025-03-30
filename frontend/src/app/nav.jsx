@@ -11,7 +11,7 @@ const Nav = () => {
                     className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
                     title="Home"
                 >
-                    <a href="/" className="cursor-pointer">
+                    <a href="/categories" className="cursor-pointer">
                         <FaHome />
                     </a>
                 </button>
