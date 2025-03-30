@@ -10,7 +10,6 @@ import {
     FaLanguage,
 } from "react-icons/fa";
 
-
 export default function DrinkDetails() {
     const [search, setSearch] = useState("");
     const router = useRouter(); // Initialize useRouter
