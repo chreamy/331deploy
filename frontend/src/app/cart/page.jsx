@@ -1,31 +1,73 @@
 "use client";
 import { useState } from "react";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
 
-export default function orderCart() {
-  const router = useRouter(); // Initialize router
-  // Cart state
-  const [cart, setCart] = useState([
-    { id: 1, name: "Milk Tea", price: 1000, quantity: 1 },
-  ]);
+export default function OrderCart() {
+    const router = useRouter();
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
-      {/* Back Button */}
-          <div className="mt-6">
-          <IoArrowBackCircleOutline className="text-3xl cursor-pointer" 
-          onClick={() => router.back()} // Navigate back
-          />
+    // Cart state
+    const [cart, setCart] = useState([
+        {
+            id: 1,
+            name: "Milk Tea",
+            photo: "/drink-images/classic-milk-tea.png", 
+            price: 2000, 
+            quantity: 1,
+            modifications: [
+                { name: "Extra Tapioca", price: 200 },
+                { name: "Less Sugar", price: 0 },
+            ],
+        },
+    ]);
+
+    const calculateTotal = () => {
+        var total = 0;
+        cart.forEach((item) => {
+            var itemTotal = item.price;
+            item.modifications.forEach((mod) => {
+                itemTotal += mod.price;
+            });
+            total += itemTotal * item.quantity;
+        });
+        return (total / 100).toFixed(2); 
+    };
+
+    const deleteItem = (id) => {
+        setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    };
+
+    return (
+        <div>
+            {/* Back Button */}
+            <button onClick={() => router.back()}> Back</button>
+
+            {/* Cart Header */}
+            <h1>Cart</h1>
+
+            {/* Items Section */}
+            {cart.map((item) => (
+                <div key={item.id}>
+                    <img src={item.photo} alt={item.name} width="100" />
+                    <h2>{item.name}</h2>
+                    <ul>
+                        {item.modifications.map((mod, index) => (
+                            <li key={index}>
+                                {mod.name}: +${(mod.price / 100).toFixed(2)}
+                            </li>
+                        ))}
+                    </ul>
+                    <p>Quantity: {item.quantity}</p>
+                    <button onClick={() => updateQuantity(item.id, -1)}>-</button>
+                    <button onClick={() => updateQuantity(item.id, 1)}>+</button>
+                    <button onClick={() => deleteItem(item.id)}>Delete</button>
+                </div>
+            ))}
+
+            {/* Total Price */}
+            <h2>Total Price: ${calculateTotal()}</h2>
+
+            {/* Action Buttons */}
+            <button onClick={() => router.push("/categories")}>Add More Items</button>
       </div>
-      <div>
-        <h1 className="text-white text-3xl font-bold">Your Cart</h1>
-        {cart.length === 0 ? (
-          <p className="text-white">Cart is empty.</p>
-        ) : (
-          <p className="text-white">Cart contains {cart.length} item(s).</p>
-        )}
-      </div>
-    </div>
-  );
-};
+    );
+}
