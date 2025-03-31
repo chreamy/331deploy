@@ -98,18 +98,18 @@ export default function DrinkDetails() {
 
                 {/* Action Buttons */}
                 <div className="w-full md:w-1/4 space-y-4">
-                    <a href="/cart">
+                    <a href="/customer/cart">
                         <button className="w-full bg-blue-500 text-white rounded-md py-2 my-1 hover:bg-blue-600">
                             Add to Cart
                         </button>
                     </a>
-                    <a href="/categories">
+                    <a href="/customer/menu">
                         <button className="w-full bg-gray-200 text-black rounded-md py-2 my-1 hover:bg-gray-300">
                             Shop More
                         </button>
                     </a>
 
-                    <a href="/checkout"> 
+                    <a href="/customer/checkout"> 
                         <button className="w-full bg-green-500 text-white rounded-md py-2 my-1 hover:bg-green-600">
                             Buy Now ${getTotalPrice()}
                         </button>
