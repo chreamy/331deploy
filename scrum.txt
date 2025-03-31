@@ -1,0 +1,30 @@
+Meeting 1: Classic Dev Standup
+Topic: Assigning Roles and Tasks
+Roles - 
+Christopher: Full-stack / Project Lead
+Paavan: Frontend - Cashier UI
+Dean: Database
+Isaac: Backend - Order Processing, API
+
+Tasks - 
+Paavan: Work on Customer UI
+Christopher: Help with Customer UI
+Dean: Connect to Database and help with Customer UI
+Isaac: Work on Weather, Language, and Login API
+
+
+Meeting 2: Sprint Goal Checkpoint
+Topic: Progress Check
+Paavan: Yesterday - Drafted initial interface, Today - Will work on refining the look, Challenges - need to connect to database for menu items
+Christopher: Yesterday - Added and assigned issues, Today - make the weather api look nicer, Challenges - none
+Dean: Yesterday - Added homepage and buttons to interface, Today - will work on connecting to database, Challenges - none right now
+Isaac: Yesterday - Added weather API, Today - will work on login and language APIs, Challenges - none right now
+
+Meeting 3: Final Sprint Checkin
+Topic: Sprint 1 Final Checks
+- Connected to database
+- Customer UI looks nice with css and is functioning
+- Weather API works, still need to work on login and language APIs
+- Need to update issues and add comments to code
+
+
