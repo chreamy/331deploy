@@ -95,6 +95,8 @@ body {
     background: linear-gradient(to bottom, #1c2330, gray);
     padding: 1rem;
     padding-top: 2rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .homepage-message {
@@ -128,4 +130,21 @@ body {
 .startorder-button:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.weather-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+}
+
+.weather-box {
+    font-size: 1.5rem;
+    padding: 1rem 1rem;
+    background-color: #ffffff; 
+    color: #000000;
+    border-radius: 10px;
+    text-align: center;
+    width: 500px; 
 }
