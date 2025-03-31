@@ -67,7 +67,7 @@ export default function OrderCart() {
             <h2>Total Price: ${calculateTotal()}</h2>
 
             {/* Action Buttons */}
-            <button onClick={() => router.push("/categories")}>Add More Items</button>
+            <button onClick={() => router.push("/customer/menu")}>Add More Items</button>
       </div>
     );
 }

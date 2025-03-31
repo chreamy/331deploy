@@ -8,7 +8,7 @@ const Nav = () => {
             {/* Left Icons */}
             <div className="nav-left">
                 <button className="nav-button" title="Home">
-                    <a href="/categories">
+                    <a href="/customer/menu">
                         <FaHome />
                     </a>
                 </button>
@@ -31,7 +31,7 @@ const Nav = () => {
                 </label>
 
                 <button className="nav-button" title="Cart">
-                    <a href="/cart">
+                    <a href="/customer/cart">
                         <FaShoppingCart />
                     </a>
                 </button>

@@ -23,7 +23,7 @@ export default function BubbleTeaShop() {
             {/* Drink Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {categories.map((drink, index) => (
-                    <a href="/category" key={index}>
+                    <a href="/customer/category-drink" key={index}>
                         <div className="border border-gray-400 rounded-xl p-6 text-center 
                                        text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 
                                        hover:scale-105 hover:shadow-xl transition-transform">

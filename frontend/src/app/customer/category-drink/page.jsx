@@ -57,7 +57,7 @@ export default function SelectedCategoryPage() {
             {/* Drink Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {drinks.map((drink, index) => (
-                    <a key={index} href="/drink">
+                    <a key={index} href="/customer/modifications">
                         <div
                             className={`border border-gray-400 rounded-xl p-6 text-center 
                                         text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 

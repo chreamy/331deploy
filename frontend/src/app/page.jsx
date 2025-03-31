@@ -97,7 +97,7 @@ export default function BubbleTeaShop() {
 
             {/* Start Order Button */}
             <div className="startorder-body">
-                <a href="/categories">
+                <a href="/customer/menu">
                     <button className="startorder-button">
                         Tap to Start Order
                     </button>
