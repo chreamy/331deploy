@@ -7,7 +7,7 @@ import { FaSearch } from "react-icons/fa";
 import { SERVER } from "@/app/const";
 
 function toSnakeCase(str) {
-    return str.toLowerCase().replace(/ /g, "_");
+    return str.toLowerCase().replace(/ /g, "-");
 }
 
 function CategoryContent() {
