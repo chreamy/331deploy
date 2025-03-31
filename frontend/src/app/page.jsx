@@ -13,6 +13,7 @@ export default function BubbleTeaShop() {
         "Iced Blends",
         "Seasonal Specials",
     ];
+    const [imageSrc, setimageSrc] = useState(null);
 
     const weatherImg = [
         { name: "clear sky day", image: "/weather-images/01d.png" },
@@ -31,15 +32,22 @@ export default function BubbleTeaShop() {
 
     const currentDate = new Date();
     var hours = currentDate.getHours();
-
+    var AMPM = '';
     if (hours === 0) {
         hours = 12; 
+        AMPM = ' AM';
       } else if (hours > 12) {
         hours = hours - 12; 
+        AMPM = ' PM';
       }
     
-    const minutes = currentDate.getMinutes();
-    const Time = `${hours}:${minutes}`;
+    var minutes = currentDate.getMinutes();
+
+    if (minutes < 10) {
+        minutes = '0' + minutes
+    }
+
+    const Time = `${hours}:${minutes}${AMPM}`;
 
     // Weather inforation
     const [weather, setWeatherData] = useState(false);
@@ -51,8 +59,24 @@ export default function BubbleTeaShop() {
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${apiKey}`;
             const response = await fetch(url);
             const data = await response.json();
-            console.log(data);
             setWeatherData(data);
+            var imageName = '';
+            if (data.weather[0].description === 'clear sky' || data.weather[0].description === 'few clouds' || data.weather[0].description === 'rain') {
+                if (AMPM === ' PM') {
+                    imageName = data.weather[0].description + ' night';
+                }
+                else {
+                    imageName = data.weather[0].description + ' day';
+                }
+            }
+            else {
+                imageName = data.weather[0].description;
+            }
+
+            // const foundImage = weatherImg.find(name => name === imageName);
+            // if (foundImage) setimageSrc(foundImage.image);
+            // console.log(item.name);
+            
             } catch (error) {
                 console.error("Error fetching weather data:", error);
             }
@@ -61,7 +85,7 @@ export default function BubbleTeaShop() {
     useEffect(()=> {
         fetchWeather('College Station');
     }, []);
-    
+
     return (
         <div className="homepage-body">
             {/* Welcome Message */}
@@ -88,8 +112,11 @@ export default function BubbleTeaShop() {
                         <h2>Weather in {weather.name}</h2>
                         <p>Temperature: {(weather.main.temp * 9/5 + 32).toFixed(0)}°F</p>
                         <p>Feels Like: {(weather.main.feels_like * 9/5 + 32).toFixed(0)}°F</p>
-                        <p>Weather Description: {weather.weather[0].description}</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+            </div>
                     </div>
+                    
                 ) : (
                     <div className="weather-box"> Unable to fetch weather data.</div>
                 )}
