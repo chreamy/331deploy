@@ -15,10 +15,12 @@ function CategoryContent() {
     const category = searchParams.get("name");
     const router = useRouter();
 
+    // Instantiate states
     const [search, setSearch] = useState("");
     const [drinks, setDrinks] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Fetch drinks from the server when a category is selected
     useEffect(() => {
         if (!category) return;
         fetch(`${SERVER}/categories`)
@@ -34,6 +36,7 @@ function CategoryContent() {
             });
     }, [category]);
 
+    // Filter functionality for searching
     const filteredDrinks = drinks.filter((drink) =>
         drink.name.toLowerCase().includes(search.toLowerCase())
     );
@@ -75,6 +78,7 @@ function CategoryContent() {
                                             text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 
                                             hover:scale-105 hover:shadow-xl transition-transform"
                             >
+                                {/* Drink Image */}
                                 <div className="w-full h-40 flex justify-center items-center">
                                     <img
                                         src={`/drink-images/${toSnakeCase(

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useRouter } from "next/navigation"; // Import useRouter
 import {
@@ -11,8 +11,9 @@ import {
 } from "react-icons/fa";
 
 export default function DrinkDetails() {
-    const [search, setSearch] = useState("");
     const router = useRouter(); // Initialize useRouter
+    // instantiate states for data that wil be needed
+    const [search, setSearch] = useState("");
     const [selectedMods, setSelectedMods] = useState([]);
     const [modifications] = useState([
         { name: "Extra Boba", price: 0.5 },
@@ -20,8 +21,9 @@ export default function DrinkDetails() {
         { name: "Add Cheese Foam", price: 1.0 },
         { name: "Oat Milk", price: 0.75 },
         { name: "Sugar-Free", price: 0 },
-    ]);
+    ]); // placeholder modofication values (Work in progress)
 
+    // Function that toggles upon a modification selection
     const handleToggle = (modName) => {
         setSelectedMods((prev) =>
             prev.includes(modName)
@@ -30,6 +32,7 @@ export default function DrinkDetails() {
         );
     };
 
+    // Function to calcuate modification prices
     const getTotalPrice = () => {
         return modifications
             .filter((mod) => selectedMods.includes(mod.name))
@@ -67,7 +70,7 @@ export default function DrinkDetails() {
 
             {/* Main Content */}
             <div className="flex flex-col md:flex-row gap-6">
-                {/* Drink Photo */}
+                {/* Placeholder for Drink Photo */}
                 <div className="w-full md:w-1/3 flex justify-center">
                     <div className="w-48 h-64 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
                         &lt;Drink Photo&gt;

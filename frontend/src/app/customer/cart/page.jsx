@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function OrderCart() {
     const router = useRouter();
 
-    // Cart state
+    // Setting cart state (currently placeholder values)
     const [cart, setCart] = useState([
         {
             id: 1,
@@ -20,6 +20,7 @@ export default function OrderCart() {
         },
     ]);
 
+    // Function that calculates the total price of items in the cart
     const calculateTotal = () => {
         var total = 0;
         cart.forEach((item) => {
@@ -32,6 +33,7 @@ export default function OrderCart() {
         return (total / 100).toFixed(2); 
     };
 
+    // Functionality for the delete button
     const deleteItem = (id) => {
         setCart((prevCart) => prevCart.filter((item) => item.id !== id));
     };
