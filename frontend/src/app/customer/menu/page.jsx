@@ -3,15 +3,17 @@ import { SERVER } from "@/app/const";
 import { useEffect, useState } from "react";
 
 export default function BubbleTeaShop() {
+    // State to store data that will be needed
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Fetch categories from the PostgreSQL server
     useEffect(() => {
-        fetch(`${SERVER}/categories`) // Adjust this path if your API is on a different route
-            .then((res) => res.json())
+        fetch(`${SERVER}/categories`) 
+            .then((res) => res.json()) // put server response as s JSON
             .then((data) => {
-                const fetchedCategories = Object.keys(data); // category names
-                setCategories(fetchedCategories);
+                const fetchedCategories = Object.keys(data); // extract category names
+                setCategories(fetchedCategories); // update categories
                 setLoading(false);
             })
             .catch((err) => {
@@ -22,10 +24,12 @@ export default function BubbleTeaShop() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+            {/* Category Header */}
             <h2 className="text-2xl font-bold mt-6 mb-4 text-center text-white">
                 Select a Category
             </h2>
 
+            {/* Display loading message and the list of categories */}
             {loading ? (
                 <div className="text-white text-center">Loading...</div>
             ) : (

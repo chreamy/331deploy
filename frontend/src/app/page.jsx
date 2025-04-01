@@ -87,32 +87,33 @@ export default function BubbleTeaShop() {
     }, []);
 
     return (
-        <div className="homepage-body">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
             {/* Welcome Message */}
-            <div className="homepage-message">
-                <h1 className="homepage-title">
+            <div className="text-center mt-6 mb-6">
+                <h1 className="text-4xl font-bold text-white">
                     Welcome to ShareTea
                 </h1>
             </div>
 
             {/* Start Order Button */}
-            <div className="startorder-body">
+            <div className="text-center mb-8">
                 <a href="/customer/menu">
-                    <button className="startorder-button">
-                        Tap to Start Order
+                <button className="text-4xl font-bold px-25 py-10 bg-green-500 text-white rounded-xl shadow-md 
+                                hover:scale-105 hover:shadow-xl transition-transform">
+                    Tap to Start Order
                     </button>
                 </a>
             </div>
 
             {/* Weather Section */}
-            <div className="weather-body">
+            <div className="text-center mb-2">
                 {weather ? (
-                    <div className="weather-box">
+                    <div className="text-4xl font-bold px-5 py-5 bg-white text-black rounded-xl">
                         <h1>{Time}</h1>
                         <h2>Weather in {weather.name}</h2>
                         <p>Temperature: {(weather.main.temp * 9/5 + 32).toFixed(0)}°F</p>
                         <p>Feels Like: {(weather.main.feels_like * 9/5 + 32).toFixed(0)}°F</p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-2 gap-2">
 
             </div>
                     </div>

@@ -21,10 +21,12 @@ export default function SelectedCategoryPage() {
     const searchParams = useSearchParams();
     const category = searchParams.get("name");
 
+    // Instantiate states
     const [search, setSearch] = useState("");
     const [drinks, setDrinks] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Fetch drinks from the server when a category is selected
     useEffect(() => {
         if (!category) return;
 
@@ -41,6 +43,7 @@ export default function SelectedCategoryPage() {
             });
     }, [category]);
 
+    // Filter functionality for searching
     const filteredDrinks = drinks.filter((drink) =>
         drink.name.toLowerCase().includes(search.toLowerCase())
     );
@@ -88,6 +91,7 @@ export default function SelectedCategoryPage() {
                                             text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 
                                             hover:scale-105 hover:shadow-xl transition-transform"
                             >
+                                {/* Drink Image */}
                                 <div className="w-full h-40 flex justify-center items-center">
                                     <img
                                         src={`/drink-images/${toSnakeCase(
