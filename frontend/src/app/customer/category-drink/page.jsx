@@ -1,26 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-    FaHome,
-    FaVolumeUp,
-    FaShoppingCart,
-    FaSearch,
-    FaLanguage,
-} from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { SERVER } from "@/app/const";
 import Nav from "@/app/nav";
 
-// Converts "Classic Milk Tea" => "classic_milk_tea"
 function toSnakeCase(str) {
     return str.toLowerCase().replace(/ /g, "-");
 }
 
-export default function SelectedCategoryPage() {
-    const router = useRouter();
+function CategoryContent() {
     const searchParams = useSearchParams();
     const category = searchParams.get("name");
+    const router = useRouter();
 
     // Instantiate states
     const [search, setSearch] = useState("");
@@ -30,7 +24,6 @@ export default function SelectedCategoryPage() {
     // Fetch drinks from the server when a category is selected
     useEffect(() => {
         if (!category) return;
-
         fetch(`${SERVER}/categories`)
             .then((res) => res.json())
             .then((data) => {
@@ -39,7 +32,7 @@ export default function SelectedCategoryPage() {
                 setLoading(false);
             })
             .catch((err) => {
-                console.error("Error fetching drinks:", err);
+                console.error("Fetch error:", err);
                 setLoading(false);
             });
     }, [category]);
@@ -59,13 +52,9 @@ export default function SelectedCategoryPage() {
                     onClick={() => router.back()}
                 />
             </div>
-
-            {/* Category Title */}
             <h2 className="text-2xl font-bold mt-6 mb-4 text-center text-white">
                 {category || "Drinks"}
             </h2>
-
-            {/* Search Bar */}
             <div className="flex justify-center mb-6">
                 <div className="relative w-full max-w-md">
                     <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
@@ -79,7 +68,6 @@ export default function SelectedCategoryPage() {
                 </div>
             </div>
 
-            {/* Loading State */}
             {loading ? (
                 <p className="text-center text-white">Loading...</p>
             ) : filteredDrinks.length === 0 ? (
@@ -110,5 +98,15 @@ export default function SelectedCategoryPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function SelectedCategoryPage() {
+    return (
+        <Suspense
+            fallback={<div className="text-white text-center">Loading...</div>}
+        >
+            <CategoryContent />
+        </Suspense>
     );
 }
