@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Nav from "@/app/nav";
 
 export default function OrderCart() {
     const router = useRouter();
@@ -40,6 +41,7 @@ export default function OrderCart() {
 
     return (
         <div>
+            <Nav userRole="customer" />
             {/* Back Button */}
             <button onClick={() => router.back()}> Back</button>
 

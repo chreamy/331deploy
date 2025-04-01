@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
 import { SERVER } from "@/app/const";
+import Nav from "@/app/nav";
 
 function toSnakeCase(str) {
     return str.toLowerCase().replace(/ /g, "-");
@@ -43,6 +44,8 @@ function CategoryContent() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+            <Nav userRole="customer" />
+            {/* Back Button */}
             <div className="mt-6">
                 <IoArrowBackCircleOutline
                     className="text-3xl cursor-pointer text-white"

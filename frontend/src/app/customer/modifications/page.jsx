@@ -9,6 +9,7 @@ import {
     FaSearch,
     FaLanguage,
 } from "react-icons/fa";
+import Nav from "@/app/nav";
 
 export default function DrinkDetails() {
     const router = useRouter(); // Initialize useRouter
@@ -42,6 +43,7 @@ export default function DrinkDetails() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+            <Nav userRole="customer" />
             {/* Back Button */}
             <div className="mt-6">
                 <IoArrowBackCircleOutline className="text-3xl cursor-pointer" 
