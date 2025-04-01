@@ -10,6 +10,7 @@ import {
     FaLanguage,
 } from "react-icons/fa";
 import { SERVER } from "@/app/const";
+import Nav from "@/app/nav";
 
 // Converts "Classic Milk Tea" => "classic_milk_tea"
 function toSnakeCase(str) {
@@ -50,6 +51,7 @@ export default function SelectedCategoryPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+            <Nav userRole="customer" />
             {/* Back Button */}
             <div className="mt-6">
                 <IoArrowBackCircleOutline

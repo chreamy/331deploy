@@ -1,6 +1,7 @@
 "use client";
 import { SERVER } from "@/app/const";
 import { useEffect, useState } from "react";
+import Nav from "@/app/nav";
 
 export default function BubbleTeaShop() {
     // State to store data that will be needed
@@ -24,6 +25,7 @@ export default function BubbleTeaShop() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+            <Nav userRole="customer" />
             {/* Category Header */}
             <h2 className="text-2xl font-bold mt-6 mb-4 text-center text-white">
                 Select a Category

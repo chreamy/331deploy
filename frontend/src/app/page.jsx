@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Nav from "@/app/nav";
 
 export default function BubbleTeaShop() {
     const [search, setSearch] = useState("");
@@ -101,6 +102,16 @@ export default function BubbleTeaShop() {
                 <button className="text-4xl font-bold px-25 py-10 bg-green-500 text-white rounded-xl shadow-md 
                                 hover:scale-105 hover:shadow-xl transition-transform">
                     Tap to Start Order
+                    </button>
+                </a>
+            </div>
+
+            {/* Start Order Button */}
+            <div className="text-center mb-8">
+                <a href="/customer/menu">
+                <button className="text-4xl font-bold px-25 py-10 bg-green-500 text-white rounded-xl shadow-md 
+                                hover:scale-105 hover:shadow-xl transition-transform">
+                    Placeholder Manager Login
                     </button>
                 </a>
             </div>

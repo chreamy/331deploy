@@ -2,56 +2,65 @@
 import React from "react";
 import { FaHome, FaVolumeUp, FaShoppingCart, FaLanguage } from "react-icons/fa";
 
-const Nav = () => {
-    return (
-        <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm">
-            {/* Left Icons */}
-            <div className="flex items-center gap-4">
+const Nav = ({ userRole }) => {
+    if (userRole === "customer") {
+        return (
+          <nav>
+            <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm">
+              {/* Left Icons */}
+              <div className="flex items-center gap-4">
                 <button
-                    className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
-                    title="Home"
+                  className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
+                  title="Home"
                 >
-                    <a href="/customer/menu" className="cursor-pointer">
-                        <FaHome />
-                    </a>
+                  <a href="/customer/menu" className="cursor-pointer">
+                    <FaHome />
+                  </a>
                 </button>
-
+    
                 <button
-                    className="text-2xl text-gray-700 hover:text-blue-500"
-                    title="Sound"
+                  className="text-2xl text-gray-700 hover:text-blue-500"
+                  title="Sound"
                 >
-                    <FaVolumeUp />
+                  <FaVolumeUp />
                 </button>
                 <button
-                    className="text-2xl text-gray-700 hover:text-blue-500"
-                    title="Language"
+                  className="text-2xl text-gray-700 hover:text-blue-500"
+                  title="Language"
                 >
-                    <FaLanguage />
+                  <FaLanguage />
                 </button>
-            </div>
-
-            <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
+              </div>
+    
+              {/* Center Title */}
+              <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
                 ShareTea Customer Portal
-            </h1>
-
-            {/* Right Side: Toggle + Cart */}
-            <div className="flex items-center gap-4">
+              </h1>
+    
+              {/* Right Side: Toggle + Cart */}
+              <div className="flex items-center gap-4">
                 <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600"></div>
+                  <input type="checkbox" className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600"></div>
                 </label>
-
+    
                 <button
-                    className="text-2xl text-gray-700 hover:text-blue-500"
-                    title="Cart"
+                  className="text-2xl text-gray-700 hover:text-blue-500"
+                  title="Cart"
                 >
-                    <a href="/customer/cart" className="cursor-pointer">
-                        <FaShoppingCart />
-                    </a>
+                  <a href="/customer/cart" className="cursor-pointer">
+                    <FaShoppingCart />
+                  </a>
                 </button>
-            </div>
-        </header>
-    );
+              </div>
+            </header>
+          </nav>
+        );
+      } 
+
+    else if (userRole === "manager") {
+        // do something
+    }
 };
 
 export default Nav;
