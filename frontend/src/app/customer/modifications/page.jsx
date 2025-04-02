@@ -9,7 +9,7 @@ function toSnakeCase(str) {
     return str.toLowerCase().replace(/ /g, "-");
 }
 
-export default function DrinkDetails() {
+function DrinkDetails() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -38,12 +38,12 @@ export default function DrinkDetails() {
     const getTotalPrice = () => {
         // Add the base price of the drink to the total price
         const basePrice = drinkPrice;
-        
+
         // Add the price of the selected modifications
         const totalModsPrice = modifications
             .filter((mod) => selectedMods.includes(mod.name))
             .reduce((acc, cur) => acc + cur.price, 0);
-        
+
         // Return the total price including the base drink price and selected modifications
         return (basePrice + totalModsPrice).toFixed(2);
     };
@@ -53,9 +53,9 @@ export default function DrinkDetails() {
             <Nav userRole="customer" />
 
             <div className="mt-6">
-                <IoArrowBackCircleOutline 
-                    className="text-3xl text-[#EED9C4] cursor-pointer" 
-                    onClick={() => router.back()} 
+                <IoArrowBackCircleOutline
+                    className="text-3xl text-[#EED9C4] cursor-pointer"
+                    onClick={() => router.back()}
                 />
             </div>
 
@@ -93,20 +93,33 @@ export default function DrinkDetails() {
                     <div className="space-y-3">
                         {modifications
                             .filter((mod) =>
-                                mod.name.toLowerCase().includes(search.toLowerCase())
+                                mod.name
+                                    .toLowerCase()
+                                    .includes(search.toLowerCase())
                             )
                             .map((mod, idx) => (
-                                <div key={idx} className="flex items-center justify-between max-w-md">
+                                <div
+                                    key={idx}
+                                    className="flex items-center justify-between max-w-md"
+                                >
                                     <div className="flex items-center gap-2 flex-1">
                                         <input
                                             type="checkbox"
-                                            checked={selectedMods.includes(mod.name)}
-                                            onChange={() => handleToggle(mod.name)}
+                                            checked={selectedMods.includes(
+                                                mod.name
+                                            )}
+                                            onChange={() =>
+                                                handleToggle(mod.name)
+                                            }
                                             className="w-5 h-5"
                                         />
-                                        <span className="text-[#EED9C4]">{mod.name}</span>
+                                        <span className="text-[#EED9C4]">
+                                            {mod.name}
+                                        </span>
                                     </div>
-                                    <span className="text-[#EED9C4] w-20 text-right">${mod.price.toFixed(2)}</span>
+                                    <span className="text-[#EED9C4] w-20 text-right">
+                                        ${mod.price.toFixed(2)}
+                                    </span>
                                 </div>
                             ))}
                     </div>
@@ -133,5 +146,17 @@ export default function DrinkDetails() {
                 </a>
             </div>
         </div>
+    );
+}
+
+export default function DrinkDetailsPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="text-[#EED9C4] text-center">Loading...</div>
+            }
+        >
+            <DrinkDetails />
+        </Suspense>
     );
 }
