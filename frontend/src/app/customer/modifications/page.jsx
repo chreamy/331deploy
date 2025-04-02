@@ -42,83 +42,85 @@ export default function DrinkDetails() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+        <div>
             <Nav userRole="customer" />
-            {/* Back Button */}
-            <div className="mt-6">
-                <IoArrowBackCircleOutline className="text-3xl cursor-pointer" 
-                onClick={() => router.back()} // Navigate back
-                />
-            </div>
-
-            {/* Subheading */}
-            <h2 className="text-2xl font-bold mt-6 mb-4 text-center">
-                Modifications
-            </h2>
-
-            {/* Search Bar */}
-            <div className="flex justify-center mb-4">
-                <div className="relative w-full max-w-md">
-                    <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Search modifications..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+                {/* Back Button */}
+                <div className="mt-6">
+                    <IoArrowBackCircleOutline className="text-3xl cursor-pointer" 
+                    onClick={() => router.back()} // Navigate back
                     />
                 </div>
-            </div>
 
-            {/* Main Content */}
-            <div className="flex flex-col md:flex-row gap-6">
-                {/* Placeholder for Drink Photo */}
-                <div className="w-full md:w-1/3 flex justify-center">
-                    <div className="w-48 h-64 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
-                        &lt;Drink Photo&gt;
+                {/* Subheading */}
+                <h2 className="text-2xl font-bold mt-6 mb-4 text-center">
+                    Modifications
+                </h2>
+
+                {/* Search Bar */}
+                <div className="flex justify-center mb-4">
+                    <div className="relative w-full max-w-md">
+                        <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search modifications..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                        />
                     </div>
                 </div>
 
-                {/* Modifications */}
-                <div className="w-full md:w-2/3">
-                    <div className="space-y-3">
-                        {modifications
-                            .filter((mod) =>
-                                mod.name.toLowerCase().includes(search.toLowerCase())
-                            )
-                            .map((mod, idx) => (
-                                <div key={idx} className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedMods.includes(mod.name)}
-                                        onChange={() => handleToggle(mod.name)}
-                                        className="w-5 h-5"
-                                    />
-                                    <span className="flex-1">{mod.name}</span>
-                                    <span>${mod.price.toFixed(2)}</span>
-                                </div>
-                            ))}
+                {/* Main Content */}
+                <div className="flex flex-col md:flex-row gap-6">
+                    {/* Placeholder for Drink Photo */}
+                    <div className="w-full md:w-1/3 flex justify-center">
+                        <div className="w-48 h-64 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+                            &lt;Drink Photo&gt;
+                        </div>
                     </div>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="w-full md:w-1/4 space-y-4">
-                    <a href="/customer/cart">
-                        <button className="w-full bg-blue-500 text-white rounded-md py-2 my-1 hover:bg-blue-600">
-                            Add to Cart
-                        </button>
-                    </a>
-                    <a href="/customer/menu">
-                        <button className="w-full bg-gray-200 text-black rounded-md py-2 my-1 hover:bg-gray-300">
-                            Shop More
-                        </button>
-                    </a>
+                    {/* Modifications */}
+                    <div className="w-full md:w-2/3">
+                        <div className="space-y-3">
+                            {modifications
+                                .filter((mod) =>
+                                    mod.name.toLowerCase().includes(search.toLowerCase())
+                                )
+                                .map((mod, idx) => (
+                                    <div key={idx} className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedMods.includes(mod.name)}
+                                            onChange={() => handleToggle(mod.name)}
+                                            className="w-5 h-5"
+                                        />
+                                        <span className="flex-1">{mod.name}</span>
+                                        <span>${mod.price.toFixed(2)}</span>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
 
-                    <a href="/customer/checkout"> 
-                        <button className="w-full bg-green-500 text-white rounded-md py-2 my-1 hover:bg-green-600">
-                            Buy Now ${getTotalPrice()}
-                        </button>
-                    </a>
+                    {/* Action Buttons */}
+                    <div className="w-full md:w-1/4 space-y-4">
+                        <a href="/customer/cart">
+                            <button className="w-full bg-blue-500 text-white rounded-md py-2 my-1 hover:bg-blue-600">
+                                Add to Cart
+                            </button>
+                        </a>
+                        <a href="/customer/menu">
+                            <button className="w-full bg-gray-200 text-black rounded-md py-2 my-1 hover:bg-gray-300">
+                                Shop More
+                            </button>
+                        </a>
+
+                        <a href="/customer/checkout"> 
+                            <button className="w-full bg-green-500 text-white rounded-md py-2 my-1 hover:bg-green-600">
+                                Buy Now ${getTotalPrice()}
+                            </button>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
