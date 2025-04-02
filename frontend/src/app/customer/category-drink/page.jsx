@@ -82,12 +82,10 @@ function CategoryContent() {
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredDrinks.map((drink, index) => (
-                        <a key={index} href="/customer/modifications">
-                            <div
-                                className="border border-[#C2A385] rounded-2xl p-6 text-center 
-                                        text-gray-900 bg-white shadow-lg 
-                                        hover:scale-105 hover:shadow-2xl transition-transform hover:bg-[#EED9C4]"
-                            >
+                        <a key={index} href={`/customer/modifications?name=${toSnakeCase(drink.name)}&price=${drink.price}`}>
+                            <div className="border border-[#C2A385] rounded-2xl p-6 text-center 
+                                            text-gray-900 bg-white shadow-lg 
+                                            hover:scale-105 hover:shadow-2xl transition-transform hover:bg-[#EED9C4]">
                                 {/* Drink Image */}
                                 <div className="w-full h-48 flex justify-center items-center">
                                     <img
@@ -96,11 +94,17 @@ function CategoryContent() {
                                         className="max-w-full max-h-full object-contain rounded-md"
                                     />
                                 </div>
-                                <p className="mt-2 text-xl font-semibold">{drink.name}</p>
+                                
+                                {/* Drink Name and Price */}
+                                <div className="flex justify-center items-center mt-2">
+                                    <p className="text-xl font-semibold">{drink.name}</p>
+                                    <p className="ml-4 text-lg font-medium text-black">${drink.price.toFixed(2)}</p>
+                                </div>
                             </div>
                         </a>
                     ))}
                 </div>
+
             )}
         </div>
     );

@@ -1,19 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { useRouter } from "next/navigation"; // Import useRouter
-import {
-    FaHome,
-    FaVolumeUp,
-    FaShoppingCart,
-    FaSearch,
-    FaLanguage,
-} from "react-icons/fa";
+import { useSearchParams, useRouter } from "next/navigation";
+import { FaSearch } from "react-icons/fa";
 import Nav from "@/app/nav";
 
+function toSnakeCase(str) {
+    return str.toLowerCase().replace(/ /g, "-");
+}
+
 export default function DrinkDetails() {
-    const router = useRouter(); // Initialize useRouter
-    // instantiate states for data that wil be needed
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Get drink name and price from URL
+    const drinkName = searchParams.get("name") || "Selected Drink";
+    const drinkPrice = parseFloat(searchParams.get("price")) || 0;
+
     const [search, setSearch] = useState("");
     const [selectedMods, setSelectedMods] = useState([]);
     const [modifications] = useState([
@@ -22,9 +25,8 @@ export default function DrinkDetails() {
         { name: "Add Cheese Foam", price: 1.0 },
         { name: "Oat Milk", price: 0.75 },
         { name: "Sugar-Free", price: 0 },
-    ]); // placeholder modofication values (Work in progress)
+    ]);
 
-    // Function that toggles upon a modification selection
     const handleToggle = (modName) => {
         setSelectedMods((prev) =>
             prev.includes(modName)
@@ -33,95 +35,102 @@ export default function DrinkDetails() {
         );
     };
 
-    // Function to calcuate modification prices
     const getTotalPrice = () => {
-        return modifications
+        // Add the base price of the drink to the total price
+        const basePrice = drinkPrice;
+        
+        // Add the price of the selected modifications
+        const totalModsPrice = modifications
             .filter((mod) => selectedMods.includes(mod.name))
-            .reduce((acc, cur) => acc + cur.price, 0)
-            .toFixed(2);
+            .reduce((acc, cur) => acc + cur.price, 0);
+        
+        // Return the total price including the base drink price and selected modifications
+        return (basePrice + totalModsPrice).toFixed(2);
     };
 
     return (
-        <div>
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8 font-[Roboto]">
             <Nav userRole="customer" />
-            <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
-                {/* Back Button */}
-                <div className="mt-6">
-                    <IoArrowBackCircleOutline className="text-3xl cursor-pointer" 
-                    onClick={() => router.back()} // Navigate back
+
+            <div className="mt-6">
+                <IoArrowBackCircleOutline 
+                    className="text-3xl text-[#EED9C4] cursor-pointer" 
+                    onClick={() => router.back()} 
+                />
+            </div>
+
+            <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center text-[#EED9C4] drop-shadow-md font-[Roboto]">
+                Modifications
+            </h2>
+
+            {/* Search Bar */}
+            <div className="flex justify-center mb-4">
+                <div className="relative w-full max-w-md">
+                    <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search modifications..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                    />
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex flex-col md:flex-row gap-6 flex-grow">
+                {/* Drink Image */}
+                <div className="w-full md:w-1/3 flex justify-center">
+                    <img
+                        src={`/drink-images/${toSnakeCase(drinkName)}.png`}
+                        alt={drinkName}
+                        className="w-48 h-64 object-cover rounded-md shadow-md"
                     />
                 </div>
 
-                {/* Subheading */}
-                <h2 className="text-2xl font-bold mt-6 mb-4 text-center">
-                    Modifications
-                </h2>
-
-                {/* Search Bar */}
-                <div className="flex justify-center mb-4">
-                    <div className="relative w-full max-w-md">
-                        <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Search modifications..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                        />
-                    </div>
-                </div>
-
-                {/* Main Content */}
-                <div className="flex flex-col md:flex-row gap-6">
-                    {/* Placeholder for Drink Photo */}
-                    <div className="w-full md:w-1/3 flex justify-center">
-                        <div className="w-48 h-64 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
-                            &lt;Drink Photo&gt;
-                        </div>
-                    </div>
-
-                    {/* Modifications */}
-                    <div className="w-full md:w-2/3">
-                        <div className="space-y-3">
-                            {modifications
-                                .filter((mod) =>
-                                    mod.name.toLowerCase().includes(search.toLowerCase())
-                                )
-                                .map((mod, idx) => (
-                                    <div key={idx} className="flex items-center gap-2">
+                {/* Modifications */}
+                <div className="w-full md:w-2/3 flex-grow">
+                    <div className="space-y-3">
+                        {modifications
+                            .filter((mod) =>
+                                mod.name.toLowerCase().includes(search.toLowerCase())
+                            )
+                            .map((mod, idx) => (
+                                <div key={idx} className="flex items-center justify-between max-w-md">
+                                    <div className="flex items-center gap-2 flex-1">
                                         <input
                                             type="checkbox"
                                             checked={selectedMods.includes(mod.name)}
                                             onChange={() => handleToggle(mod.name)}
                                             className="w-5 h-5"
                                         />
-                                        <span className="flex-1">{mod.name}</span>
-                                        <span>${mod.price.toFixed(2)}</span>
+                                        <span className="text-[#EED9C4]">{mod.name}</span>
                                     </div>
-                                ))}
-                        </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="w-full md:w-1/4 space-y-4">
-                        <a href="/customer/cart">
-                            <button className="w-full bg-blue-500 text-white rounded-md py-2 my-1 hover:bg-blue-600">
-                                Add to Cart
-                            </button>
-                        </a>
-                        <a href="/customer/menu">
-                            <button className="w-full bg-gray-200 text-black rounded-md py-2 my-1 hover:bg-gray-300">
-                                Shop More
-                            </button>
-                        </a>
-
-                        <a href="/customer/checkout"> 
-                            <button className="w-full bg-green-500 text-white rounded-md py-2 my-1 hover:bg-green-600">
-                                Buy Now ${getTotalPrice()}
-                            </button>
-                        </a>
+                                    <span className="text-[#EED9C4] w-20 text-right">${mod.price.toFixed(2)}</span>
+                                </div>
+                            ))}
                     </div>
                 </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="w-full md:w-full flex justify-center gap-6 mt-0">
+                <a href="/customer/cart">
+                    <button className="w-full md:w-auto bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-600">
+                        Add to Cart ${getTotalPrice()}
+                    </button>
+                </a>
+                <a href="/customer/menu">
+                    <button className="w-full md:w-auto bg-gray-200 text-black rounded-md py-2 px-4 hover:bg-gray-300">
+                        Shop More
+                    </button>
+                </a>
+
+                <a href="/customer/checkout">
+                    <button className="w-full md:w-auto bg-green-500 text-white rounded-md py-2 px-4 hover:bg-green-600">
+                        Buy Now ${getTotalPrice()}
+                    </button>
+                </a>
             </div>
         </div>
     );
