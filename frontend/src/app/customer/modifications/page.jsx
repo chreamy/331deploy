@@ -3,30 +3,43 @@ import { useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FaSearch } from "react-icons/fa";
+import { SERVER } from "@/app/const";
 import Nav from "@/app/nav";
 
 function toSnakeCase(str) {
     return str.toLowerCase().replace(/ /g, "-");
 }
-
 export default function DrinkDetails() {
-    const router = useRouter();
     const searchParams = useSearchParams();
+    const router = useRouter();
 
     // Get drink name and price from URL
     const drinkName = searchParams.get("name") || "Selected Drink";
     const drinkPrice = parseFloat(searchParams.get("price")) || 0;
 
+    // Instantiate states
     const [search, setSearch] = useState("");
-    const [selectedMods, setSelectedMods] = useState([]);
-    const [modifications] = useState([
-        { name: "Extra Boba", price: 0.5 },
-        { name: "Less Ice", price: 0 },
-        { name: "Add Cheese Foam", price: 1.0 },
-        { name: "Oat Milk", price: 0.75 },
-        { name: "Sugar-Free", price: 0 },
-    ]);
+    const [loading, setLoading] = useState(true);
 
+    const [modifications, setModifications] = useState([]);
+    const [selectedIce, setSelectedIce] = useState("");
+    const [selectedSugar, setSelectedSugar] = useState("");
+    
+    // Fetch modifications from the PostgreSQL server
+    useEffect(() => {
+        fetch(`${SERVER}/modifications`) 
+            .then((res) => res.json()) // put server response as JSON
+            .then((data) => {
+                const fetchedModifications = data; // Directly use the data from the response
+                setModifications(fetchedModifications); // Update the state
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch modifications:", err);
+                setLoading(false);
+            });
+    }, []);
+    
     const handleToggle = (modName) => {
         setSelectedMods((prev) =>
             prev.includes(modName)
@@ -39,13 +52,8 @@ export default function DrinkDetails() {
         // Add the base price of the drink to the total price
         const basePrice = drinkPrice;
         
-        // Add the price of the selected modifications
-        const totalModsPrice = modifications
-            .filter((mod) => selectedMods.includes(mod.name))
-            .reduce((acc, cur) => acc + cur.price, 0);
-        
-        // Return the total price including the base drink price and selected modifications
-        return (basePrice + totalModsPrice).toFixed(2);
+        // Since modifications don't have a price, we don't add any extra price here.
+        return basePrice.toFixed(2);  // Only return the base price of the drink
     };
 
     return (
@@ -90,25 +98,62 @@ export default function DrinkDetails() {
 
                 {/* Modifications */}
                 <div className="w-full md:w-2/3 flex-grow">
-                    <div className="space-y-3">
-                        {modifications
-                            .filter((mod) =>
-                                mod.name.toLowerCase().includes(search.toLowerCase())
-                            )
-                            .map((mod, idx) => (
-                                <div key={idx} className="flex items-center justify-between max-w-md">
-                                    <div className="flex items-center gap-2 flex-1">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedMods.includes(mod.name)}
-                                            onChange={() => handleToggle(mod.name)}
-                                            className="w-5 h-5"
-                                        />
-                                        <span className="text-[#EED9C4]">{mod.name}</span>
-                                    </div>
-                                    <span className="text-[#EED9C4] w-20 text-right">${mod.price.toFixed(2)}</span>
-                                </div>
-                            ))}
+                    <div className="space-y-6">
+                        {/* Ice Level Row */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-white mb-2">Ice Level:</h3>
+                            <div className="grid grid-cols-4 gap-0">
+                                {modifications
+                                    .filter((mod) => mod.name && mod.name.toLowerCase().includes("ice"))
+                                    .map((mod, idx) => (
+                                        <div key={idx} className="flex items-center gap-2">
+                                            <input
+                                                type="radio"
+                                                name="iceLevel" // Ensures only one selection in this group
+                                                value={mod.name}
+                                                checked={selectedIce === mod.name}
+                                                onClick={(e) => {
+                                                    if (selectedIce === mod.name) {
+                                                        e.target.checked = false; // Uncheck if the same option is clicked
+                                                        setSelectedIce(""); // Clear selection
+                                                    }
+                                                }}
+                                                onChange={() => setSelectedIce(mod.name)}
+                                                className="w-5 h-5"
+                                            />
+                                            <span className="text-[#EED9C4] text-lg">{mod.name}</span>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+
+                        {/* Sugar Level Row */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-white mb-2">Sugar Level:</h3>
+                            <div className="grid grid-cols-4 gap-0">
+                                {modifications
+                                    .filter((mod) => mod.name && mod.name.toLowerCase().includes("sugar"))
+                                    .map((mod, idx) => (
+                                        <div key={idx} className="flex items-center gap-2">
+                                            <input
+                                                type="radio"
+                                                name="sugarLevel" // Ensures only one selection in this group
+                                                value={mod.name}
+                                                checked={selectedSugar === mod.name}
+                                                onClick={(e) => {
+                                                    if (selectedSugar === mod.name) {
+                                                        e.target.checked = false; // Uncheck if the same option is clicked
+                                                        setSelectedSugar(""); // Clear selection
+                                                    }
+                                                }}
+                                                onChange={() => setSelectedSugar(mod.name)}
+                                                className="w-5 h-5"
+                                            />
+                                            <span className="text-[#EED9C4] text-lg">{mod.name}</span>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
