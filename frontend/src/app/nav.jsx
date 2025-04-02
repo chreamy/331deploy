@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaHome, FaVolumeUp, FaShoppingCart, FaLanguage, FaLine, FaChartLine, FaPaperclip, FaPaperPlane, FaRegPaperPlane, FaHandPaper, FaPen, FaGripLines, FaGripHorizontal, FaGratipay } from "react-icons/fa";
 
 const Nav = ({ userRole }) => {
@@ -60,22 +60,29 @@ const Nav = ({ userRole }) => {
     } 
 
     else if (userRole === "manager") {
-        // Menu states for the manager view
+        // Menu states for the manager view navigation
         const [isMenuOpen, setIsMenuOpen] = useState(true);
+            useEffect(() => {
+                const savedState = localStorage.getItem("menuState") === "true";
+                setIsMenuOpen(savedState);
+        }, []);
+
         const toggleManagerMenu = () => {
-            setIsMenuOpen(!isMenuOpen);
+            const newState = !isMenuOpen;
+            setIsMenuOpen(newState);
+            localStorage.setItem("menuState", newState);
         };  
         
         return (
-            <div className="min-h-screen bg-gray-300 flex">
+            <div className="min-h-screen bg-red-50 flex">
                 {/* Left Sidebar */}
                 <div
-                    className={`transition-all duration-500 ease-in-out bg-black text-white p-4`}
+                    className={`transition-all duration-10000 ease-in-out bg-gray-400 text-white p-4`}
                 >
 
                 {/* Menu Toggle Button */}
                 <button
-                    className="text-white text-2xl mb-4 hover:text-red-500"
+                    className="text-black text-2xl p-4 hover:text-red-500"
                     onClick={toggleManagerMenu}
                 >
                     <FaGripHorizontal />
@@ -83,21 +90,21 @@ const Nav = ({ userRole }) => {
 
                 {/* Menu Buttons */}
                 <div className="flex flex-col items-start gap-6">
-                    <button className="flex flex-col items-center text-gray-300 hover:text-blue-500" >
+                    <button className="flex flex-col items-center text-black hover:text-blue-500" >
                         <a href="/manager/management" className="cursor-pointer flex items-center">
                             <FaHome className="text-6xl" />
                             {isMenuOpen?"":<h3 className="p-6 text-2xl">Home</h3>}
                         </a>
                     </button>
 
-                    <button className="flex flex-col items-center text-gray-300 hover:text-blue-500" >
+                    <button className="flex flex-col items-center text-black hover:text-blue-500" >
                         <a href="/manager/reports" className="cursor-pointer flex items-center">
                             <FaPen className="text-6xl" />
                             {isMenuOpen?"":<h3 className="p-6 text-2xl">Reports</h3>}
                         </a>
                     </button>
 
-                    <button className="flex flex-col items-center text-gray-300 hover:text-blue-500" >
+                    <button className="flex flex-col items-center text-black hover:text-blue-500" >
                         <a href="/manager/trends" className="cursor-pointer flex items-center">
                             <FaChartLine className="text-6xl"/>
                             {isMenuOpen?"":<h3 className="p-6 text-2xl">Trends</h3>}

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Nav from "@/app/nav";
 
 export default function OrderCart() {
@@ -40,14 +41,20 @@ export default function OrderCart() {
     };
 
     return (
-        <div>
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 font-[Roboto]">
             <Nav userRole="customer" />
-            <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
             {/* Back Button */}
-            <button onClick={() => router.back()}> Back</button>
+                <div className="mt-6 p-4">
+                    <IoArrowBackCircleOutline
+                        className="text-3xl cursor-pointer text-[#EED9C4]"
+                        onClick={() => router.back()}
+                    />
+                </div>
 
             {/* Cart Header */}
-            <h1>Cart</h1>
+            <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center text-[#EED9C4] drop-shadow-md">
+                {"Your Cart"}
+            </h2>
 
             {/* Items Section */}
             {cart.map((item) => (
@@ -74,6 +81,5 @@ export default function OrderCart() {
             {/* Action Buttons */}
             <button onClick={() => router.push("/customer/menu")}>Add More Items</button>
       </div>
-    </div>
     );
 }
