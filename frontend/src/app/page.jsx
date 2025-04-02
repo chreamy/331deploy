@@ -108,10 +108,10 @@ export default function BubbleTeaShop() {
 
             {/* Start Order Button */}
             <div className="text-center mb-8">
-                <a href="/customer/menu">
+                <a href="/manager/management">
                 <button className="text-4xl font-bold px-25 py-10 bg-green-500 text-white rounded-xl shadow-md 
                                 hover:scale-105 hover:shadow-xl transition-transform">
-                    Placeholder Manager Login
+                    Manager Login
                     </button>
                 </a>
             </div>
