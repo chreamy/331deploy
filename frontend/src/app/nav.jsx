@@ -75,10 +75,10 @@ const Nav = ({ userRole }) => {
 
                 {/* Menu Toggle Button */}
                 <button
-                    className="text-white text-2xl mb-4"
+                    className="text-white text-2xl mb-4 hover:text-red-500"
                     onClick={toggleManagerMenu}
                 >
-                    <FaGripHorizontal className="items-center"/>
+                    <FaGripHorizontal />
                 </button>
 
                 {/* Menu Buttons */}
