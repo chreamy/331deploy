@@ -24,36 +24,38 @@ export default function BubbleTeaShop() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+        <div>
             <Nav userRole="customer" />
-            {/* Category Header */}
-            <h2 className="text-2xl font-bold mt-6 mb-4 text-center text-white">
-                Select a Category
-            </h2>
+            <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+                {/* Category Header */}
+                <h2 className="text-2xl font-bold mt-6 mb-4 text-center text-white">
+                    Select a Category
+                </h2>
 
-            {/* Display loading message and the list of categories */}
-            {loading ? (
-                <div className="text-white text-center">Loading...</div>
-            ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {categories.map((category, index) => (
-                        <a
-                            href={`/customer/category-drink?name=${encodeURIComponent(
-                                category
-                            )}`}
-                            key={index}
-                        >
-                            <div
-                                className="border border-gray-400 rounded-xl p-6 text-center 
-                                           text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 
-                                           hover:scale-105 hover:shadow-xl transition-transform"
+                {/* Display loading message and the list of categories */}
+                {loading ? (
+                    <div className="text-white text-center">Loading...</div>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {categories.map((category, index) => (
+                            <a
+                                href={`/customer/category-drink?name=${encodeURIComponent(
+                                    category
+                                )}`}
+                                key={index}
                             >
-                                {category}
-                            </div>
-                        </a>
-                    ))}
-                </div>
-            )}
+                                <div
+                                    className="border border-gray-400 rounded-xl p-6 text-center 
+                                            text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 
+                                            hover:scale-105 hover:shadow-xl transition-transform"
+                                >
+                                    {category}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
