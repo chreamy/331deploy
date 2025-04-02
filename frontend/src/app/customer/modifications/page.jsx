@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FaSearch } from "react-icons/fa";
