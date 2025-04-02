@@ -43,12 +43,12 @@ function CategoryContent() {
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 font-[Roboto]">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8 font-[Roboto]">
             
             <Nav userRole="customer" />
             
             {/* Back Button */}
-            <div className="mt-6 p-4">
+            <div className="mt-6">
                 <IoArrowBackCircleOutline
                     className="text-3xl cursor-pointer text-[#EED9C4]"
                     onClick={() => router.back()}
@@ -81,7 +81,7 @@ function CategoryContent() {
             ) : filteredDrinks.length === 0 ? (
                 <p className="text-center text-[#EED9C4] text-lg font-semibold">No drinks found.</p>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 md:p-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredDrinks.map((drink, index) => (
                         <a key={index} href={`/customer/modifications?name=${toSnakeCase(drink.name)}&price=${drink.price}`}>
                             <div className="border border-[#C2A385] rounded-2xl p-6 text-center 

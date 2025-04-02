@@ -24,7 +24,7 @@ export default function BubbleTeaShop() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 font-[Roboto]">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8 font-[Roboto]">
             <Nav userRole="customer" />
             {/* Category Header */}
             <h2 className="text-3xl font-extrabold mt-6 mb-6 text-center text-[#EED9C4] drop-shadow-md font-[Roboto]">
@@ -36,7 +36,7 @@ export default function BubbleTeaShop() {
                 <div className="text-[#EED9C4] text-center text-lg font-semibold font-[Roboto]">Loading...</div>
             ) : (
                 // <div className="grid grid-cols-3 gap-8">
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 p-4 md:p-8">
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
                     {categories.map((category, index) => (
                         <a
                             href={`/customer/category-drink?name=${encodeURIComponent(

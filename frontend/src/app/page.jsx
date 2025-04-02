@@ -88,30 +88,40 @@ export default function BubbleTeaShop() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8 font-[Roboto]">
+            {/* Top Nav Bar */}
+            <Nav userRole="guest" />
+
             {/* Welcome Message */}
             <div className="text-center mt-6 mb-6">
-                <h1 className="text-4xl font-bold text-white">
-                    Welcome to ShareTea
+                <h1 className="text-4xl font-bold text-[#EED9C4] drop-shadow-md">
+                    Welcome to ShareTea Web Portal
                 </h1>
             </div>
 
-            {/* Start Order Button */}
-            <div className="text-center mb-8">
+            {/* Button Row */}
+            <div className="flex justify-center gap-6 mb-8">
+                {/* Customer View Button */}
                 <a href="/customer/menu">
-                <button className="text-4xl font-bold px-25 py-10 bg-green-500 text-white rounded-xl shadow-md 
-                                hover:scale-105 hover:shadow-xl transition-transform">
-                    Tap to Start Order
+                    <button className="text-2xl font-bold px-12 py-6 bg-green-500 text-white rounded-xl shadow-md
+                                        hover:scale-105 hover:shadow-xl transition-transform">
+                        Customer View
                     </button>
                 </a>
-            </div>
 
-            {/* Start Order Button */}
-            <div className="text-center mb-8">
+                {/* Manager View Button */}
                 <a href="/manager/management">
-                <button className="text-4xl font-bold px-25 py-10 bg-green-500 text-white rounded-xl shadow-md 
-                                hover:scale-105 hover:shadow-xl transition-transform">
-                    Manager Login
+                    <button className="text-2xl font-bold px-12 py-6 bg-blue-500 text-white rounded-xl shadow-md
+                                        hover:scale-105 hover:shadow-xl transition-transform">
+                        Manager View
+                    </button>
+                </a>
+
+                {/* Cashier View Button */}
+                <a href="/cashier/management">
+                    <button className="text-2xl font-bold px-12 py-6 bg-yellow-500 text-white rounded-xl shadow-md
+                                        hover:scale-105 hover:shadow-xl transition-transform">
+                        Cashier View
                     </button>
                 </a>
             </div>
@@ -124,11 +134,7 @@ export default function BubbleTeaShop() {
                         <h2>Weather in {weather.name}</h2>
                         <p>Temperature: {(weather.main.temp * 9/5 + 32).toFixed(0)}°F</p>
                         <p>Feels Like: {(weather.main.feels_like * 9/5 + 32).toFixed(0)}°F</p>
-                        <div className="grid grid-cols-2 md:grid-cols-2 gap-2">
-
-            </div>
                     </div>
-                    
                 ) : (
                     <div className="weather-box"> Unable to fetch weather data.</div>
                 )}
