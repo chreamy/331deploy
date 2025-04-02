@@ -82,7 +82,7 @@ function CategoryContent() {
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredDrinks.map((drink, index) => (
-                        <a key={index} href="/customer/modifications">
+                        <a key={index} href={`/customer/modifications?name=${toSnakeCase(drink.name)}&price=${drink.price}`}>
                             <div className="border border-[#C2A385] rounded-2xl p-6 text-center 
                                             text-gray-900 bg-white shadow-lg 
                                             hover:scale-105 hover:shadow-2xl transition-transform hover:bg-[#EED9C4]">
@@ -104,6 +104,7 @@ function CategoryContent() {
                         </a>
                     ))}
                 </div>
+
             )}
         </div>
     );
