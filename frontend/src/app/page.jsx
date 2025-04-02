@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import Nav from "@/app/nav";
+import Nav from "./nav";
 
 export default function BubbleTeaShop() {
     const [search, setSearch] = useState("");
@@ -22,7 +22,7 @@ export default function BubbleTeaShop() {
         { name: "few clouds day", image: "/weather-images/02d.png" },
         { name: "few clouds night", image: "/weather-images/02n.png" },
         { name: "scattered clouds", image: "/weather-images/03.png" },
-        { name: "broken clouds", image: "/weather-images/04.png",},
+        { name: "broken clouds", image: "/weather-images/04.png" },
         { name: "shower rain", image: "/weather-images/09.png" },
         { name: "rain day", image: "/weather-images/10d.png" },
         { name: "rain night", image: "/weather-images/10n.png" },
@@ -33,26 +33,26 @@ export default function BubbleTeaShop() {
 
     const currentDate = new Date();
     var hours = currentDate.getHours();
-    var AMPM = '';
+    var AMPM = "";
     if (hours === 0) {
-        hours = 12; 
-        AMPM = ' AM';
-      } else if (hours > 12) {
-        hours = hours - 12; 
-        AMPM = ' PM';
-      }
-    
+        hours = 12;
+        AMPM = " AM";
+    } else if (hours > 12) {
+        hours = hours - 12;
+        AMPM = " PM";
+    }
+
     var minutes = currentDate.getMinutes();
 
     if (minutes < 10) {
-        minutes = '0' + minutes
+        minutes = "0" + minutes;
     }
 
     const Time = `${hours}:${minutes}${AMPM}`;
 
     // Weather inforation
     const [weather, setWeatherData] = useState(false);
-    const apiKey = "2ee7f942dfb54b03fa89c972814a9842"; 
+    const apiKey = "2ee7f942dfb54b03fa89c972814a9842";
 
     // Fetch weather data
     const fetchWeather = async (city) => {
@@ -61,30 +61,31 @@ export default function BubbleTeaShop() {
             const response = await fetch(url);
             const data = await response.json();
             setWeatherData(data);
-            var imageName = '';
-            if (data.weather[0].description === 'clear sky' || data.weather[0].description === 'few clouds' || data.weather[0].description === 'rain') {
-                if (AMPM === ' PM') {
-                    imageName = data.weather[0].description + ' night';
+            var imageName = "";
+            if (
+                data.weather[0].description === "clear sky" ||
+                data.weather[0].description === "few clouds" ||
+                data.weather[0].description === "rain"
+            ) {
+                if (AMPM === " PM") {
+                    imageName = data.weather[0].description + " night";
+                } else {
+                    imageName = data.weather[0].description + " day";
                 }
-                else {
-                    imageName = data.weather[0].description + ' day';
-                }
-            }
-            else {
+            } else {
                 imageName = data.weather[0].description;
             }
 
             // const foundImage = weatherImg.find(name => name === imageName);
             // if (foundImage) setimageSrc(foundImage.image);
             // console.log(item.name);
-            
-            } catch (error) {
-                console.error("Error fetching weather data:", error);
-            }
+        } catch (error) {
+            console.error("Error fetching weather data:", error);
+        }
     };
-    
-    useEffect(()=> {
-        fetchWeather('College Station');
+
+    useEffect(() => {
+        fetchWeather("College Station");
     }, []);
 
     return (
@@ -103,24 +104,30 @@ export default function BubbleTeaShop() {
             <div className="flex justify-center gap-6 mb-8">
                 {/* Customer View Button */}
                 <a href="/customer/menu">
-                    <button className="text-2xl font-bold px-12 py-6 bg-green-500 text-white rounded-xl shadow-md
-                                        hover:scale-105 hover:shadow-xl transition-transform">
+                    <button
+                        className="text-2xl font-bold px-12 py-6 bg-green-500 text-white rounded-xl shadow-md
+                                        hover:scale-105 hover:shadow-xl transition-transform"
+                    >
                         Customer View
                     </button>
                 </a>
 
                 {/* Manager View Button */}
                 <a href="/manager/management">
-                    <button className="text-2xl font-bold px-12 py-6 bg-blue-500 text-white rounded-xl shadow-md
-                                        hover:scale-105 hover:shadow-xl transition-transform">
+                    <button
+                        className="text-2xl font-bold px-12 py-6 bg-blue-500 text-white rounded-xl shadow-md
+                                        hover:scale-105 hover:shadow-xl transition-transform"
+                    >
                         Manager View
                     </button>
                 </a>
 
                 {/* Cashier View Button */}
                 <a href="/cashier/management">
-                    <button className="text-2xl font-bold px-12 py-6 bg-yellow-500 text-white rounded-xl shadow-md
-                                        hover:scale-105 hover:shadow-xl transition-transform">
+                    <button
+                        className="text-2xl font-bold px-12 py-6 bg-yellow-500 text-white rounded-xl shadow-md
+                                        hover:scale-105 hover:shadow-xl transition-transform"
+                    >
                         Cashier View
                     </button>
                 </a>
@@ -132,11 +139,23 @@ export default function BubbleTeaShop() {
                     <div className="text-4xl font-bold px-5 py-5 bg-white text-black rounded-xl">
                         <h1>{Time}</h1>
                         <h2>Weather in {weather.name}</h2>
-                        <p>Temperature: {(weather.main.temp * 9/5 + 32).toFixed(0)}°F</p>
-                        <p>Feels Like: {(weather.main.feels_like * 9/5 + 32).toFixed(0)}°F</p>
+                        <p>
+                            Temperature:{" "}
+                            {((weather.main.temp * 9) / 5 + 32).toFixed(0)}°F
+                        </p>
+                        <p>
+                            Feels Like:{" "}
+                            {((weather.main.feels_like * 9) / 5 + 32).toFixed(
+                                0
+                            )}
+                            °F
+                        </p>
                     </div>
                 ) : (
-                    <div className="weather-box"> Unable to fetch weather data.</div>
+                    <div className="weather-box">
+                        {" "}
+                        Unable to fetch weather data.
+                    </div>
                 )}
             </div>
         </div>
