@@ -123,7 +123,7 @@ export default function BubbleTeaShop() {
                 </a>
 
                 {/* Cashier View Button */}
-                <a href="/cashier/management">
+                <a href="/cashier">
                     <button
                         className="text-2xl font-bold px-12 py-6 bg-yellow-500 text-white rounded-xl shadow-md
                                         hover:scale-105 hover:shadow-xl transition-transform"
