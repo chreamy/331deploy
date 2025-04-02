@@ -8,7 +8,7 @@ const Nav = ({ userRole }) => {
     if (userRole === "customer") {
         return (
             <nav>
-                <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm">
+                <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm rounded-lg">
                 {/* Left Icons */}
                 <div className="flex items-center gap-4">
                     <button className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"

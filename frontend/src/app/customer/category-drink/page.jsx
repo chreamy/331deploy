@@ -43,71 +43,74 @@ function CategoryContent() {
     );
 
     return (
-        <div>
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8 font-[Roboto]">
             <Nav userRole="customer" />
-            <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8">
-                {/* Back Button */}
-                <div className="mt-6">
-                    <IoArrowBackCircleOutline
-                        className="text-3xl cursor-pointer text-white"
-                        onClick={() => router.back()}
+            
+            {/* Back Button */}
+            <div className="mt-6">
+                <IoArrowBackCircleOutline
+                    className="text-3xl cursor-pointer text-[#EED9C4]"
+                    onClick={() => router.back()}
+                />
+            </div>
+
+            {/* Category Header */}
+            <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center text-[#EED9C4] drop-shadow-md">
+                {category || "Drinks"}
+            </h2>
+
+            {/* Search Bar */}
+            <div className="flex justify-center mb-6">
+                <div className="relative w-full max-w-md text-black">
+                    <FaSearch className="absolute top-2.5 left-3 text-black" />
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-[#C2A385] rounded-md 
+                                   focus:outline-none focus:ring-2 focus:ring-[#EED9C4] bg-gray-100"
                     />
                 </div>
-                <h2 className="text-2xl font-bold mt-6 mb-4 text-center text-white">
-                    {category || "Drinks"}
-                </h2>
-                <div className="flex justify-center mb-6">
-                    <div className="relative w-full max-w-md">
-                        <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                </div>
-
-                {loading ? (
-                    <p className="text-center text-white">Loading...</p>
-                ) : filteredDrinks.length === 0 ? (
-                    <p className="text-center text-white">No drinks found.</p>
-                ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {filteredDrinks.map((drink, index) => (
-                            <a key={index} href="/customer/modifications">
-                                <div
-                                    className="border border-gray-400 rounded-xl p-6 text-center 
-                                                text-gray-900 bg-gradient-to-r from-white to-gray-200 shadow-md 
-                                                hover:scale-105 hover:shadow-xl transition-transform"
-                                >
-                                    {/* Drink Image */}
-                                    <div className="w-full h-40 flex justify-center items-center">
-                                        <img
-                                            src={`/drink-images/${toSnakeCase(
-                                                drink.name
-                                            )}.png`}
-                                            alt={drink.name}
-                                            className="max-w-full max-h-full object-contain rounded-md"
-                                        />
-                                    </div>
-                                    <p className="mt-2">{drink.name}</p>
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                )}
             </div>
+
+            {/* Loading or No Drinks Message */}
+            {loading ? (
+                <p className="text-center text-[#EED9C4] text-lg font-semibold">Loading...</p>
+            ) : filteredDrinks.length === 0 ? (
+                <p className="text-center text-[#EED9C4] text-lg font-semibold">No drinks found.</p>
+            ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {filteredDrinks.map((drink, index) => (
+                        <a key={index} href="/customer/modifications">
+                            <div
+                                className="border border-[#C2A385] rounded-2xl p-6 text-center 
+                                        text-gray-900 bg-white shadow-lg 
+                                        hover:scale-105 hover:shadow-2xl transition-transform hover:bg-[#EED9C4]"
+                            >
+                                {/* Drink Image */}
+                                <div className="w-full h-48 flex justify-center items-center">
+                                    <img
+                                        src={`/drink-images/${toSnakeCase(drink.name)}.png`}
+                                        alt={drink.name}
+                                        className="max-w-full max-h-full object-contain rounded-md"
+                                    />
+                                </div>
+                                <p className="mt-2 text-xl font-semibold">{drink.name}</p>
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
 
+
+
 export default function SelectedCategoryPage() {
     return (
-        <Suspense
-            fallback={<div className="text-white text-center">Loading...</div>}
-        >
+        <Suspense fallback={<div className="text-[#EED9C4] text-center">Loading...</div>}>
             <CategoryContent />
         </Suspense>
     );
