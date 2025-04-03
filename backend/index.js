@@ -42,6 +42,18 @@ app.get("/drinks", (req, res) => {
     });
 });
 
+app.get("/stock", (req, res) => {
+    stock = [];
+    pool.query("SELECT name, quantity FROM inventory order by quantity asc;").then((query_res) => {
+        for (let i = 0; i < query_res.rowCount; i++) {
+            stock.push(query_res.rows[i]);
+        }
+        const data = { stock: stock };
+        console.log(stock);
+        res.send({ stock: data });
+    });
+});
+
 app.get("/categories", (req, res) => {
     pool.query(
         `SELECT json_object_agg(category, drinks) AS result
