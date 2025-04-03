@@ -47,10 +47,18 @@ app.get("/stock", (req, res) => {
     pool.query("SELECT name, quantity FROM inventory order by quantity asc;").then((query_res) => {
         for (let i = 0; i < query_res.rowCount; i++) {
             stock.push(query_res.rows[i]);
-        }
-        const data = { stock: stock };
-        console.log(stock);
-        res.send({ stock: data });
+        };
+        res.send({ stock });
+    });
+});
+
+app.get("/inventory", (req, res) => {
+    inventory = [];
+    pool.query("SELECT name, price, drinkid, inventoryid FROM inventory join drink_inventory on inventory.id = drink_inventory.drinkid;;").then((query_res) => {
+        for (let i = 0; i < query_res.rowCount; i++) {
+            inventory.push(query_res.rows[i]);
+        };
+        res.send({ inventory });
     });
 });
 

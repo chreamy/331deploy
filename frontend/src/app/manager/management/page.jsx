@@ -3,6 +3,7 @@ import { SERVER } from "@/app/const";
 import { useState, useEffect, useRef } from "react";
 import Nav from "@/app/nav";
 import { Chart } from 'chart.js/auto';
+import { FaTrash } from "react-icons/fa";
 
 	export default function ManagerTrend() {
 
@@ -16,8 +17,8 @@ import { Chart } from 'chart.js/auto';
         fetch(`${SERVER}/stock`)
             .then((res) => res.json())
             .then((data) => {
-			    const stockName = data.stock.stock.map(item => item.name);
-                const stockQuantity = data.stock.stock.map(item => item.quantity);
+			    const stockName = data.stock.map(item => item.name);
+                const stockQuantity = data.stock.map(item => item.quantity);
 				
                 setName(stockName);
                 setQuantity(stockQuantity);
@@ -91,22 +92,81 @@ import { Chart } from 'chart.js/auto';
 		});
 	}, [stockNames, stockQuantities]);
 
-	const resizeElements = () => {
-		setWindowWidth(window.innerWidth);
-	};
+	const [inventory, setInventory] = useState([]);
+
+	// Fetch inventory information from the PostgreSQL server
+    useEffect(() => {
+        fetch(`${SERVER}/inventory`) 
+            .then((res) => res.json()) // put server response as s JSON
+            .then((data) => {
+                const fetchedData = data.inventory; // extract category names
+                setInventory(fetchedData); // update categories
+                setLoading(false);
+				//console.log(fetchedData);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch categories:", err);
+                setLoading(false);
+            });
+    }, []);
+
+	const ProductList = ({ name, price }) => {
+		return (
+		  <li className="flex justify-between items-center p-4 bg-gray-200 rounded-lg">
+			<span className="text-lg font-semibold text-gray-800">{name}</span>
+			<div className="flex gap-2">
+			<span className="text-lg font-bold text-green-600 text-right">${price.toFixed(2)}</span>
+				<button onClick={() => deleteItem(pr)} 
+					className="text-red-500 hover:text-red-700"
+					>
+					<FaTrash />
+				</button>
+			</div>
+		  </li>
+		);
+	  };
+
+	  const deleteItem = async (drinkid, inventoryid) => {
+		try {
+		  const response = await fetch(`/inventory/${drinkid}`, {
+			method: "DELETE",
+		  });
+	
+		  if (!response.ok) {
+			throw new Error("Failed to delete product");
+		  }
+	
+		  setProducts(products.filter((product) => product.drinkid !== drinkid));
+		} catch (error) {
+		  setError(error.message);
+		}
+	  };
 
 		return (
-    	<div className="flex w-screen">
+    	<div className="flex">
         	<Nav userRole="manager"/>
         	<div className={`flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black`}>
 				<h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400">
-                	Sales Trend
+                	Management
             	</h1>
 
 				{/* Display loading message and the list of categories */}
-				<div className="flex flex-col items-center justify-center">
-					<canvas className="bg-white rounded-xl m-8 p-2" ref={chartRef} style={{ width: "100%", maxWidth: "w-screen" }}></canvas>
+				<div className="flex items-center justify-center">
+					<canvas className="bg-white rounded-xl m-8 p-2 w-l h-l" ref={chartRef} style={{ width: '100%', maxWidth: '1150px', height: '700px' }} ></canvas>
 				</div>
+
+				<div className="bg-white w-1/2 border border-gray-200 rounded-lg shadow-lg p-2">
+        			<h1 className="text-2xl font-bold mb-6 text-black text-center">Product List</h1>
+        				<div className="grid grid-cols-2 gap-2">
+          					{inventory.map((index) => ( <ProductList
+              					key={index.drinkid}
+								foreignKey={index.inventoryid} 
+								name={index.name} 
+								price={index.price} 
+							/>
+        				))}
+        			</div>
+      			</div>
   			</div>
     	</div>
   	);
