@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Script from "next/script";
 import Nav from "./nav";
 
 export default function BubbleTeaShop() {
@@ -57,32 +58,40 @@ export default function BubbleTeaShop() {
     // Fetch weather data
     const fetchWeather = async (city) => {
         try {
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${apiKey}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            setWeatherData(data);
-            var imageName = "";
-            if (
-                data.weather[0].description === "clear sky" ||
-                data.weather[0].description === "few clouds" ||
-                data.weather[0].description === "rain"
-            ) {
-                if (AMPM === " PM") {
-                    imageName = data.weather[0].description + " night";
-                } else {
-                    imageName = data.weather[0].description + " day";
-                }
-            } else {
-                imageName = data.weather[0].description;
-            }
-
-            // const foundImage = weatherImg.find(name => name === imageName);
-            // if (foundImage) setimageSrc(foundImage.image);
-            // console.log(item.name);
+          const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${apiKey}`;
+          const response = await fetch(url);
+          const data = await response.json();
+          setWeatherData(data);
+      
+          let imageName = "";
+      
+          // Build image name using description + time of day
+          if (
+            data.weather[0].description === "clear sky" ||
+            data.weather[0].description === "few clouds" ||
+            data.weather[0].description === "rain"
+          ) {
+            imageName =
+              data.weather[0].description +
+              (AMPM === " PM" ? " night" : " day");
+          } else {
+            imageName = data.weather[0].description;
+          }
+      
+          const foundImage = weatherImg.find(
+            (item) => item.name.toLowerCase() === imageName.toLowerCase()
+          );
+      
+          if (foundImage) {
+            setimageSrc(foundImage.image);
+          } else {
+            console.warn("No matching weather image found for:", imageName);
+          }
         } catch (error) {
-            console.error("Error fetching weather data:", error);
+          console.error("Error fetching weather data:", error);
         }
-    };
+      };
+      
 
     useEffect(() => {
         fetchWeather("College Station");
@@ -135,27 +144,35 @@ export default function BubbleTeaShop() {
 
             {/* Weather Section */}
             <div className="text-center mb-2">
-                {weather ? (
-                    <div className="text-4xl font-bold px-5 py-5 bg-white text-black rounded-xl">
-                        <h1>{Time}</h1>
-                        <h2>Weather in {weather.name}</h2>
-                        <p>
-                            Temperature:{" "}
-                            {((weather.main.temp * 9) / 5 + 32).toFixed(0)}°F
-                        </p>
-                        <p>
-                            Feels Like:{" "}
-                            {((weather.main.feels_like * 9) / 5 + 32).toFixed(
-                                0
-                            )}
-                            °F
-                        </p>
+            {weather && (
+                <div className="relative group inline-block">
+                    {/* Compact View (Always Visible) */}
+                    <div className="flex flex-col items-center">
+                    {imageSrc && (
+                        <img
+                        src={imageSrc}
+                        alt={weather.weather[0].description}
+                        className="w-20 h-20"
+                        />
+                    )}
+                    <p className="text-2xl font-semibold capitalize text-white mt-2">
+                        {weather.weather[0].description}
+                    </p>
                     </div>
-                ) : (
-                    <div className="weather-box">
-                        {" "}
-                        Unable to fetch weather data.
+
+                    {/* Hover Overlay */}
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-white text-black text-center rounded-xl px-4 py-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                    <h1 className="text-xl font-bold">{Time}</h1>
+                    <h2 className="text-lg mb-1">Weather in {weather.name}</h2>
+                    <p>
+                        Temp: {((weather.main.temp * 9) / 5 + 32).toFixed(0)}°F
+                    </p>
+                    <p>
+                        Feels Like:{" "}
+                        {((weather.main.feels_like * 9) / 5 + 32).toFixed(0)}°F
+                    </p>
                     </div>
+                </div>
                 )}
             </div>
         </div>
