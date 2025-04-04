@@ -90,6 +90,45 @@ app.get("/categories", (req, res) => {
         });
 });
 
+app.get("/drink-options/:drink_id", async (req, res) => {
+    try {
+        // Get all toppings regardless of drink
+        const toppingsQuery = `SELECT name, price FROM toppings`;
+        const toppingsResult = await pool.query(toppingsQuery);
+
+        const modificationsQuery = `SELECT name FROM modifications`;
+        const modificationsResult = await pool.query(modificationsQuery);
+
+        const modMap = {};
+        modificationsResult.rows.forEach(({ name }) => {
+            const type = name.includes("Ice")
+                ? "Ice"
+                : name.includes("Sugar")
+                ? "Sugar"
+                : "Other";
+
+            if (!modMap[type]) modMap[type] = [];
+            modMap[type].push(name);
+        });
+
+        const groupedModifications = Object.entries(modMap).map(([type, options]) => ({
+            type,
+            options,
+        }));
+
+        res.json({
+            toppings: toppingsResult.rows,
+            modifications: groupedModifications,
+        });
+    } catch (err) {
+        console.error("Error fetching drink options:", err);
+        res.status(500).json({ error: "Failed to fetch drink options" });
+    }
+});
+
+
+
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
