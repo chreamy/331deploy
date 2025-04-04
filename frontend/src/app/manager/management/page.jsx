@@ -154,19 +154,25 @@ import { FaTrash } from "react-icons/fa";
 				<div className="flex items-center justify-center">
 					<canvas className="bg-white rounded-xl m-8 p-2 w-l h-l" ref={chartRef} style={{ width: '100%', maxWidth: '1150px', height: '700px' }} ></canvas>
 				</div>
-
-				<div className="bg-white w-1/2 border border-gray-200 rounded-lg shadow-lg p-2">
-        			<h1 className="text-2xl font-bold mb-6 text-black text-center">Product List</h1>
-        				<div className="grid grid-cols-2 gap-2">
-          					{inventory.map((index) => ( <ProductList
-              					key={index.drinkid}
-								foreignKey={index.inventoryid} 
-								name={index.name} 
-								price={index.price} 
-							/>
-        				))}
-        			</div>
-      			</div>
+				<div className="flex items-center justify-center">
+					<div className="bg-white w-1/2 border border-gray-200 rounded-lg shadow-lg p-2 ml-4 mb-4">
+						<h1 className="text-2xl font-bold mb-6 text-black text-center">Product List</h1>
+							<div className="grid grid-cols-2 gap-2">
+								{inventory.map((index) => ( <ProductList
+									key={index.inventoryid}
+									foreignKey={index.inventoryid} 
+									name={index.name} 
+									price={index.price} 
+									drinkid={index.drinkid}
+									toppingid={index.toppingid}
+								/>
+							))}
+						</div>
+					</div>
+					<div>
+							<h1 className="bg-white w-1/2 border border-gray-200 rounded-lg shadow-lg p-2 ml-4 mb-4"></h1>
+						</div>
+				</div>
   			</div>
     	</div>
   	);

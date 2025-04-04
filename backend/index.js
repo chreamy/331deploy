@@ -54,11 +54,32 @@ app.get("/stock", (req, res) => {
 
 app.get("/inventory", (req, res) => {
     inventory = [];
-    pool.query("SELECT name, price, drinkid, inventoryid FROM inventory join drink_inventory on inventory.id = drink_inventory.drinkid;;").then((query_res) => {
-        for (let i = 0; i < query_res.rowCount; i++) {
-            inventory.push(query_res.rows[i]);
-        };
-        res.send({ inventory });
+    pool.query("SELECT name, price, drinkid, inventoryid FROM inventory INNER JOIN drink_inventory ON inventory.id = drink_inventory.inventoryid;")
+        .then((drinkQueryRes) => {
+            drinkQueryRes.rows.forEach(row => {
+                inventory.push({
+                    name: row.name,
+                    price: row.price,
+                    drinkid: row.drinkid,
+                    toppingid: null,
+                    inventoryid: row.inventoryid
+                });
+            });
+
+    return pool.query("SELECT name, price, toppingid, inventoryid FROM inventory INNER JOIN topping_inventory ON inventory.id = topping_inventory.toppingid;");
+        })
+        .then((toppingQueryRes) => {
+            toppingQueryRes.rows.forEach(row => {
+                inventory.push({
+                    name: row.name,
+                    price: row.price,
+                    drinkid: null, 
+                    toppingid: row.toppingid,
+                    inventoryid: row.inventoryid
+                });
+            });
+
+            res.send({ inventory });        
     });
 });
 
@@ -125,9 +146,6 @@ app.get("/drink-options/:drink_id", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch drink options" });
     }
 });
-
-
-
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
