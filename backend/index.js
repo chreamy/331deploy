@@ -42,6 +42,17 @@ app.get("/drinks", (req, res) => {
     });
 });
 
+app.get("/uniqueCategories", (req, res) => {
+    categories = [];
+    pool.query("SELECT * FROM categories;").then((query_res) => {
+        for (let i = 0; i < query_res.rowCount; i++) {
+            categories.push(query_res.rows[i]);
+        }
+        const data = { categories: categories };
+        res.send({ categories: data });
+    });
+});
+
 app.get("/stock", (req, res) => {
     stock = [];
     pool.query("SELECT name, quantity FROM inventory order by quantity asc;").then((query_res) => {
@@ -54,15 +65,17 @@ app.get("/stock", (req, res) => {
 
 app.get("/inventory", (req, res) => {
     inventory = [];
-    pool.query("SELECT name, price, drinkid, inventoryid FROM inventory INNER JOIN drink_inventory ON inventory.id = drink_inventory.inventoryid;")
+    pool.query("SELECT i.name AS drink_name, i.price, di.drinkid, di.inventoryid, c.categoryid, c.categoryname FROM inventory AS i INNER JOIN drink_inventory AS di ON i.id = di.inventoryid INNER JOIN (SELECT ca.name AS categoryname, cd.categoryid, cd.drinkid FROM categories AS ca JOIN categories_drink AS cd ON ca.id = cd.categoryid) AS c ON di.drinkid = c.drinkid;")
         .then((drinkQueryRes) => {
             drinkQueryRes.rows.forEach(row => {
                 inventory.push({
-                    name: row.name,
+                    name: row.drink_name,
                     price: row.price,
                     drinkid: row.drinkid,
                     toppingid: null,
-                    inventoryid: row.inventoryid
+                    inventoryid: row.inventoryid,
+                    categoryid: row.categoryid,
+                    categoryname: row.categoryname
                 });
             });
 
@@ -75,13 +88,16 @@ app.get("/inventory", (req, res) => {
                     price: row.price,
                     drinkid: null, 
                     toppingid: row.toppingid,
-                    inventoryid: row.inventoryid
+                    inventoryid: row.inventoryid,
+                    categoryid: null,
+                    categoryname: null
                 });
             });
 
             res.send({ inventory });        
     });
 });
+
 
 app.get("/categories", (req, res) => {
     pool.query(
@@ -146,6 +162,37 @@ app.get("/drink-options/:drink_id", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch drink options" });
     }
 });
+
+app.post('/add-item', (req, res) => {
+    const { name, quantity, price } = req.body;
+  
+    // check that all the required fields exist
+    if (!name || !quantity || !price) {
+      return res.status(400).json({ error: 'Missing field(s)' });
+    }
+  
+    // Insert the new item into the database
+    //const query = 'INSERT INTO inventory (name, quantity, price) VALUES (?, ?, ?)';
+    // db.execute(query, [name, quantity, price], (err, result) => {
+    //   if (err) {
+    //     console.error('Error inserting data: ', err);
+    //     return res.status(500).json({ error: 'Failed to add item' });
+    //   }
+  
+    pool.query('SELECT COUNT(*) FROM inventory', (err, results) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          return res.status(500).json({ error: 'Failed to add item' });
+        }
+        console.log('Inventory count:', results[0].inventory_count);
+      });
+
+      res.status(200).json({
+        message: 'Item added successfully',
+        item: { id: result.insertId, name, quantity, price }
+      });
+    });
+  //});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
