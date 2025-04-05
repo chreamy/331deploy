@@ -142,6 +142,41 @@ import { FaTrash } from "react-icons/fa";
 		}
 	  };
 
+	  const [categories, setCategories] = useState([]);
+
+	  // Fetch categories from the PostgreSQL server
+	  useEffect(() => {
+		fetch(`${SERVER}/uniquecategories`) 
+			.then((res) => res.json())
+			.then((data) => {
+				setCategories(data.categories);
+				setLoading(false);
+
+			})
+			.catch((err) => {
+				console.error("Failed to fetch categories:", err);
+				setLoading(false);
+			});
+	}, []);
+
+	const [drinkNameInput, setDrinkNameI] = useState('')
+	const [priceInput, setPriceI] = useState('');
+	const [quantityInput, setQuantityI] = useState('');
+	const [selectedCategoryInput, setSelectedCategoryI] = useState('');
+
+	async function addDrink() {
+		if (!drinkNameInput || !priceInput || !quantityInput || !selectedCategoryInput) {
+			return;
+	  	}
+		// all fields are filled out
+		const drinkToInventory = {drinkNameInput, priceInput, quantityInput, selectedCategoryInput};
+		
+		const response = await fetch(`${SERVER}/inventory`, {
+			method: 'POST',
+			body: JSON.stringify(newDrink),
+		  });
+	}
+
 		return (
     	<div className="flex">
         	<Nav userRole="manager"/>
@@ -150,29 +185,101 @@ import { FaTrash } from "react-icons/fa";
                 	Management
             	</h1>
 
-				{/* Display loading message and the list of categories */}
+				{/* Display the ist of categories */}
 				<div className="flex items-center justify-center">
 					<canvas className="bg-white rounded-xl m-8 p-2 w-l h-l" ref={chartRef} style={{ width: '100%', maxWidth: '1150px', height: '700px' }} ></canvas>
 				</div>
 				<div className="flex items-center justify-center">
-					<div className="bg-white w-1/2 border border-gray-200 rounded-lg shadow-lg p-2 ml-4 mb-4">
+					<div className="bg-white border border-gray-200 rounded-lg shadow-lg p-2 ml-4 mb-4">
 						<h1 className="text-2xl font-bold mb-6 text-black text-center">Product List</h1>
-							<div className="grid grid-cols-2 gap-2">
+							<div className="grid grid-cols-4 gap-2">
 								{inventory.map((index) => ( <ProductList
 									key={index.inventoryid}
-									foreignKey={index.inventoryid} 
+									foreignKey={index.categoryid} 
 									name={index.name} 
 									price={index.price} 
 									drinkid={index.drinkid}
 									toppingid={index.toppingid}
+									categoryname={index.categoryname}
 								/>
 							))}
 						</div>
 					</div>
-					<div>
-							<h1 className="bg-white w-1/2 border border-gray-200 rounded-lg shadow-lg p-2 ml-4 mb-4"></h1>
-						</div>
 				</div>
+				<div className="max-w-lg mx-auto p-4 border rounded-lg shadow-lg bg-white">
+					<h2 className="text-xl font-bold mb-4 text-black">Add New Drink</h2>
+					
+					{/* Input for Drink Name */}
+					<div className="mb-4">
+						<label className="block text-sm font-medium text-black">Drink Name</label>
+						<input
+							type="text"
+							id="drinkName"
+							value={drinkNameInput}
+							onChange={(e) => setDrinkNameI(e.target.value)}
+							className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+							placeholder="Enter drink name"
+						/>
+					</div>
+
+					{/* Input for Price */}
+					<div className="mb-4">
+						<label htmlFor="price" className="block text-sm font-medium text-black">Price</label>
+						<input
+						type="number"
+						id="price"
+						value={priceInput}
+						onChange={(e) => setPriceI(e.target.value)}
+						className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+						placeholder="Enter price"
+						step="0.01"
+						/>
+					</div>
+
+					{/* Input for Quantity */}
+					<div className="mb-4">
+						<label htmlFor="price" className="block text-sm font-medium text-black">Quantity</label>
+						<input
+						type="number"
+						id="price"
+						value={quantityInput}
+						onChange={(e) => setQuantityI(e.target.value)}
+						className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+						placeholder="Enter quantity"
+						step="0.01"
+						/>
+					</div>
+
+					{/* Dropdown for Category Selection */}
+					<div className="mb-4">
+						<label className="block text-sm font-medium text-black">Category</label>
+						<select
+							id="category"
+							value={selectedCategoryInput}
+							onChange={(e) => setSelectedCategoryI(e.target.value)}
+							className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+						>
+							<option value="" disabled> Select a category </option>
+							{categories.length === 0 ? (
+							<option disabled>No categories found</option>
+							) : (
+							categories.categories.map((category) => (
+								<option key={category.id} value={category.id}>
+								{category.name}
+								</option>
+							))
+							)}
+						</select>
+					</div>
+
+					{/* Add Drink Button */}
+					<button
+						onClick={addDrink}
+						className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
+					>
+						Add Drink
+					</button>
+					</div>
   			</div>
     	</div>
   	);
