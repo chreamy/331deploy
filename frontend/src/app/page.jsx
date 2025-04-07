@@ -103,7 +103,7 @@ export default function BubbleTeaShop() {
             preview: "/previews/customer.png",
         },
         {
-            link: "/manager/management",
+            link: "/manager",
             description: "Manager View",
             preview: "/previews/manager.png",
         },
