@@ -13,6 +13,7 @@ const corsOptions = {
     },
 };
 
+app.use(express.json());
 app.use(cors(corsOptions));
 const pool = new Pool({
     user: process.env.PSQL_USER,
@@ -162,6 +163,46 @@ app.get("/drink-options/:drink_id", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch drink options" });
     }
 });
+
+app.post('/addInventory', async (req, res) => {
+    try {
+        const { drinkNameInput, quantityInput, priceInput, selectedCategoryInput } = req.body;
+  
+        if (!drinkNameInput || !quantityInput || !priceInput || !selectedCategoryInput) {
+            return res.status(400).json({ error: 'Missing fields' });
+        }
+
+        const inventoryIdResult = await pool.query('SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM inventory');
+        const newInventoryId = inventoryIdResult.rows[0].new_id;
+
+        const drinkIdResult = await pool.query('SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM drinks');
+        const newDrinkId = drinkIdResult.rows[0].new_id;
+
+        await pool.query('INSERT INTO inventory (id, name, quantity, price) VALUES ($1, $2, $3, $4)',
+            [newInventoryId, drinkNameInput, quantityInput, priceInput]
+        );
+  
+        await pool.query('INSERT INTO drinks (id, name, price) VALUES ($1, $2, $3)',
+            [newDrinkId, drinkNameInput, priceInput]
+        );
+
+        await pool.query('INSERT INTO drink_inventory (drinkid, inventoryid) VALUES ($1, $2)',
+            [newDrinkId, newInventoryId]
+        );
+
+        await pool.query('INSERT INTO categories_drink (categoryid, drinkid) VALUES ($1, $2)',
+            [selectedCategoryInput, newDrinkId]
+        );
+        
+        res.status(200).json({
+            message: 'Item added successfully',
+        });
+
+        } catch (err) {
+            console.error('Server error:', err);
+            res.status(500).json({ error: 'Server error occurred' });
+        }
+    }); 
 
 app.post('/add-item', (req, res) => {
     const { name, quantity, price } = req.body;
