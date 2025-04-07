@@ -138,7 +138,6 @@ import { FaTrash } from "react-icons/fa";
 	
 		  setProducts(products.filter((product) => product.drinkid !== drinkid));
 		} catch (error) {
-		  setError(error.message);
 		}
 	  };
 
@@ -164,18 +163,34 @@ import { FaTrash } from "react-icons/fa";
 	const [quantityInput, setQuantityI] = useState('');
 	const [selectedCategoryInput, setSelectedCategoryI] = useState('');
 
-	async function addDrink() {
+	const addDrink = async () => {
 		if (!drinkNameInput || !priceInput || !quantityInput || !selectedCategoryInput) {
-			return;
-	  	}
-		// all fields are filled out
-		const drinkToInventory = {drinkNameInput, priceInput, quantityInput, selectedCategoryInput};
+		  return;
+		}
+	  
+		const drinkToInventory = { drinkNameInput, quantityInput, priceInput, selectedCategoryInput};
+	  
+		try {
+			const response = await fetch(`${SERVER}/addInventory`, {
+			  method: 'POST',
+			  headers: {
+				'Content-Type': 'application/json',
+			  },
+			  body: JSON.stringify(drinkToInventory),
+			});
+	  
+			if (!response.ok) {
+				throw new Error('Failed to add drink');
+			  }
 		
-		const response = await fetch(`${SERVER}/inventory`, {
-			method: 'POST',
-			body: JSON.stringify(newDrink),
-		  });
-	}
+			  setDrinkNameI('');
+			  setPriceI('');
+			  setQuantityI('');
+			  setSelectedCategoryI('');		
+			} catch (error) {
+			  console.error('Error in adding drink:', error);
+			}
+	  }
 
 		return (
     	<div className="flex">
