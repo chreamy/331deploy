@@ -44,9 +44,8 @@ function CategoryContent() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 p-4 md:p-8 font-[Roboto]">
-            
             <Nav userRole="customer" />
-            
+
             {/* Back Button */}
             <div className="mt-6">
                 <IoArrowBackCircleOutline
@@ -77,45 +76,63 @@ function CategoryContent() {
 
             {/* Loading or No Drinks Message */}
             {loading ? (
-                <p className="text-center text-[#EED9C4] text-lg font-semibold">Loading...</p>
+                <p className="text-center text-[#EED9C4] text-lg font-semibold">
+                    Loading...
+                </p>
             ) : filteredDrinks.length === 0 ? (
-                <p className="text-center text-[#EED9C4] text-lg font-semibold">No drinks found.</p>
+                <p className="text-center text-[#EED9C4] text-lg font-semibold">
+                    No drinks found.
+                </p>
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredDrinks.map((drink, index) => (
-                        <a key={index} href={`/customer/modifications?name=${toSnakeCase(drink.name)}&price=${drink.price}`}>
-                            <div className="border border-[#C2A385] rounded-2xl p-6 text-center 
+                        <a
+                            key={index}
+                            href={`/customer/modifications?name=${toSnakeCase(
+                                drink.name
+                            )}&price=${drink.price}`}
+                        >
+                            <div
+                                className="border border-[#C2A385] rounded-2xl p-6 text-center 
                                             text-gray-900 bg-white shadow-lg 
-                                            hover:scale-105 hover:shadow-2xl transition-transform hover:bg-[#EED9C4]">
+                                            hover:scale-105 hover:shadow-2xl transition-transform hover:bg-[#EED9C4]"
+                            >
                                 {/* Drink Image */}
                                 <div className="w-full h-48 flex justify-center items-center">
                                     <img
-                                        src={`/drink-images/${toSnakeCase(drink.name)}.png`}
+                                        src={`/drink-images/${toSnakeCase(
+                                            drink.name
+                                        )}.png`}
                                         alt={drink.name}
                                         className="max-w-full max-h-full object-contain rounded-md"
                                     />
                                 </div>
-                                
+
                                 {/* Drink Name and Price */}
                                 <div className="flex justify-center items-center mt-2">
-                                    <p className="text-xl font-semibold">{drink.name}</p>
-                                    <p className="ml-4 text-lg font-medium text-black">${drink.price.toFixed(2)}</p>
+                                    <p className="text-xl font-semibold">
+                                        {drink.name}
+                                    </p>
+                                    <p className="ml-4 text-lg font-medium text-black">
+                                        ${drink.price.toFixed(2)}
+                                    </p>
                                 </div>
                             </div>
                         </a>
                     ))}
                 </div>
-
             )}
         </div>
     );
 }
 
-
-
 export default function SelectedCategoryPage() {
     return (
-        <Suspense fallback={<div className="text-[#EED9C4] text-center">Loading...</div>}>
+        <Suspense
+            fallback={
+                <div className="text-[#EED9C4] text-center">Loading...</div>
+            }
+        >
             <CategoryContent />
         </Suspense>
     );
