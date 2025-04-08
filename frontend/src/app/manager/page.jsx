@@ -19,7 +19,7 @@ export default function Manager() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <div className="flex absolute size-auto">
+        <div className="flex absolute inset-0 size-auto">
             <div className={`bg-[#0a0a0a] font-[telegraf] text-white p-4 overflow-auto h-screen`}>
                 {/* Menu Toggle Button */}
                 <button className="text-4xl p-4 hover:text-red-500">
