@@ -175,6 +175,10 @@ app.delete("/removeDrink", async (req, res) => {
         await pool.query('DELETE FROM inventory where name = ($1)', [name]);
 
         await pool.query('DELETE FROM drinks where name = ($1)', [name]);
+        
+        res.status(200).json({
+            message: 'Item successfully deleted',
+        });
     }
     catch (err) {
         console.error('Server error:', err);
@@ -191,6 +195,10 @@ app.delete("/removeTopping", async (req, res) => {
         await pool.query('DELETE FROM toppings WHERE id = ($1)', [toppingid]);
         
         await pool.query('DELETE FROM inventory where name = ($1)', [name]);
+    
+        res.status(200).json({
+            message: 'Item successfully deleted',
+        });
     }
     catch (err) {
         console.error('Server error:', err);

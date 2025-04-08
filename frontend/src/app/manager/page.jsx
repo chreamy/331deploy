@@ -19,17 +19,17 @@ export default function Manager() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <div className="flex">
-            <div className={`bg-[#0a0a0a] font-[telegraf] text-white p-4`}>
+        <div className="flex absolute size-auto">
+            <div className={`bg-[#0a0a0a] font-[telegraf] text-white p-4 overflow-auto h-screen`}>
                 {/* Menu Toggle Button */}
-                <button className="text-2xl p-4 hover:text-red-500">
+                <button className="text-4xl p-4 hover:text-red-500">
                     <FaGripHorizontal
                         onClick={() => setIsMenuOpen((prev) => !prev)}
                     />
                 </button>
 
                 {/* Menu Buttons */}
-                <div className="flex flex-col mt-4 items-start gap-6">
+                <div className="flex flex-col mt-4 items-start gap-6 w-ful">
                     <a
                         onClick={() => setTab("management")}
                         className="cursor-pointer w-full"

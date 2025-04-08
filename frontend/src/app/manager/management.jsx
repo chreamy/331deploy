@@ -6,9 +6,13 @@ import { FaTrash } from "react-icons/fa";
 
 export function Management() {
     // State to store data that will be needed
-    const [loading, setLoading] = useState(true);
     const [stockNames, setName] = useState([]);
     const [stockQuantities, setQuantity] = useState([]);
+    const [fetchData, setfetchData] = useState(true);
+
+    const refreshData = () => {
+        setfetchData(!fetchData);
+    };
 
     // Fetch stock information from the PostgreSQL server
     useEffect(() => {
@@ -23,9 +27,8 @@ export function Management() {
             })
             .catch((err) => {
                 console.error("Error fetching stock data:", err);
-                setLoading(false);
             });
-    }, []);
+    }, [fetchData]);
 
     const chartRef = useRef(null);
     var chartInstance = useRef(null);
@@ -51,7 +54,7 @@ export function Management() {
             "teal",
         ];
 
-        chartInstance = new Chart(chartRef.current, {
+        chartInstance.current = new Chart(chartRef.current, {
             type: "bar",
             data: {
                 labels: xValues,
@@ -97,7 +100,15 @@ export function Management() {
                 },
             },
         });
-    }, [stockNames, stockQuantities]);
+    }, [stockNames, stockQuantities, fetchData]);
+
+    useEffect(() => {
+        return () => {
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+            }
+        };
+    }, []);
 
     const [inventory, setInventory] = useState([]);
 
@@ -108,14 +119,11 @@ export function Management() {
             .then((data) => {
                 const fetchedData = data.inventory; // extract category names
                 setInventory(fetchedData); // update categories
-                setLoading(false);
-                //console.log(fetchedData);
             })
             .catch((err) => {
                 console.error("Failed to fetch categories:", err);
-                setLoading(false);
             });
-    }, []);
+    }, [fetchData]);
 
     const ProductList = ({ name, price, drinkid, toppingid }) => {
         return (
@@ -152,10 +160,10 @@ export function Management() {
                     },
                     body: JSON.stringify(drinkInformation),
                 });
-                
                 if (!response.ok) {
                     throw new Error("Failed to add drink");
                 }
+                refreshData();
             } catch (error) {}
         }
         else if (drinkid === null) {
@@ -171,12 +179,15 @@ export function Management() {
                     },
                     body: JSON.stringify(toppingInformation),
                 });
-    
+                console.log("Refreshing data after delete");
                 if (!response.ok) {
                     throw new Error("Failed to delete product");
                 }
+                
+                refreshData();
             } catch (error) {}
         }
+
     };
 
     const [categories, setCategories] = useState([]);
@@ -187,11 +198,9 @@ export function Management() {
             .then((res) => res.json())
             .then((data) => {
                 setCategories(data.categories);
-                setLoading(false);
             })
             .catch((err) => {
                 console.error("Failed to fetch categories:", err);
-                setLoading(false);
             });
     }, []);
 
@@ -235,6 +244,7 @@ export function Management() {
             setPriceI("");
             setQuantityI("");
             setSelectedCategoryI("");
+            refreshData();
         } catch (error) {
             console.error("Error in adding drink:", error);
         }
@@ -276,13 +286,14 @@ export function Management() {
             setToppingName("");
             setToppingPrice("");
             setToppingQuantity("");
+            refreshData();
         } catch (error) {
             console.error("Error in adding drink:", error);
         }
     };
 
     return (
-        <div>
+        <div className="overflow-auto h-screen">
             <div className="flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black flex-col">
                 <h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400">
                     Management
@@ -295,17 +306,17 @@ export function Management() {
                         ref={chartRef}
                         style={{
                             width: "100%",
-                            maxWidth: "1150px",
+                            maxWidth: "1200px",
                             height: "700px",
                         }}
                     ></canvas>
                 </div>
                 <div className="flex items-center justify-center">
-                    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-2 ml-4 mb-4">
+                    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 ml-4 mb-4">
                         <h1 className="text-2xl font-bold mb-6 text-black text-center">
                             Product List
                         </h1>
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-3 gap-5 size-275 h-auto">
                             {inventory.map((index) => (
                                 <ProductList
                                     key={index.inventoryid}
@@ -321,7 +332,7 @@ export function Management() {
                     </div>
                 </div>
                 <div className="bg-white rounded-md p-6 shadow-md flex flex-col md:flex-row gap-6 m-4">
-                    <div className="flex-1 border-r border-gray-300 p-5">
+                    <div className="flex-1 border-r border-gray-300 p-2 pr-8">
                         <h2 className="text-xl font-bold mb-4 text-black">
                             Add New Drink
                         </h2>
@@ -392,19 +403,22 @@ export function Management() {
                                 }
                                 className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
                             >
-                                {categories.categories.length > 0 ? (
+                                <option value="" disabled>
+                                    Select a category
+                                </option>
+                                {categories && categories.categories && categories.categories.length > 0 ? (
                                     categories.categories.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
-                                    </option>
-                                ))
-                                ) : (
-                                    <option disabled>No categories found</option>
-                                )}
+                                
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))
+                        ) : (
+                            <option>No categories available</option> // Optionally handle the empty state
+                        )}
                             </select>
                         </div>
                         
-
                         {/* Add Drink Button */}
                         <button
                             onClick={addDrink}
@@ -415,7 +429,7 @@ export function Management() {
                     </div>
                     
                     <div className="flex-1">
-                        <h2 className="text-xl font-bold mb-4 text-black p-2">
+                        <h2 className="text-xl font-bold mb-2 text-black p-2">
                             Add New Topping
                         </h2>
 
@@ -482,8 +496,14 @@ export function Management() {
                     </div>
                     
                 </div>
-                <div className="bg-white rounded-md p-6 shadow-md flex flex-col md:flex-row gap-6 m-4">
-                    
+                <div className="bg-white rounded-md p-6 shadow-md flex flex-col gap-6 m-4 mt-8">
+                    <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                        Employee Management 
+                    </h1>
+                    {/* Dropdown for Employee List */}
+                    <div className="mb-4">
+                           
+                    </div>
                 </div>
 
             </div>

@@ -5,7 +5,7 @@ import Nav from "@/app/nav";
 
 export default function Trends() {
     return (
-        <div className="flex w-screen">
+        <div className="overflow-auto h-screen">
             <div
                 className={`flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black`}
             >
