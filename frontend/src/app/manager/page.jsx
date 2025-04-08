@@ -16,7 +16,7 @@ import Trends from "./trends";
 
 export default function Manager() {
     const [tab, setTab] = useState("management");
-    const [isMenuOpen, setIsMenuOpen] = useState(true);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
         <div className="flex">

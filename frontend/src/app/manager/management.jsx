@@ -117,7 +117,7 @@ export function Management() {
             });
     }, []);
 
-    const ProductList = ({ name, price }) => {
+    const ProductList = ({ name, price, drinkid, toppingid }) => {
         return (
             <li className="flex justify-between items-center p-4 bg-gray-200 rounded-lg">
                 <span className="text-lg font-semibold text-gray-800">
@@ -128,7 +128,7 @@ export function Management() {
                         ${price.toFixed(2)}
                     </span>
                     <button
-                        onClick={() => deleteItem(pr)}
+                        onClick={() => deleteItem(name, drinkid, toppingid)}
                         className="text-red-500 hover:text-red-700"
                     >
                         <FaTrash />
@@ -138,20 +138,45 @@ export function Management() {
         );
     };
 
-    const deleteItem = async (drinkid, inventoryid) => {
-        try {
-            const response = await fetch(`/inventory/${drinkid}`, {
-                method: "DELETE",
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete product");
-            }
-
-            setProducts(
-                products.filter((product) => product.drinkid !== drinkid)
-            );
-        } catch (error) {}
+    const deleteItem = async (name, drinkid, toppingid) => {
+        if (toppingid === null) { 
+            try {
+                const drinkInformation = {
+                    name,
+                    drinkid,
+                };
+                const response = await fetch(`${SERVER}/removeDrink`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(drinkInformation),
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Failed to add drink");
+                }
+            } catch (error) {}
+        }
+        else if (drinkid === null) {
+            try {
+                const toppingInformation = {
+                    name,
+                    toppingid,
+                };
+                const response = await fetch(`${SERVER}/removeTopping`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(toppingInformation),
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to delete product");
+                }
+            } catch (error) {}
+        }
     };
 
     const [categories, setCategories] = useState([]);
@@ -182,6 +207,7 @@ export function Management() {
             !quantityInput ||
             !selectedCategoryInput
         ) {
+            alert("Missing fields");
             return;
         }
 
@@ -214,11 +240,50 @@ export function Management() {
         }
     };
 
+    const [toppingName, setToppingName] = useState("");
+    const [toppingPrice, setToppingPrice] = useState("");
+    const [toppingQuantity, setToppingQuantity] = useState("");
+
+    const addTopping = async () => {
+        if (
+            !toppingName ||
+            !toppingPrice ||
+            !toppingQuantity
+        ) {
+            alert("Missing fields");
+            return;
+        }
+
+        const toppingToInv = {
+            toppingName,
+            toppingPrice,
+            toppingQuantity,
+        };
+
+        try {
+            const response = await fetch(`${SERVER}/addTopping`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(toppingToInv),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to add topping");
+            }
+
+            setToppingName("");
+            setToppingPrice("");
+            setToppingQuantity("");
+        } catch (error) {
+            console.error("Error in adding drink:", error);
+        }
+    };
+
     return (
-        <div className="flex">
-            <div
-                className={`flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black`}
-            >
+        <div>
+            <div className="flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black flex-col">
                 <h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400">
                     Management
                 </h1>
@@ -255,104 +320,172 @@ export function Management() {
                         </div>
                     </div>
                 </div>
-                <div className="max-w-lg mx-auto p-4 border rounded-lg shadow-lg bg-white">
-                    <h2 className="text-xl font-bold mb-4 text-black">
-                        Add New Drink
-                    </h2>
+                <div className="bg-white rounded-md p-6 shadow-md flex flex-col md:flex-row gap-6 m-4">
+                    <div className="flex-1 border-r border-gray-300 p-5">
+                        <h2 className="text-xl font-bold mb-4 text-black">
+                            Add New Drink
+                        </h2>
 
-                    {/* Input for Drink Name */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-black">
-                            Drink Name
-                        </label>
-                        <input
-                            type="text"
-                            id="drinkName"
-                            value={drinkNameInput}
-                            onChange={(e) => setDrinkNameI(e.target.value)}
-                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                            placeholder="Enter drink name"
-                        />
-                    </div>
+                        {/* Input for Drink Name */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-black">
+                                Drink Name
+                            </label>
+                            <input
+                                type="text"
+                                id="drinkName"
+                                value={drinkNameInput}
+                                onChange={(e) => setDrinkNameI(e.target.value)}
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                placeholder="Enter drink name"
+                            />
+                        </div>
 
-                    {/* Input for Price */}
-                    <div className="mb-4">
-                        <label
-                            htmlFor="price"
-                            className="block text-sm font-medium text-black"
-                        >
-                            Price
-                        </label>
-                        <input
-                            type="number"
-                            id="price"
-                            value={priceInput}
-                            onChange={(e) => setPriceI(e.target.value)}
-                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                            placeholder="Enter price"
-                            step="0.01"
-                        />
-                    </div>
+                        {/* Input for Price */}
+                        <div className="mb-4">
+                            <label
+                                htmlFor="price"
+                                className="block text-sm font-medium text-black"
+                            >
+                                Price
+                            </label>
+                            <input
+                                type="number"
+                                id="price"
+                                value={priceInput}
+                                onChange={(e) => setPriceI(e.target.value)}
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                placeholder="Enter price"
+                                step="0.01"
+                            />
+                        </div>
 
-                    {/* Input for Quantity */}
-                    <div className="mb-4">
-                        <label
-                            htmlFor="price"
-                            className="block text-sm font-medium text-black"
-                        >
-                            Quantity
-                        </label>
-                        <input
-                            type="number"
-                            id="price"
-                            value={quantityInput}
-                            onChange={(e) => setQuantityI(e.target.value)}
-                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                            placeholder="Enter quantity"
-                            step="0.01"
-                        />
-                    </div>
+                        {/* Input for Quantity */}
+                        <div className="mb-4">
+                            <label
+                                htmlFor="price"
+                                className="block text-sm font-medium text-black"
+                            >
+                                Quantity
+                            </label>
+                            <input
+                                type="number"
+                                id="price"
+                                value={quantityInput}
+                                onChange={(e) => setQuantityI(e.target.value)}
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                placeholder="Enter quantity"
+                                step="0.01"
+                            />
+                        </div>
 
-                    {/* Dropdown for Category Selection */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-black">
-                            Category
-                        </label>
-                        <select
-                            id="category"
-                            value={selectedCategoryInput}
-                            onChange={(e) =>
-                                setSelectedCategoryI(e.target.value)
-                            }
-                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                        >
-                            <option value="" disabled>
-                                {" "}
-                                Select a category{" "}
-                            </option>
-                            {categories.length === 0 ? (
-                                <option disabled>No categories found</option>
-                            ) : (
-                                categories.categories.map((category) => (
-                                    <option
-                                        key={category.id}
-                                        value={category.id}
-                                    >
+                        {/* Dropdown for Category Selection */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-black">
+                                Category
+                            </label>
+                            <select
+                                id="category"
+                                value={selectedCategoryInput}
+                                onChange={(e) =>
+                                    setSelectedCategoryI(e.target.value)
+                                }
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                            >
+                                {categories.categories.length > 0 ? (
+                                    categories.categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
                                         {category.name}
                                     </option>
                                 ))
-                            )}
-                        </select>
-                    </div>
+                                ) : (
+                                    <option disabled>No categories found</option>
+                                )}
+                            </select>
+                        </div>
+                        
 
-                    {/* Add Drink Button */}
-                    <button
-                        onClick={addDrink}
-                        className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
-                    >
-                        Add Drink
-                    </button>
+                        {/* Add Drink Button */}
+                        <button
+                            onClick={addDrink}
+                            className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
+                        >
+                            Add Drink
+                        </button>
+                    </div>
+                    
+                    <div className="flex-1">
+                        <h2 className="text-xl font-bold mb-4 text-black p-2">
+                            Add New Topping
+                        </h2>
+
+                        {/* Input for Topping Name */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-black">
+                                Topping Name
+                            </label>
+                            <input
+                                type="text"
+                                id="toppingName"
+                                value={toppingName}
+                                onChange={(e) => setToppingName(e.target.value)}
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                placeholder="Enter topping name"
+                            />
+                        </div>
+
+                        {/* Input for Price */}
+                        <div className="mb-4">
+                            <label
+                                htmlFor="price"
+                                className="block text-sm font-medium text-black"
+                            >
+                                Price
+                            </label>
+                            <input
+                                type="number"
+                                id="price"
+                                value={toppingPrice}
+                                onChange={(e) => setToppingPrice(e.target.value)}
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                placeholder="Enter price"
+                                step="0.01"
+                            />
+                        </div>
+
+                        {/* Input for Quantity */}
+                        <div className="mb-4">
+                            <label
+                                htmlFor="price"
+                                className="block text-sm font-medium text-black"
+                            >
+                                Quantity
+                            </label>
+                            <input
+                                type="number"
+                                id="price"
+                                value={toppingQuantity}
+                                onChange={(e) => setToppingQuantity(e.target.value)}
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                placeholder="Enter quantity"
+                                step="0.01"
+                            />
+                        </div>
+
+                        {/* Add Topping Button */}
+                        <button
+                            onClick={addTopping}
+                            className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
+                        >
+                            Add Topping
+                        </button>
+                    </div>
+                    
                 </div>
+                <div className="bg-white rounded-md p-6 shadow-md flex flex-col md:flex-row gap-6 m-4">
+                    
+                </div>
+
             </div>
         </div>
     );

@@ -38,7 +38,7 @@ app.get("/drinks", (req, res) => {
             drinks.push(query_res.rows[i]);
         }
         const data = { drinks: drinks };
-        console.log(drinks);
+        //console.log(drinks);
         res.send({ drinks: data });
     });
 });
@@ -80,7 +80,7 @@ app.get("/inventory", (req, res) => {
                 });
             });
 
-    return pool.query("SELECT name, price, toppingid, inventoryid FROM inventory INNER JOIN topping_inventory ON inventory.id = topping_inventory.toppingid;");
+    return pool.query("SELECT name, price, toppingid, inventoryid FROM inventory INNER JOIN topping_inventory ON inventory.id = topping_inventory.inventoryid;");
         })
         .then((toppingQueryRes) => {
             toppingQueryRes.rows.forEach(row => {
@@ -164,12 +164,58 @@ app.get("/drink-options/:drink_id", async (req, res) => {
     }
 });
 
+app.delete("/removeDrink", async (req, res) => {
+    try {
+        const { name, drinkid } = req.body;
+
+        await pool.query('DELETE FROM drink_inventory where drinkid = ($1)', [drinkid]);
+        
+        await pool.query('DELETE FROM categories_drink where drinkid = ($1)', [drinkid]);
+        
+        await pool.query('DELETE FROM inventory where name = ($1)', [name]);
+
+        await pool.query('DELETE FROM drinks where name = ($1)', [name]);
+    }
+    catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ error: 'Server error occurred' });
+    }
+})
+
+app.delete("/removeTopping", async (req, res) => {
+    try {
+        const { name, toppingid } = req.body;
+
+        await pool.query('DELETE FROM topping_inventory WHERE toppingid = ($1)', [toppingid]);
+
+        await pool.query('DELETE FROM toppings WHERE id = ($1)', [toppingid]);
+        
+        await pool.query('DELETE FROM inventory where name = ($1)', [name]);
+    }
+    catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ error: 'Server error occurred' });
+    }
+})
+
 app.post('/addInventory', async (req, res) => {
     try {
         const { drinkNameInput, quantityInput, priceInput, selectedCategoryInput } = req.body;
   
         if (!drinkNameInput || !quantityInput || !priceInput || !selectedCategoryInput) {
             return res.status(400).json({ error: 'Missing fields' });
+        }
+
+        if (parseFloat(priceInput) < 0 || parseFloat(quantityInput) < 0) {
+            return res.status(400).json({ error: 'Invalid fields' });
+        }
+
+        const drinkCheck = await pool.query('SELECT count(*) FROM drinks where name = ($1)',
+        [drinkNameInput]);
+        const nameExists = parseInt(drinkCheck.rows[0].count, 10); // convert to int
+
+        if (nameExists > 0) {
+            return res.status(400).json({ error: 'Drink Exists' });
         }
 
         const inventoryIdResult = await pool.query('SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM inventory');
@@ -203,6 +249,54 @@ app.post('/addInventory', async (req, res) => {
             res.status(500).json({ error: 'Server error occurred' });
         }
     }); 
+
+    app.post('/addTopping', async (req, res) => {
+        try {
+            const { toppingName, toppingPrice, toppingQuantity, } = req.body;
+      
+            if (!toppingName || !toppingPrice || !toppingQuantity) {
+                return res.status(400).json({ error: 'Missing fields' });
+            }
+
+            if (parseFloat(toppingPrice) < 0 || parseFloat(toppingQuantity) < 0) {
+                return res.status(400).json({ error: 'Invalid fields' });
+            }
+    
+            const toppingCheck = await pool.query('SELECT count(*) FROM toppings where name = ($1)',
+            [toppingName]);
+            const nameExists = parseInt(toppingCheck.rows[0].count, 10); // convert to int
+    
+            if (nameExists > 0) {
+                return res.status(400).json({ error: 'Topping Exists' });
+            }
+    
+            const inventoryIdResult = await pool.query('SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM inventory');
+            const newInventoryId = inventoryIdResult.rows[0].new_id;
+    
+            const ToppingIdResult = await pool.query('SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM toppings');
+            const newToppingId = ToppingIdResult.rows[0].new_id;
+    
+            await pool.query('INSERT INTO inventory (id, name, quantity, price) VALUES ($1, $2, $3, $4)',
+                [newInventoryId, toppingName, toppingQuantity, toppingPrice]
+            );
+      
+            await pool.query('INSERT INTO toppings (id, name, price) VALUES ($1, $2, $3)',
+                [newToppingId, toppingName, toppingPrice]
+            );
+    
+            await pool.query('INSERT INTO topping_inventory (toppingid, inventoryid) VALUES ($1, $2)',
+                [newToppingId, newInventoryId]
+            );
+    
+            res.status(200).json({
+                message: 'Item added successfully',
+            });
+    
+            } catch (err) {
+                console.error('Server error:', err);
+                res.status(500).json({ error: 'Server error occurred' });
+            }
+        }); 
 
 app.post('/add-item', (req, res) => {
     const { name, quantity, price } = req.body;
