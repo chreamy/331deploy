@@ -64,6 +64,42 @@ app.get("/stock", (req, res) => {
     });
 });
 
+app.get("/employees", (req, res) => {
+    employees = [];
+    pool.query("SELECT * FROM employees;").then((query_res) => {
+        for (let i = 0; i < query_res.rowCount; i++) {
+            employees.push(query_res.rows[i]);
+        };
+        res.send({ employees });
+    });
+});
+
+app.post("/updateEmployee", async (req, res) => {
+    const { id, shifttimings, role } = req.body;
+
+    try {
+        if (role === null) {
+            await pool.query('UPDATE employees SET shifttimings = ($1) where id = ($2)', [shifttimings, id]);
+        }
+
+        else if (shifttimings === null) {
+            await pool.query('UPDATE employees SET role = ($1) where id = ($2)', [role, id]);
+        }
+
+        else { // update all
+            await pool.query('UPDATE employees SET role = ($1), shifttimings = ($2) where id = ($3)', [role, shifttimings, id]);
+        }
+
+        res.status(200).json({
+            message: 'Employee updated',
+        });
+    }
+    catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ error: 'Server error occurred' });
+    }
+})
+
 app.get("/inventory", (req, res) => {
     inventory = [];
     pool.query("SELECT i.name AS drink_name, i.price, di.drinkid, di.inventoryid, c.categoryid, c.categoryname FROM inventory AS i INNER JOIN drink_inventory AS di ON i.id = di.inventoryid INNER JOIN (SELECT ca.name AS categoryname, cd.categoryid, cd.drinkid FROM categories AS ca JOIN categories_drink AS cd ON ca.id = cd.categoryid) AS c ON di.drinkid = c.drinkid;")
