@@ -396,6 +396,28 @@ app.post("/add-item", (req, res) => {
 });
 //});
 
+app.get("/hourly-product-usage/:date", async (req, res) => {
+    try {
+        const { date } = req.params;
+        const query = `
+            SELECT distinct name, count(name), EXTRACT(hour FROM o.timestamp) as hour 
+            FROM order_drink_modifications_toppings odmt 
+            JOIN drinks d ON odmt.drinkid = d.id 
+            JOIN orders o ON odmt.orderid = o.id 
+            WHERE o.timestamp >= $1::timestamp 
+            AND o.timestamp < ($1::timestamp + interval '1 day')
+            GROUP BY hour, name 
+            ORDER by name, hour;
+        `;
+        
+        const result = await pool.query(query, [date]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching hourly product usage:", err);
+        res.status(500).json({ error: "Failed to fetch hourly product usage" });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
