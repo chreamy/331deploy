@@ -35,11 +35,11 @@ export default function Manager() {
                         className="cursor-pointer w-full"
                     >
                         <button className="p-6 flex justify-center w-full border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
-                            <FaHome className="text-3xl" />
+                            <FaHome className="text-3xl w-20 text-left" />
                             {isMenuOpen ? (
                                 ""
                             ) : (
-                                <h3 className="ml-4 text-2xl">Home</h3>
+                                <h3 className="ml-4 text-2xl w-full">Home</h3>
                             )}
                         </button>{" "}
                     </a>
@@ -49,11 +49,11 @@ export default function Manager() {
                         className="cursor-pointer w-full"
                     >
                         <button className="p-6 flex w-full border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
-                            <FaPen className="text-3xl" />
+                            <FaPen className="text-3xl w-20 text-left" />
                             {isMenuOpen ? (
                                 ""
                             ) : (
-                                <h3 className="ml-4 text-2xl">Reports</h3>
+                                <h3 className="ml-4 text-2xl w-full">Reports</h3>
                             )}
                         </button>
                     </a>
@@ -62,11 +62,11 @@ export default function Manager() {
                         className="cursor-pointer w-full items-center"
                     >
                         <button className="p-6 flex w-full justify-center border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
-                            <FaChartLine className="text-3xl" />
+                            <FaChartLine className="text-3xl w-20" />
                             {isMenuOpen ? (
                                 ""
                             ) : (
-                                <h3 className="ml-4 text-2xl">Trends</h3>
+                                <h3 className="ml-4 text-2xl w-full">Trends</h3>
                             )}
                         </button>{" "}
                     </a>

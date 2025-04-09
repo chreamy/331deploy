@@ -292,6 +292,84 @@ export function Management() {
         }
     };
 
+    const [employeeId, setEmpId] = useState([]);
+    const [employeeShift, setEmpShift] = useState("");
+    const [employeeRole, setEmpRole] = useState("");
+
+    // Fetch inventory information from the PostgreSQL server
+    useEffect(() => {
+        fetch(`${SERVER}/employees`)
+            .then((res) => res.json()) // put server response as a JSON
+            .then((data) => {
+                const empData = data.employees.map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                }));
+                setEmpId(empData);
+                const empRole = data.employees.map((item) => item.role);
+                setEmpShift(empRole);
+                const empShift = data.employees.map((item) => item.shifttimings);
+                setEmpRole(empShift);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch employees:", err);
+            });
+    }, []);
+
+    const [employeeIdInput, setEmpIdInput] = useState("");
+    const [employeeShiftInput, setEmpShiftI] = useState("");
+    const [employeeRoleInput, setEmpRoleI] = useState("");
+
+    const editEmployee = async () => {
+        if (
+            !employeeIdInput ||
+            (!employeeShiftInput &&
+            !employeeRoleInput)
+        ) {
+            alert("Missing fields");
+            return;
+        }
+
+        const updateInfo = {};
+
+        if (!employeeShiftInput) {
+            updateInfo.id = employeeIdInput;
+            updateInfo.shifttimings = null;
+            updateInfo.role = employeeRoleInput;
+        }
+        else if (!employeeRoleInput) {
+            updateInfo.id = employeeIdInput;
+            updateInfo.shifttimings = employeeShiftInput;
+            updateInfo.role = null;
+        }
+        else {
+            updateInfo.id = employeeIdInput;
+            updateInfo.shifttimings = employeeShiftInput;
+            updateInfo.role = employeeRoleInput;
+        }
+
+        try {
+            const response = await fetch(`${SERVER}/updateEmployee`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updateInfo),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update Employee");
+            }
+
+            setEmpIdInput("");
+            setEmpRoleI("");
+            setEmpShiftI("");
+            refreshData();
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
     return (
         <div className="overflow-auto h-screen">
             <div className="flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black flex-col">
@@ -412,10 +490,8 @@ export function Management() {
                                 <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
-                            ))
-                        ) : (
-                            <option>No categories available</option> // Optionally handle the empty state
-                        )}
+                                ))
+                            ): []}
                             </select>
                         </div>
                         
@@ -501,11 +577,78 @@ export function Management() {
                         Employee Management 
                     </h1>
                     {/* Dropdown for Employee List */}
-                    <div className="mb-4">
-                           
-                    </div>
-                </div>
+                    <form>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-black">
+                                Employees
+                            </label>
+                            <select
+                                id="employee"
+                                value={employeeIdInput}
+                                onChange={(e) =>
+                                    setEmpIdInput(e.target.value)
+                                }
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                            >
+                                <option value="" disabled>
+                                    Select an employee
+                                </option>
+                                {employeeId && employeeId.length > 0 ? (
+                                    employeeId.map((employee) => (
+                                
+                                <option key={employee.id} value={employee.id}>
+                                    {employee.name}
+                                </option>
+                                ))
+                            ): []}
+                            </select>
+                        </div>
 
+                        {/* Dropdown for shifts */}   
+                        <div className="mb-4">
+                        <label className="block text-sm font-medium text-black">
+                                Shift
+                            </label>
+                            <select
+                                id="shift"
+                                value={employeeShiftInput}
+                                onChange={(e) =>
+                                    setEmpShiftI(e.target.value)
+                                }
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                            >
+                                <option value="" disabled>Select a Shift Timing</option>
+                                <option value="Morning">Morning</option>
+                                <option value="Afternoon">Afternoon</option>
+                                <option value="Evening">Evening</option>
+                            </select>
+                        </div>
+
+                        {/* Dropdown for roles */}   
+                        <div className="mb-4">
+                        <label className="block text-sm font-medium text-black">
+                                Roles
+                            </label>
+                            <select
+                                id="role"
+                                value={employeeRoleInput}
+                                onChange={(e) =>
+                                    setEmpRoleI(e.target.value)
+                                }
+                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                            >
+                                <option value="" disabled>Select a Role</option>
+                                <option value="Cashier">Cashier</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Janitor">Janitor</option>
+                                <option value="Barista">Barista</option>
+                            </select>
+                        </div>
+                    </form>
+                    <button onClick={editEmployee} className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
+                        Save Changes
+                    </button>
+                </div>
             </div>
         </div>
     );
