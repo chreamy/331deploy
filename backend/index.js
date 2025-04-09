@@ -418,6 +418,155 @@ app.get("/hourly-product-usage/:date", async (req, res) => {
     }
 });
 
+app.get("/x-report/:date", async (req, res) => {
+    try {
+        const date = req.params.date;
+        if (!date) {
+            return res.status(400).json({ error: "Date parameter is required" });
+        }
+
+        const sqlCheckRun = "SELECT run FROM z_report WHERE DATE(timestamp) = $1";
+        const resultCheckRun = await pool.query(sqlCheckRun, [date]);
+
+        let runStatus = false;
+        if (resultCheckRun.rows.length > 0) {
+            runStatus = resultCheckRun.rows[0].run === 1;
+        }
+
+        const sqlXReport = `
+            WITH unique_drinks AS (
+                SELECT orderid, drinkid, MAX(d.price) AS drink_price
+                FROM order_drink_modifications_toppings odmt
+                JOIN drinks d ON odmt.drinkid = d.id
+                GROUP BY orderid, drinkid
+            ),
+            topping_prices AS (
+                SELECT odmt.orderid, SUM(t.price) AS total_topping_price
+                FROM order_drink_modifications_toppings odmt
+                JOIN toppings t ON odmt.topping_modification_id = t.id
+                WHERE odmt.topping_modification_id BETWEEN 0 AND 10
+                GROUP BY odmt.orderid
+            )
+            SELECT
+                EXTRACT(hour FROM o.timestamp) AS hour_of_day,
+                COUNT(DISTINCT o.id) AS num_orders,
+                SUM(ud.total_drink_price + COALESCE(tp.total_topping_price, 0)) AS order_total
+            FROM orders o
+            LEFT JOIN (
+                SELECT orderid, SUM(drink_price) AS total_drink_price
+                FROM unique_drinks
+                GROUP BY orderid
+            ) ud ON o.id = ud.orderid
+            LEFT JOIN topping_prices tp ON o.id = tp.orderid
+            WHERE DATE(o.timestamp) = $1
+            GROUP BY hour_of_day
+            ORDER BY hour_of_day;
+        `;
+
+        const resultXReport = await pool.query(sqlXReport, [date]);
+        console.log("X-Report:", resultXReport.rows);
+
+        const reportData = resultXReport.rows.map(row => ({
+            hour: row.hour_of_day,
+            totalOrders: runStatus ? 0 : row.num_orders,
+            totalSales: runStatus ? 0 : row.order_total
+        }));
+
+        res.json(reportData);
+    } catch (err) {
+        console.error("Error generating X-Report:", err);
+        res.status(500).json({ error: "Failed to generate X-Report" });
+    }
+});
+
+app.get("/z-report/:date", async (req, res) => {
+    try {
+        const date = req.params.date;
+        if (!date) {
+            return res.status(400).json({ error: "Date parameter is required" });
+        }
+
+        const updatedDate = `${date} 00:00:00`;
+        const timestamp = new Date(updatedDate);
+
+        const sqlCheck = "SELECT COUNT(*) FROM z_report WHERE timestamp = $1";
+        const resultCheck = await pool.query(sqlCheck, [timestamp]);
+
+        if (resultCheck.rows[0].count === 0) {
+            const sqlInsert = "INSERT INTO z_report VALUES ($1, 1)";
+            await pool.query(sqlInsert, [timestamp]);
+        } else {
+            const sqlCheckRun = "SELECT COUNT(*) FROM z_report WHERE timestamp = $1 AND run = 1";
+            const resultCheckRun = await pool.query(sqlCheckRun, [timestamp]);
+
+            if (resultCheckRun.rows[0].count > 0) {
+                return res.json({
+                    message: "Z-Report has already been run, try again tomorrow.",
+                    totalRevenue: 0,
+                    totalTax: 0,
+                    totalProfit: 0,
+                    totalDrinks: 0,
+                    totalOrders: 0,
+                    totalToppings: 0
+                });
+            }
+
+            const sqlUpdate = "UPDATE z_report SET run = 1 WHERE timestamp = $1";
+            await pool.query(sqlUpdate, [timestamp]);
+        }
+
+        const sqlOrders = "SELECT COUNT(DISTINCT id) AS total_orders FROM orders WHERE DATE(timestamp) = $1";
+        const resultOrders = await pool.query(sqlOrders, [date]);
+        const totalOrders = resultOrders.rows[0].total_orders;
+
+        const sqlDrinksRevenue = `
+            WITH OrderList AS (
+                SELECT id FROM orders WHERE DATE(timestamp) = $1
+            ),
+            UniqueDrinks AS (
+                SELECT DISTINCT odmt.orderid, odmt.drinkid
+                FROM order_drink_modifications_toppings odmt
+                JOIN OrderList ol ON odmt.orderid = ol.id
+            )
+            SELECT COUNT(*) AS total_drinks,
+                   SUM(d.price) AS total_drink_revenue
+            FROM UniqueDrinks ud
+            JOIN drinks d ON ud.drinkid = d.id;
+        `;
+
+        const resultDrinksRevenue = await pool.query(sqlDrinksRevenue, [date]);
+        const totalDrinks = resultDrinksRevenue.rows[0].total_drinks;
+        const totalDrinkRevenue = resultDrinksRevenue.rows[0].total_drink_revenue;
+
+        const sqlToppings = `
+            SELECT COUNT(*) AS total_toppings, SUM(t.price) AS total_topping_revenue
+            FROM order_drink_modifications_toppings odmt
+            JOIN toppings t ON odmt.topping_modification_id = t.id
+            JOIN orders o ON odmt.orderid = o.id
+            WHERE DATE(o.timestamp) = $1
+            AND odmt.topping_modification_id NOT BETWEEN 11 AND 18;
+        `;
+
+        const resultToppings = await pool.query(sqlToppings, [date]);
+        const totalToppings = resultToppings.rows[0].total_toppings;
+        const totalToppingRevenue = resultToppings.rows[0].total_topping_revenue;
+
+        const totalRevenue = totalDrinkRevenue + totalToppingRevenue;
+
+        res.json({
+            totalRevenue: (totalRevenue * 1.08).toFixed(2),
+            totalTax: (totalRevenue * 0.08).toFixed(2),
+            totalProfit: totalRevenue.toFixed(2),
+            totalDrinks,
+            totalOrders,
+            totalToppings
+        });
+    } catch (err) {
+        console.error("Error generating Z-Report:", err);
+        res.status(500).json({ error: "Failed to generate Z-Report" });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });

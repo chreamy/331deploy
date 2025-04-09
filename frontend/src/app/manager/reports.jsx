@@ -17,6 +17,8 @@ export default function Reports() {
     const [loading, setLoading] = useState(false);
     const [visibleLines, setVisibleLines] = useState({});
     const [hoveredLine, setHoveredLine] = useState(null);
+    const [xReport, setXReport] = useState(null);
+    const [zReport, setZReport] = useState(null);
 
     const fetchHourlyData = async () => {
         setLoading(true);
@@ -37,8 +39,31 @@ export default function Reports() {
         setLoading(false);
     };
 
+    const fetchXReport = async () => {
+        try {
+            const response = await fetch(`${SERVER}/x-report/${date}`);
+            const data = await response.json();
+            console.log("Fetched X-Report:", data);
+            setXReport(data);
+        } catch (error) {
+            console.error("Error fetching X-Report:", error);
+        }
+    };
+
+    const fetchZReport = async () => {
+        try {
+            const response = await fetch(`${SERVER}/z-report/${date}`);
+            const data = await response.json();
+            setZReport(data);
+        } catch (error) {
+            console.error("Error fetching Z-Report:", error);
+        }
+    };
+
     useEffect(() => {
         fetchHourlyData();
+        fetchXReport();
+        fetchZReport();
     }, [date]);
 
     // Group data by product name
@@ -150,6 +175,50 @@ export default function Reports() {
                                 ))}
                             </div>
                         </div>
+                    )}
+                </div>
+
+                {/* X-Report Section */}
+                <div className="mt-8 bg-gray-800 p-6 rounded-lg">
+                    <h2 className="text-xl font-bold text-white mb-4">X-Report</h2>
+                    {xReport ? (
+                        <table className="w-full text-white text-xs">
+                            <thead>
+                                <tr>
+                                    <th className="border-b border-gray-600 p-2 text-left">Hour</th>
+                                    <th className="border-b border-gray-600 p-2 text-left">Total Orders</th>
+                                    <th className="border-b border-gray-600 p-2 text-left">Total Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {xReport.map((row, index) => (
+                                    <tr key={index}>
+                                        <td className="border-b border-gray-600 p-2">{row.hour}:00</td>
+                                        <td className="border-b border-gray-600 p-2">{row.totalOrders}</td>
+                                        <td className="border-b border-gray-600 p-2">${row.totalSales.toFixed(2)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="text-white">Loading X-Report...</div>
+                    )}
+                </div>
+
+                {/* Z-Report Section */}
+                <div className="mt-8 bg-gray-800 p-6 rounded-lg">
+                    <h2 className="text-xl font-bold text-white mb-4">Z-Report</h2>
+                    {zReport ? (
+                        <ul className="list-disc list-inside text-white text-xs">
+                            <li>Total Revenue: ${zReport.totalRevenue}</li>
+                            <li>Total Tax: ${zReport.totalTax}</li>
+                            <li>Total Profit: ${zReport.totalProfit}</li>
+                            <li>Total Drinks Sold: {zReport.totalDrinks}</li>
+                            <li>Total Orders: {zReport.totalOrders}</li>
+                            <li>Total Toppings Used: {zReport.totalToppings}</li>
+                        </ul>
+                    ) : (
+                        <div className="text-white">Loading Z-Report...</div>
                     )}
                 </div>
             </div>
