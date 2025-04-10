@@ -122,6 +122,48 @@ app.post("/updateEmployee", async (req, res) => {
     }
 })
 
+app.post("/updateInventory", async (req, res) => {
+    const { name, price, quantity } = req.body;
+
+    try {
+        if (price === null) {
+            await pool.query('UPDATE employees SET shifttimings = ($1) where id = ($2)', [shifttimings, id]);
+        }
+
+        else if (shifttimings === null) {
+            await pool.query('UPDATE employees SET role = ($1) where id = ($2)', [role, id]);
+        }
+
+        else { // update all
+            await pool.query('UPDATE employees SET role = ($1), shifttimings = ($2) where id = ($3)', [role, shifttimings, id]);
+        }
+
+        res.status(200).json({
+            message: 'Employee updated',
+        });
+    }
+    catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ error: 'Server error occurred' });
+    }
+})
+
+app.delete("/fireEmployee", async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        await pool.query('DELETE FROM employees where id = ($1)', [id]);
+        
+        res.status(200).json({
+            message: 'Employee removed',
+        });
+    }
+    catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ error: 'Server error occurred' });
+    }
+})
+
 app.get("/inventory", (req, res) => {
     inventory = [];
     pool.query(
@@ -394,6 +436,29 @@ app.post("/addTopping", async (req, res) => {
 
         res.status(200).json({
             message: "Item added successfully",
+        });
+    } catch (err) {
+        console.error("Server error:", err);
+        res.status(500).json({ error: "Server error occurred" });
+    }
+});
+
+app.post("/addEmployee", async (req, res) => {
+    try {
+        const { name, shifttimings, role } = req.body;
+
+        const employeeIdResult = await pool.query(
+            "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM employees"
+        );
+        const newEmployeeId = employeeIdResult.rows[0].new_id;
+
+        await pool.query(
+            "INSERT INTO employees (id, name, role, shifttimings) VALUES ($1, $2, $3, $4)",
+            [newEmployeeId, name, role, shifttimings]
+        );
+
+        res.status(200).json({
+            message: "Employee added successfully",
         });
     } catch (err) {
         console.error("Server error:", err);
