@@ -137,7 +137,7 @@ export function Management() {
                     </span>
                     <button
                         onClick={() => deleteItem(name, drinkid, toppingid)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
                     >
                         <FaTrash />
                     </button>
@@ -293,8 +293,6 @@ export function Management() {
     };
 
     const [employeeId, setEmpId] = useState([]);
-    const [employeeShift, setEmpShift] = useState("");
-    const [employeeRole, setEmpRole] = useState("");
 
     // Fetch inventory information from the PostgreSQL server
     useEffect(() => {
@@ -307,14 +305,11 @@ export function Management() {
                 }));
                 setEmpId(empData);
                 const empRole = data.employees.map((item) => item.role);
-                setEmpShift(empRole);
-                const empShift = data.employees.map((item) => item.shifttimings);
-                setEmpRole(empShift);
             })
             .catch((err) => {
                 console.error("Failed to fetch employees:", err);
             });
-    }, []);
+    }, [fetchData]);
 
     const [employeeIdInput, setEmpIdInput] = useState("");
     const [employeeShiftInput, setEmpShiftI] = useState("");
@@ -364,6 +359,136 @@ export function Management() {
             setEmpIdInput("");
             setEmpRoleI("");
             setEmpShiftI("");
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    const [itemUpdateName, setItemName] = useState("");
+    const [itemUpdatePrice, setItemPrice] = useState("");
+    const [itemUpdateQuantity, setItemQuantity] = useState("");
+
+    const updateInventory = async () => {
+        if (
+            !itemUpdateName ||
+            (!itemUpdatePrice &&
+            !itemUpdateQuantity)
+        ) {
+            alert("Missing fields");
+            return;
+        }
+
+        const updateInfo = {};
+
+        if (!itemUpdatePrice) {
+            updateInfo.name = itemUpdateName;
+            updateInfo.price = null;
+            updateInfo.quantity = itemUpdateQuantity;
+        }
+        else if (!itemUpdateQuantity) {
+            updateInfo.name = itemUpdateName;
+            updateInfo.price = itemUpdatePrice;
+            updateInfo.quantity = null;
+        }
+        else {
+            updateInfo.name = itemUpdateName;
+            updateInfo.price = itemUpdatePrice;
+            updateInfo.quantity = itemUpdateQuantity;
+        }
+
+        try {
+            const response = await fetch(`${SERVER}/updateInventory`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updateInfo),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update Item");
+            }
+
+            setItemName("");
+            setItemPrice("");
+            setItemQuantity("");
+            refreshData();
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    const [employeeIdRem, setEmpRemIdInput] = useState("");
+
+    const fireEmployee = async () => {
+        if (
+            !employeeIdRem
+        ) {
+            alert("Missing fields");
+            return;
+        }
+
+        try {
+            if (employeeIdRem === "0") {
+                throw new Error("Cannot Fire Admin");
+            }
+
+            const updateInfo = {};
+            updateInfo.id = employeeIdRem;
+
+            const response = await fetch(`${SERVER}/fireEmployee`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updateInfo),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to remove Employee");
+            }
+
+            setEmpRemIdInput("");
+            refreshData();
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    const [employeeNameAdd, setEmpAddNameInput] = useState("");
+    const [employeeShiftAdd, setEmpAddShiftI] = useState("");
+    const [employeeRoleAdd, setEmpAddRoleI] = useState("");
+
+    const addEmployee = async () => {
+        if (
+            !employeeNameAdd || !employeeShiftAdd || !employeeRoleAdd
+        ) {
+            alert("Missing fields");
+            return;
+        }
+
+        const updateInfo = {};
+
+        updateInfo.name = employeeNameAdd;
+        updateInfo.shifttimings = employeeShiftAdd;
+        updateInfo.role = employeeRoleAdd;
+        
+        try {
+            const response = await fetch(`${SERVER}/addEmployee`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updateInfo),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update Employee");
+            }
+
+            setEmpAddNameInput("");
+            setEmpAddRoleI("");
+            setEmpAddShiftI("");
             refreshData();
         } catch (error) {
             console.error("Error:", error);
@@ -409,8 +534,8 @@ export function Management() {
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-md p-6 shadow-md flex flex-col md:flex-row gap-6 m-4">
-                    <div className="flex-1 border-r border-gray-300 p-2 pr-8">
+                <div className="bg-white rounded-md p-6 shadow-md flex flex-col md:flex-row gap-6 m-4 w-300 mx-auto">
+                    <div className="flex-1 p-2 mb-2">
                         <h2 className="text-xl font-bold mb-4 text-black">
                             Add New Drink
                         </h2>
@@ -498,156 +623,325 @@ export function Management() {
                         {/* Add Drink Button */}
                         <button
                             onClick={addDrink}
-                            className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
+                            className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
                         >
                             Add Drink
                         </button>
                     </div>
-                    
-                    <div className="flex-1">
-                        <h2 className="text-xl font-bold mb-2 text-black p-2">
-                            Add New Topping
-                        </h2>
+                    <div className="h-[425px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-bold mb-2 text-black p-2">
+                                Add New Topping
+                            </h2>
 
-                        {/* Input for Topping Name */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-black">
-                                Topping Name
-                            </label>
-                            <input
-                                type="text"
-                                id="toppingName"
-                                value={toppingName}
-                                onChange={(e) => setToppingName(e.target.value)}
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                placeholder="Enter topping name"
-                            />
-                        </div>
+                            {/* Input for Topping Name */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-black">
+                                    Topping Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="toppingName"
+                                    value={toppingName}
+                                    onChange={(e) => setToppingName(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                    placeholder="Enter topping name"
+                                />
+                            </div>
 
-                        {/* Input for Price */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="price"
-                                className="block text-sm font-medium text-black"
+                            {/* Input for Price */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="price"
+                                    className="block text-sm font-medium text-black"
+                                >
+                                    Price
+                                </label>
+                                <input
+                                    type="number"
+                                    id="price"
+                                    value={toppingPrice}
+                                    onChange={(e) => setToppingPrice(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                    placeholder="Enter price"
+                                    step="0.01"
+                                />
+                            </div>
+
+                            {/* Input for Quantity */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="price"
+                                    className="block text-sm font-medium text-black"
+                                >
+                                    Quantity
+                                </label>
+                                <input
+                                    type="number"
+                                    id="price"
+                                    value={toppingQuantity}
+                                    onChange={(e) => setToppingQuantity(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                    placeholder="Enter quantity"
+                                    step="0.01"
+                                />
+                            </div>
+
+                            {/* Add Topping Button */}
+                            <button
+                                onClick={addTopping}
+                                className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
                             >
-                                Price
-                            </label>
-                            <input
-                                type="number"
-                                id="price"
-                                value={toppingPrice}
-                                onChange={(e) => setToppingPrice(e.target.value)}
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                placeholder="Enter price"
-                                step="0.01"
-                            />
+                                Add Topping
+                            </button>
                         </div>
+                        <div className="h-[425px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-bold mb-2 text-black p-2">
+                                Update Items
+                            </h2>
 
-                        {/* Input for Quantity */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="price"
-                                className="block text-sm font-medium text-black"
+                            {/* Input for Topping Name */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-black">
+                                    Item Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={itemUpdateName}
+                                    onChange={(e) => setItemName(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                    placeholder="Enter item name"
+                                />
+                            </div>
+
+                            {/* Input for Price */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="price"
+                                    className="block text-sm font-medium text-black"
+                                >
+                                    Price
+                                </label>
+                                <input
+                                    type="number"
+                                    id="price"
+                                    value={itemUpdatePrice}
+                                    onChange={(e) => setItemPrice(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                    placeholder="Enter price"
+                                    step="0.01"
+                                />
+                            </div>
+
+                            {/* Input for Quantity */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="price"
+                                    className="block text-sm font-medium text-black"
+                                >
+                                    Quantity
+                                </label>
+                                <input
+                                    type="number"
+                                    id="quantity"
+                                    value={itemUpdateQuantity}
+                                    onChange={(e) => setItemQuantity(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                    placeholder="Enter quantity"
+                                    step="0.01"
+                                />
+                            </div>
+
+                            {/* Add Topping Button */}
+                            <button
+                                onClick={updateInventory}
+                                className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
                             >
-                                Quantity
-                            </label>
-                            <input
-                                type="number"
-                                id="price"
-                                value={toppingQuantity}
-                                onChange={(e) => setToppingQuantity(e.target.value)}
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                placeholder="Enter quantity"
-                                step="0.01"
-                            />
+                                Save Changes
+                            </button>
                         </div>
-
-                        {/* Add Topping Button */}
-                        <button
-                            onClick={addTopping}
-                            className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
-                        >
-                            Add Topping
-                        </button>
                     </div>
-                    
-                </div>
-                <div className="bg-white rounded-md p-6 shadow-md flex flex-col gap-6 m-4 mt-8">
-                    <h1 className="text-2xl font-bold mb-6 text-black text-center">
-                        Employee Management 
-                    </h1>
-                    {/* Dropdown for Employee List */}
-                    <form>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-black">
-                                Employees
-                            </label>
-                            <select
-                                id="employee"
-                                value={employeeIdInput}
-                                onChange={(e) =>
-                                    setEmpIdInput(e.target.value)
-                                }
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                            >
-                                <option value="" disabled>
-                                    Select an employee
-                                </option>
-                                {employeeId && employeeId.length > 0 ? (
-                                    employeeId.map((employee) => (
-                                
-                                <option key={employee.id} value={employee.id}>
-                                    {employee.name}
-                                </option>
-                                ))
-                            ): []}
-                            </select>
-                        </div>
+                    <div className="bg-white rounded-md p-6 shadow-md flex flex-col gap-6 m-4 mt-8">
+                        {/* Dropdown for Employee List */}
+                        <div className="flex w-full">
+                            <div className="flex-1 mx-4">
+                                <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                                    Employee Management 
+                                </h1>
+                                <form>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-black">
+                                            Employees
+                                        </label>
+                                        <select
+                                            id="employee"
+                                            value={employeeIdInput}
+                                            onChange={(e) =>
+                                                setEmpIdInput(e.target.value)
+                                            }
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                        >
+                                        <option value="" disabled>
+                                            Select an employee
+                                        </option>
+                                            {employeeId && employeeId.length > 0 ? (
+                                                employeeId.map((employee) => (
+                                        
+                                            <option key={employee.id} value={employee.id}>
+                                                {employee.name}
+                                            </option>
+                                            ))
+                                        ): []}
+                                        </select>
+                                    </div>
+                                    {/* Dropdown for shifts */}   
+                                    <div className="mb-4">
+                                    <label className="block text-sm font-medium text-black">
+                                            Shift
+                                        </label>
+                                        <select
+                                            id="shift"
+                                            value={employeeShiftInput}
+                                            onChange={(e) =>
+                                                setEmpShiftI(e.target.value)
+                                            }
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                        >
+                                            <option value="" disabled>Select a Shift Timing</option>
+                                            <option value="Morning">Morning</option>
+                                            <option value="Afternoon">Afternoon</option>
+                                            <option value="Evening">Evening</option>
+                                        </select>
+                                    </div>
 
-                        {/* Dropdown for shifts */}   
-                        <div className="mb-4">
-                        <label className="block text-sm font-medium text-black">
-                                Shift
-                            </label>
-                            <select
-                                id="shift"
-                                value={employeeShiftInput}
-                                onChange={(e) =>
-                                    setEmpShiftI(e.target.value)
-                                }
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                            >
-                                <option value="" disabled>Select a Shift Timing</option>
-                                <option value="Morning">Morning</option>
-                                <option value="Afternoon">Afternoon</option>
-                                <option value="Evening">Evening</option>
-                            </select>
-                        </div>
+                                    {/* Dropdown for roles */}   
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-black">
+                                            Roles
+                                        </label>
+                                        <select
+                                            id="role"
+                                            value={employeeRoleInput}
+                                            onChange={(e) =>
+                                                setEmpRoleI(e.target.value)
+                                            }
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                        >
+                                            <option value="" disabled>Select a Role</option>
+                                            <option value="Cashier">Cashier</option>
+                                            <option value="Manager">Manager</option>
+                                            <option value="Janitor">Janitor</option>
+                                            <option value="Barista">Barista</option>
+                                        </select>
+                                    </div>
+                                </form>
+                                <button onClick={editEmployee} className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 cursor-pointer">
+                                    Save Changes
+                                </button>
+                            </div>
+                            <div className="h-[330px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                                <div className="flex-1 mx-4 ">
+                                    <form>
+                                    <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                                        Remove Employees 
+                                    </h1>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-black">
+                                                Employees
+                                            </label>
+                                            <select
+                                                id="employee"
+                                                value={employeeIdRem}
+                                                onChange={(e) =>
+                                                    setEmpRemIdInput(e.target.value)
+                                                }
+                                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                            >
+                                                <option value="" disabled>
+                                                    Select an employee
+                                                </option>
+                                                {employeeId && employeeId.length > 0 ? (
+                                                employeeId.map((employee) => (
+                                                    <option key={employee.id} value={employee.id}>
+                                                        {employee.name}
+                                                    </option>
+                                                    ))
+                                                ): []}
+                                            </select>
+                                        </div>
+                                    </form>
+                                    <button onClick={fireEmployee} className="w-full bg-red-500 text-white p-2 rounded-md hover:bg-red-600 cursor-pointer">
+                                        Fire Employee
+                                    </button>
+                                </div>
+                                <div className="h-[330px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                                    <div className="flex-1 mx-4 ">
+                                        <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                                            Add Employees 
+                                        </h1>
+                                        <form>
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium text-black">
+                                                    Employee Name
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="name"
+                                                    value={employeeNameAdd}
+                                                    onChange={(e) => setEmpAddNameInput(e.target.value)}
+                                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                                    placeholder="Enter employee name"
+                                                />
+                                            </div>
 
-                        {/* Dropdown for roles */}   
-                        <div className="mb-4">
-                        <label className="block text-sm font-medium text-black">
-                                Roles
-                            </label>
-                            <select
-                                id="role"
-                                value={employeeRoleInput}
-                                onChange={(e) =>
-                                    setEmpRoleI(e.target.value)
-                                }
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                            >
-                                <option value="" disabled>Select a Role</option>
-                                <option value="Cashier">Cashier</option>
-                                <option value="Manager">Manager</option>
-                                <option value="Janitor">Janitor</option>
-                                <option value="Barista">Barista</option>
-                            </select>
+                                    {/* Dropdown for shifts */}   
+                                    <div className="mb-4">
+                                    <label className="block text-sm font-medium text-black">
+                                            Shift
+                                        </label>
+                                        <select
+                                            id="shift"
+                                            value={employeeShiftAdd}
+                                            onChange={(e) =>
+                                                setEmpAddShiftI(e.target.value)
+                                            }
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                        >
+                                            <option value="" disabled>Select a Shift Timing</option>
+                                            <option value="Morning">Morning</option>
+                                            <option value="Afternoon">Afternoon</option>
+                                            <option value="Evening">Evening</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Dropdown for roles */}   
+                                    <div className="mb-4">
+                                    <label className="block text-sm font-medium text-black">
+                                            Roles
+                                        </label>
+                                        <select
+                                            id="role"
+                                            value={employeeRoleAdd}
+                                            onChange={(e) =>
+                                                setEmpAddRoleI(e.target.value)
+                                            }
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                        >
+                                            <option value="" disabled>Select a Role</option>
+                                            <option value="Cashier">Cashier</option>
+                                            <option value="Manager">Manager</option>
+                                            <option value="Janitor">Janitor</option>
+                                            <option value="Barista">Barista</option>
+                                        </select>
+                                </div>
+                                </form>
+                                <button onClick={addEmployee} className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 cursor-pointer">
+                                    Add Employee
+                                </button>
                         </div>
-                    </form>
-                    <button onClick={editEmployee} className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
-                        Save Changes
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>
