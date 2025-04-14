@@ -159,7 +159,7 @@ export function Management() {
     // Function that handles the list class used to display and modify the inventory
     const ProductList = ({ name, price, drinkid, toppingid }) => {
         return (
-            <li className="flex justify-between items-center p-4 bg-gray-200 rounded-lg">
+            <li className="flex justify-between items-center p-4 w-80 bg-gray-200 rounded-lg">
                 <span className="text-lg font-semibold text-gray-800">
                     {name}
                 </span>
@@ -289,6 +289,10 @@ export function Management() {
     const [toppingName, setToppingName] = useState("");
     const [toppingPrice, setToppingPrice] = useState("");
     const [toppingQuantity, setToppingQuantity] = useState("");
+
+    function toSnakeCase(str) {
+        return str.toLowerCase().replace(/ /g, "-");
+    }   
 
     // Function that checks fields and handles adding new topping to the inventory
     const addTopping = async () => {
@@ -572,21 +576,29 @@ export function Management() {
 
                 {/* Display a list of all product names, prices, and deletion button */ }
                 <div className="flex justify-center">
-                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-3 ml-4 mb-4 justify-center">
-                        <h1 className="text-2xl font-bold mb-6 text-black text-center">
-                            Product List
-                        </h1>
-                        <div className="grid grid-cols-3 gap-4 w-280 mx-auto">
-                            {inventory.map((index) => (
-                                <ProductList
-                                    key={index.inventoryid}
-                                    foreignKey={index.categoryid}
-                                    name={index.name}
-                                    price={index.price}
-                                    drinkid={index.drinkid}
-                                    toppingid={index.toppingid}
-                                    categoryname={index.categoryname}
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-4 mb-4">
+                    <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                        Product List
+                    </h1>
+                        <div className="grid grid-cols-2 gap-4">
+                            {inventory.map((item) => (
+                            <div
+                                key={item.inventoryid}
+                                className="flex flex-col md:flex-row items-center bg-gray-50 rounded-xl p-4 shadow-md"
+                            >
+                                <img
+                                    src={`/drink-images/${toSnakeCase(item.name)}.png`}
+                                    alt={item.name}
+                                    className="w-40 h-40 object-contain mb-4 md:mb-0 md:mr-6"
                                 />
+                                <ProductList
+                                    name={item.name}
+                                    price={item.price}
+                                    drinkid={item.drinkid}
+                                    toppingid={item.toppingid}
+                                    categoryname={item.categoryname}
+                                />
+                            </div>
                             ))}
                         </div>
                     </div>
