@@ -28,8 +28,9 @@ export default function TranslateToggle() {
             {/* Translate dropdown */}
             <div
                 id="google_translate_element"
-                className="absolute top-10 left-0 z-50"
-                style={{ display: "none" }}
+                className={`absolute top-10 left-0 z-50 bg-white p-2 rounded shadow ${
+                    visible ? "" : "hidden"
+                }`}
             ></div>
         </div>
     );

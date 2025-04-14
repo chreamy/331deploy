@@ -6,17 +6,6 @@ import {
     FaHome,
     FaVolumeUp,
     FaShoppingCart,
-    FaLanguage,
-    FaLine,
-    FaChartLine,
-    FaPaperclip,
-    FaPaperPlane,
-    FaRegPaperPlane,
-    FaHandPaper,
-    FaPen,
-    FaGripLines,
-    FaGripHorizontal,
-    FaGratipay,
 } from "react-icons/fa";
 
 const Nav = ({ userRole }) => {
@@ -40,25 +29,19 @@ const Nav = ({ userRole }) => {
                 >
                     <FaVolumeUp />
                 </button>
-
-                    <button
-                        className="text-2xl text-gray-700 hover:text-blue-500"
-                        title="Language"
-                    >
-                        <FaLanguage />
-                    </button>
-
+  
+                <div className="flex items-center justify-center h-full">
+                    <TranslateToggle />
+                </div>
+                
                     <a href="/">
-                        <button
+                        <button                         
                             className="bg-black text-white text-lg px-4 py-2 rounded-full hover:bg-gray-800 transition-all"
                             title="Log Off"
                         >
                             Log Off
                         </button>
                     </a>
-
-                  {/* Translate button */}
-                  <TranslateToggle />
               </div>
 
                 {/* Center Title */}

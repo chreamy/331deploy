@@ -88,9 +88,22 @@ export default function Reports() {
     return (
         <div className="overflow-auto h-screen">
             <div className={`flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black`}>
-                <h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400 sticky top-0 w-full">
+                <h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400 sticky top-0 w-full z-500">
                     Manager Reports
                 </h1>
+
+                {/* Top Navigation */}
+                <div className="w-full bg-gray-800 text-white flex justify-center gap-4 py-4 z-50 shadow-md">
+                    <button onClick={() => scrollToSection('section1')} className="px-4 py-2 rounded hover:bg-gray-600">
+                    Section 1
+                    </button>
+                    <button onClick={() => scrollToSection('section2')} className="px-4 py-2 rounded hover:bg-gray-600">
+                    Section 2
+                    </button>
+                    <button onClick={() => scrollToSection('section3')} className="px-4 py-2 rounded hover:bg-gray-600">
+                    Section 3
+                    </button>
+                </div>
                 
                 <div className="p-4">
                     <div className="mb-4">
