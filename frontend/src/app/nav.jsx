@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
+import TranslateToggle from "./components/TranslateToggle";
 import {
     FaHome,
     FaVolumeUp,
@@ -23,30 +24,26 @@ const Nav = () => {
         <nav>
             <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm rounded-lg">
                 {/* Left Icons */}
-                <div className="flex items-center gap-4">
-                    <button
-                        className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
-                        title="Home"
-                    >
-                        <a href="/" className="cursor-pointer">
-                            <FaHome />
-                        </a>
-                    </button>
+                <div className="flex items-center gap-4 relative">
+                <button
+                    className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
+                    title="Home"
+                >
+                    <a href="/" className="cursor-pointer">
+                        <FaHome />
+                    </a>
+                </button>
 
-                    <button
-                        className="text-2xl text-gray-700 hover:text-blue-500"
-                        title="Sound"
-                    >
-                        <FaVolumeUp />
-                    </button>
+                <button
+                    className="text-2xl text-gray-700 hover:text-blue-500"
+                    title="Sound"
+                >
+                    <FaVolumeUp />
+                </button>
 
-                    <button
-                        className="text-2xl text-gray-700 hover:text-blue-500"
-                        title="Language"
-                    >
-                        <FaLanguage />
-                    </button>
-                </div>
+                {/* Translate button */}
+                <TranslateToggle />
+            </div>
 
                 {/* Center Title */}
                 <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">

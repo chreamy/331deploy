@@ -168,15 +168,15 @@ export default function BubbleTeaShop() {
             </div>
             {/* Button Row */}
             <div className="flex h-full justify-center gap-6 max-w-screen mb-8">
-                {views.map((item, index) => (
+            {views.map((item, index) => (
                     <a
+                        key={index}
                         href={item.link}
                         className="h-full flex max-w-[40%] transition-all duration-500 ease-in-out"
                     >
                         <div
-                            key={index}
                             className="text-2xl font-bold px-12 py-6 flex items-center justify-between w-auto bg-smoke-50 border-2 border-white text-white rounded-xl shadow-md
-                        hover:scale-105 hover:shadow-xl hover:text-black hover:bg-white cursor-pointer transition-all  duration-500 ease-in-out"
+                                hover:scale-105 hover:shadow-xl hover:text-black hover:bg-white cursor-pointer transition-all  duration-500 ease-in-out"
                             onMouseEnter={() => setHoveredView(item.preview)}
                             onMouseLeave={() => setHoveredView(null)}
                         >
@@ -186,12 +186,12 @@ export default function BubbleTeaShop() {
                                 src={item.preview}
                                 alt={`${item.description} preview`}
                                 className={`object-cover rounded-lg shadow-xl border border-white 
-        ${
-            hoveredView === item.preview
-                ? "w-[30vh] ml-4 opacity-100"
-                : "w-[0px] ml-0 opacity-0"
-        }
-        transition-all duration-500 ease-in-out`}
+                                ${
+                                    hoveredView === item.preview
+                                        ? "w-[30vh] ml-4 opacity-100"
+                                        : "w-[0px] ml-0 opacity-0"
+                                }
+                                transition-all duration-500 ease-in-out`}
                                 style={{ transitionProperty: "width, opacity" }}
                             />
                         </div>
