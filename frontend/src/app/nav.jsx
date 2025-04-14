@@ -46,6 +46,15 @@ const Nav = ({ userRole }) => {
                     >
                         <FaLanguage />
                     </button>
+
+                    <a href="/">
+                        <button
+                            className="bg-black text-white text-lg px-4 py-2 rounded-full hover:bg-gray-800 transition-all"
+                            title="Log Off"
+                        >
+                            Log Off
+                        </button>
+                    </a>
                 </div>
 
                 {/* Center Title */}
