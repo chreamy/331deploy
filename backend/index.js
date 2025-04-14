@@ -127,19 +127,19 @@ app.post("/updateInventory", async (req, res) => {
 
     try {
         if (price === null) {
-            await pool.query('UPDATE employees SET shifttimings = ($1) where id = ($2)', [shifttimings, id]);
+            await pool.query('UPDATE inventory SET quantity = ($1) where name = ($2)', [quantity, name]);
         }
 
-        else if (shifttimings === null) {
-            await pool.query('UPDATE employees SET role = ($1) where id = ($2)', [role, id]);
+        else if (quantity === null) {
+            await pool.query('UPDATE inventory SET price = ($1) where name = ($2)', [price, name]);
         }
 
         else { // update all
-            await pool.query('UPDATE employees SET role = ($1), shifttimings = ($2) where id = ($3)', [role, shifttimings, id]);
+            await pool.query('UPDATE inventory SET price = ($1), quantity = ($2) where name = ($3)', [price, quantity, name]);
         }
 
         res.status(200).json({
-            message: 'Employee updated',
+            message: 'Inventory updated',
         });
     }
     catch (err) {
@@ -167,7 +167,7 @@ app.delete("/fireEmployee", async (req, res) => {
 app.get("/inventory", (req, res) => {
     inventory = [];
     pool.query(
-        "SELECT i.name AS drink_name, i.price, di.drinkid, di.inventoryid, c.categoryid, c.categoryname FROM inventory AS i INNER JOIN drink_inventory AS di ON i.id = di.inventoryid INNER JOIN (SELECT ca.name AS categoryname, cd.categoryid, cd.drinkid FROM categories AS ca JOIN categories_drink AS cd ON ca.id = cd.categoryid) AS c ON di.drinkid = c.drinkid;"
+        "SELECT i.name AS drink_name, i.price, di.drinkid, di.inventoryid, c.categoryid, c.categoryname FROM inventory AS i INNER JOIN drink_inventory AS di ON i.id = di.inventoryid INNER JOIN (SELECT ca.name AS categoryname, cd.categoryid, cd.drinkid FROM categories AS ca JOIN categories_drink AS cd ON ca.id = cd.categoryid) AS c ON di.drinkid = c.drinkid order by drink_name asc;"
     )
         .then((drinkQueryRes) => {
             drinkQueryRes.rows.forEach((row) => {
@@ -183,7 +183,7 @@ app.get("/inventory", (req, res) => {
             });
 
             return pool.query(
-                "SELECT name, price, toppingid, inventoryid FROM inventory INNER JOIN topping_inventory ON inventory.id = topping_inventory.inventoryid;"
+                "SELECT name, price, toppingid, inventoryid FROM inventory INNER JOIN topping_inventory ON inventory.id = topping_inventory.inventoryid order by name asc;"
             );
         })
         .then((toppingQueryRes) => {
@@ -565,7 +565,7 @@ app.get("/x-report/:date", async (req, res) => {
         `;
 
         const resultXReport = await pool.query(sqlXReport, [date]);
-        console.log("X-Report:", resultXReport.rows);
+        //console.log("X-Report:", resultXReport.rows);
 
         const reportData = resultXReport.rows.map(row => ({
             hour: row.hour_of_day,
