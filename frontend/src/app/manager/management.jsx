@@ -79,7 +79,6 @@ export function Management() {
                     legend: { display: false },
                     title: {
                         display: true,
-                        text: "Current Stock",
                         font: {
                             size: 25, 
                             weight: "bold",
@@ -553,26 +552,52 @@ export function Management() {
         }
     };
 
+        const scrollRef = useRef(null);
+
+  const scrollByPixels = (amount) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        top: amount,
+        behavior: 'smooth',
+      })
+    }}
+
     return (
         <div className="overflow-auto h-screen">
             <div className="flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black pb-6">
                 <h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400 sticky top-0 w-full">
                     Management Dashboard
                 </h1>
-                
+
+                {/* Top Navigation */}
+                <div className="w-full bg-gray-800 text-white flex justify-center gap-4 py-4 z-50 shadow-md">
+                    <button onClick={() => scrollByPixels(100)} className="px-4 py-2 rounded hover:bg-gray-600">
+                    View Stock
+                    </button>
+                    <button onClick={() => scrollToSection('section2')} className="px-4 py-2 rounded hover:bg-gray-600">
+                    Product List
+                    </button>
+                    <button onClick={() => scrollToSection('section3')} className="px-4 py-2 rounded hover:bg-gray-600">
+                    Inventory Management
+                    </button>
+
+                </div>                
 
                 {/* Display the bar graph showing inventory stock */}
-                <div className="flex items-center justify-center">
-                    <canvas
-                        className="bg-white rounded-2xl m-8 p-2 w-l h-l"
-                        ref={chartRef}
-                        style={{
-                            width: "100%",
-                            maxWidth: "1200px",
-                            height: "700px",
-                        }}
-                    ></canvas>
+                <div className="flex justify-center">
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-4 mb-4 max-w-[1280px] w-full h-[700px] overflow-hidden">
+                        <h1 className="text-2xl font-bold mb-6 text-black text-center">Product List</h1>
+                        <canvas
+                            className="bg-white rounded-2xl"
+                            ref={chartRef}
+                            style={{
+                                width: "100%",
+                                height: "100%", 
+                            }}
+                        ></canvas>
+                    </div>
                 </div>
+
 
                 {/* Display a list of all product names, prices, and deletion button */ }
                 <div className="flex justify-center">

@@ -46,7 +46,9 @@ body {
     z-index: 9999;
 }
 
-#google_translate_element.show {
-    display: block !important;
-}
-
+#google_translate_element {
+    position: relative; /* or static */
+    top: auto;
+    left: auto;
+    z-index: 10;
+  }
