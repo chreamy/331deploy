@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
+import TranslateToggle from "./components/TranslateToggle";
 import {
     FaHome,
     FaVolumeUp,
@@ -33,12 +34,12 @@ const Nav = ({ userRole }) => {
                         </a>
                     </button>
 
-                    <button
-                        className="text-2xl text-gray-700 hover:text-blue-500"
-                        title="Sound"
-                    >
-                        <FaVolumeUp />
-                    </button>
+                <button
+                    className="text-2xl text-gray-700 hover:text-blue-500"
+                    title="Sound"
+                >
+                    <FaVolumeUp />
+                </button>
 
                     <button
                         className="text-2xl text-gray-700 hover:text-blue-500"
@@ -55,7 +56,10 @@ const Nav = ({ userRole }) => {
                             Log Off
                         </button>
                     </a>
-                </div>
+
+                  {/* Translate button */}
+                  <TranslateToggle />
+              </div>
 
                 {/* Center Title */}
                 <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
