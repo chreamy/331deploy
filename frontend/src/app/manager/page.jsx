@@ -8,7 +8,7 @@ import {
     FaGripHorizontal,
     FaHome,
     FaPen,
-    FaTrash,
+    FaArrowAltCircleLeft,
 } from "react-icons/fa";
 import { Management } from "./management";
 import Reports from "./reports";
@@ -69,6 +69,19 @@ export default function Manager() {
                                 <h3 className="ml-4 text-2xl w-full">Trends</h3>
                             )}
                         </button>{" "}
+                    </a>
+                    <a
+                        href="/"
+                        className="cursor-pointer w-full"
+                    >
+                        <button className="p-6 flex w-full border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
+                            <FaArrowAltCircleLeft className="text-3xl w-20 text-left" />
+                            {isMenuOpen ? (
+                                ""
+                            ) : (
+                                <h3 className="ml-4 text-2xl w-full">Log Off</h3>
+                            )}
+                        </button>
                     </a>
                 </div>
             </div>

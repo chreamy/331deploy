@@ -120,10 +120,10 @@ export default function CashierView() {
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 mt-6">
                 <a href="/">
                     <button className="bg-[#C2A385] text-white font-semibold px-6 py-2 rounded-xl shadow hover:scale-105 hover:shadow-lg transition-transform">
-                        Home
+                        Log Off
                     </button>
                 </a>
-                <a href="/manager/management">
+                <a href="/manager">
                     <button className="bg-[#C2A385] text-white font-semibold px-6 py-2 rounded-xl shadow hover:scale-105 hover:shadow-lg transition-transform ml-4">
                         Manager View
                     </button>
