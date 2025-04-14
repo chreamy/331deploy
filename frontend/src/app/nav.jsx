@@ -19,20 +19,20 @@ import {
     FaGratipay,
 } from "react-icons/fa";
 
-const Nav = () => {
+const Nav = ({ userRole }) => {
     return (
         <nav>
             <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm rounded-lg">
                 {/* Left Icons */}
-                <div className="flex items-center gap-4 relative">
-                <button
-                    className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
-                    title="Home"
-                >
-                    <a href="/" className="cursor-pointer">
-                        <FaHome />
-                    </a>
-                </button>
+                <div className="flex items-center gap-4">
+                    <button
+                        className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
+                        title="Home"
+                    >
+                        <a href={userRole === "cashier" ? "/cashier" : "/customer/menu"} className="cursor-pointer">
+                            <FaHome />
+                        </a>
+                    </button>
 
                 <button
                     className="text-2xl text-gray-700 hover:text-blue-500"
