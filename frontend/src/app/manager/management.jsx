@@ -586,7 +586,7 @@ export function Management() {
                 {/* Display the bar graph showing inventory stock */}
                 <div className="flex justify-center">
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-4 mb-4 max-w-[1280px] w-full h-[700px] overflow-hidden">
-                        <h1 className="text-2xl font-bold mb-6 text-black text-center">Product List</h1>
+                        <h1 className="text-2xl font-bold mb-6 text-black text-center">View Stock</h1>
                         <canvas
                             className="bg-white rounded-2xl"
                             ref={chartRef}
