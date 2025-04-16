@@ -193,87 +193,89 @@ export default function Reports() {
                             className="p-2 rounded text-black border-black border-2"
                         />
                     </div>
-
-                    <div className="m-4 bg-white w-fit p-4 rounded-lg mb-0 justify-center items-center" ref={productUsageRef}>
-                        <h2 className="block text-black text-xl font-bold" >Product Usage Chart</h2>
-                    </div>
-
-                    {loadingChart ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Loading...</div>
-                    ) : hourlyData.length === 0 ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div>
-                    ) : (
-                        <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] rounded-lg">
-                            <div className="relative h-full">
-                                {/* Y-axis labels */}
-                                <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-between">
-                                    {[maxValue, maxValue/2, 0].map((value) => (
-                                        <div key={value} className="text-black text-xs">
-                                            {value}
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Graph area */}
-                                <div className="absolute left-8 right-0 top-0 bottom-8 overflow-hidden">
-                                    {/* Lines */}
-                                    {Object.entries(groupedData).map(([product, hours], index) => (
-                                        visibleLines[product] && (
-                                            <svg
-                                                key={product}
-                                                className="absolute top-0 left-0 w-full h-full"
-                                                viewBox="0 0 100 100"
-                                                preserveAspectRatio="none"
-                                            >
-                                                <path
-                                                    d={hours.slice(11, 23).map((value, hour) => {
-                                                        const x = (hour / 11) * 100;
-                                                        const y = 100 - (value / maxValue) * 100;
-                                                        return `${hour === 0 ? 'M' : 'L'} ${x} ${y}`;
-                                                    }).join(' ')}
-                                                    stroke={COLORS[index % COLORS.length]}
-                                                    strokeWidth={hoveredLine === product ? "1.5" : "0.5"}
-                                                    fill="none"
-                                                />
-                                            </svg>
-                                        )
-                                    ))}
-                                </div>
-
-                                {/* X-axis labels */}
-                                <div className="absolute bottom-0 left-8 right-0 flex justify-between">
-                                    {Array.from({length: 12}, (_, i) => i + 11).map((hour) => (
-                                        <div key={hour} className="text-black text-xs" style={{ transform: 'rotate(-45deg)', transformOrigin: 'left' }}>
-                                            {hour}:00
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Legend */}
-                            <div className="mt-4 flex flex-wrap gap-4">
-                                {Object.keys(groupedData).map((product, index) => (
-                                    <div
-                                        key={product}
-                                        className="flex items-center cursor-pointer"
-                                        onClick={() => toggleLineVisibility(product)}
-                                        onMouseEnter={() => setHoveredLine(product)}
-                                        onMouseLeave={() => setHoveredLine(null)}
-                                        style={{ opacity: visibleLines[product] ? 1 : 0.5 }}
-                                    >
-                                        <div
-                                            className="w-4 h-4 mr-2"
-                                            style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                                        />
-                                        <span className="text-black">{product}</span>
-                                    </div>
-                                ))}
-                            </div>
+                    
+                    <div className="bg-white items-center justify-center content-center rounded-lg">
+                        <div className="m-4 bg-white w-fit p-4 rounded-lg mb-0" ref={productUsageRef}>
+                             <h2 className="block text-black text-xl font-bold text-center">Product Usage Chart</h2>
                         </div>
-                    )}
+
+                        {loadingChart ? (
+                            <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">Loading...</div>
+                        ) : hourlyData.length === 0 ? (
+                            <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
+                        ) : (
+                            <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] rounded-lg  border-2 p-4 border-black mb-4">
+                                <div className="relative h-full">
+                                    {/* Y-axis labels */}
+                                    <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between">
+                                        {[maxValue, maxValue/2, 0].map((value) => (
+                                            <div key={value} className="text-black text-xs">
+                                                {value}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Graph area */}
+                                    <div className="absolute left-8 right-0 top-0 bottom-8 overflow-hidden bg-gray-200">
+                                        {/* Lines */}
+                                        {Object.entries(groupedData).map(([product, hours], index) => (
+                                            visibleLines[product] && (
+                                                <svg
+                                                    key={product}
+                                                    className="absolute top-0 left-0 w-full h-full"
+                                                    viewBox="0 0 100 100"
+                                                    preserveAspectRatio="none"
+                                                >
+                                                    <path
+                                                        d={hours.slice(11, 23).map((value, hour) => {
+                                                            const x = (hour / 11) * 100;
+                                                            const y = 100 - (value / maxValue) * 100;
+                                                            return `${hour === 0 ? 'M' : 'L'} ${x} ${y}`;
+                                                        }).join(' ')}
+                                                        stroke={COLORS[index % COLORS.length]}
+                                                        strokeWidth={hoveredLine === product ? "1.5" : "0.5"}
+                                                        fill="none"
+                                                    />
+                                                </svg>
+                                            )
+                                        ))}
+                                    </div>
+
+                                    {/* X-axis labels */}
+                                    <div className="absolute bottom-0 left-8 right-0 flex justify-between">
+                                        {Array.from({length: 12}, (_, i) => i + 11).map((hour) => (
+                                            <div key={hour} className="text-black text-xs" style={{ transform: 'rotate(-45deg)', transformOrigin: 'left' }}>
+                                                {hour}:00
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Legend */}
+                                <div className="mt-4 flex flex-wrap gap-4">
+                                    {Object.keys(groupedData).map((product, index) => (
+                                        <div
+                                            key={product}
+                                            className="flex items-center cursor-pointer"
+                                            onClick={() => toggleLineVisibility(product)}
+                                            onMouseEnter={() => setHoveredLine(product)}
+                                            onMouseLeave={() => setHoveredLine(null)}
+                                            style={{ opacity: visibleLines[product] ? 1 : 0.5 }}
+                                        >
+                                            <div
+                                                className="w-4 h-4 mr-2"
+                                                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                            />
+                                            <span className="text-black">{product}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-            <div className="flex flex-row justify-center items-start gap-x-8">
+            <div className="flex flex-row justify-center items-start gap-x-8 bg-white bg-size-10px">
                 <div className="flex flex-col justify-center items-center">
                     <div className="mt-4 bg-white w-fit p-4 rounded-lg">
                         <h2 className="text-xl font-bold text-black" ref={ReportRef}>X-Report</h2>
@@ -281,7 +283,7 @@ export default function Reports() {
                     <button
                         onClick={() => {setXReportButton(true); refetchXReport();}}
                         disabled = {loadingXReport}
-                        className="rounded hover:bg-blue-400 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
+                        className="rounded transform transition duration-200 hover:scale-120 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
                     >
                         <FaPlayCircle className="text-3xl" />
                         <span>Generate</span>
@@ -330,7 +332,7 @@ export default function Reports() {
                     <button
                         onClick={() => {setZReportButton(true); refetchZReport();}}
                         disabled = {loadingZReport}
-                        className="rounded hover:bg-blue-400 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
+                        className="rounded transform transition duration-200 hover:scale-120 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
                     >
                         <FaPlayCircle className="text-3xl" />
                         <span>Generate</span>

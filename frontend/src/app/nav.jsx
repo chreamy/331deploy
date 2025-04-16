@@ -66,7 +66,7 @@ const Nav = ({ userRole }) => {
                         <input type="checkbox" className="sr-only peer" />
                         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600"></div>
                     </label>
-                    {userRole != "guest" && (
+                    {userRole != "customer" || userRole != "cashier" && (
                     <button
                         className="text-2xl text-gray-700 hover:text-blue-500"
                         title="Cart"

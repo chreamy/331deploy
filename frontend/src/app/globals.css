@@ -47,7 +47,7 @@ body {
 }
 
 #google_translate_element {
-    position: relative; /* or static */
+    position: fixed; /* or static */
     top: auto;
     left: auto;
     z-index: 10;

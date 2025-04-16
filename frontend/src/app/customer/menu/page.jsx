@@ -46,7 +46,7 @@ export default function BubbleTeaShop() {
     }, []);
 
     return (
-        <div className="min-h-screen font-[telegraf] p-4 md:p-8 overflow-x-hidden bg-[#3D2B1F]">
+        <div className="min-h-screen font-[telegraf] p-4 md:p-8 bg-[#3D2B1F]">
             <Nav userRole="customer" />
             <div className="w-full h-[80vh] flex gap-6 mt-8">
                 <div

@@ -736,8 +736,8 @@ export function Management() {
                 </div>
 
                 <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto mb-10" ref={manageInventoryRef}>
-                    <h1 className="text-2xl font-bold mb-4 text-black pb-4 text-center"> Manage Inventory</h1>
-                    <div className="flex flex-col md:flex-row gap-6">
+                    <h1 className="text-2xl font-bold mb-4 text-black pb-2 text-center"> Manage Inventory</h1>
+                    <div className="flex flex-col md:flex-row gap-6 bg-gray-200 p-4 rounded-lg">
                         <div className="flex-1 mb-4">
                             <h2 className="text-xl font-bold mb-6 text-black text-center">
                                 Add New Drink
@@ -826,7 +826,7 @@ export function Management() {
                             </button>
                         </div>
 
-                        <div className="h-[425px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                        <div className="h-[440px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
                             <div className="flex-1">
                                 <h2 className="text-xl font-bold mb-6 text-black text-center">
                                     Add New Topping
@@ -888,7 +888,7 @@ export function Management() {
                                 </button>
                             </div>
 
-                            <div className="h-[425px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                            <div className="h-[440px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
                                 <div className="flex-1">
                                     <h2 className="text-xl font-bold mb-6 text-black text-center">
                                         Update Inventory
@@ -964,8 +964,8 @@ export function Management() {
                         </div>
                     
                         <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto" ref={manageEmployeeRef}>
-                            <h1 className="text-2xl font-bold mb-4 text-black pb-4 text-center"> Employee Management</h1>
-                            <div className="flex flex-col md:flex-row gap-6">
+                            <h1 className="text-2xl font-bold mb-4 text-black pb-2 text-center"> Employee Management</h1>
+                            <div className="flex flex-col md:flex-row gap-6 bg-gray-200 p-4 rounded-lg">
                                 <div className="flex-1 mb-4">
                                 {/* Dropdown for Employee List */}
                                     <h1 className="text-xl font-bold mb-6 text-black text-center">

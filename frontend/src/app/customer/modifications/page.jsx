@@ -18,7 +18,7 @@ function formatDrinkName(str) {
         .join(' '); // Join with spaces
 }
 
-function DrinkDetails() {
+export default function DrinkDetails() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -135,6 +135,7 @@ function DrinkDetails() {
         localStorage.setItem("cart", JSON.stringify(currentCart));
     };
 
+    
     return (
         <div className="min-h-screen p-4 md:p-8 font-[telegraf] bg-[#3D2B1F]">
             <Nav userRole="customer" />
@@ -301,12 +302,3 @@ function DrinkDetails() {
         </div>
     );
 }
-
-export default function DrinkDetailsPage() {
-    return (
-        <Suspense fallback={<div className="text-[#EED9C4] text-center">Loading...</div>}>
-            <DrinkDetails />
-        </Suspense>
-    );
-}
-
