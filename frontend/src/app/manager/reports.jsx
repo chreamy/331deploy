@@ -194,9 +194,11 @@ export default function Reports() {
                         />
                     </div>
                     
-                    <div className="bg-white items-center justify-center content-center rounded-lg">
-                        <div className="m-4 bg-white w-fit p-4 rounded-lg mb-0" ref={productUsageRef}>
-                             <h2 className="block text-black text-xl font-bold text-center">Product Usage Chart</h2>
+                    <div className="bg-white items-center content-center rounded-lg">
+                        <div className="w-full p-4 rounded-lg mt-3" ref={productUsageRef}>
+                            <div className="w-full flex justify-center">
+                                <h2 className="text-black text-xl font-bold">Product Usage Chart</h2>
+                            </div>
                         </div>
 
                         {loadingChart ? (
@@ -216,7 +218,7 @@ export default function Reports() {
                                     </div>
 
                                     {/* Graph area */}
-                                    <div className="absolute left-8 right-0 top-0 bottom-8 overflow-hidden bg-gray-200">
+                                    <div className="absolute left-8 right-0 top-0 bottom-8 overflow-hidden bg-gray-100">
                                         {/* Lines */}
                                         {Object.entries(groupedData).map(([product, hours], index) => (
                                             visibleLines[product] && (
@@ -275,9 +277,9 @@ export default function Reports() {
                     </div>
                 </div>
 
-            <div className="flex flex-row justify-center items-start gap-x-8 bg-white bg-size-10px">
-                <div className="flex flex-col justify-center items-center">
-                    <div className="mt-4 bg-white w-fit p-4 rounded-lg">
+            <div className="flex flex-row justify-center items-start gap-x-8">
+                <div className="flex flex-col justify-center items-center bg-white rounded-lg">
+                    <div className="mt-4 bg-white w-fit p-4 rounded-lg pb-4">
                         <h2 className="text-xl font-bold text-black" ref={ReportRef}>X-Report</h2>
                     </div>
                     <button
@@ -290,13 +292,13 @@ export default function Reports() {
                     </button>
 
                     {loadingXReport ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Loading...</div>
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 px-25 border-2 border-black mb-4">Loading...</div>
                     ) : !XReportButton ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Generate X-Report to continue</div>
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 border-black mb-4">Generate X-Report to continue</div>
                     ) : hourlyData.length === 0 ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div> 
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 border-black mb-4">No data on current date</div> 
                     ) : (
-                        <div className="m-4 p-6 mb-0 w-auto bg-white bg-gray-800 p-6 rounded-lg w-xl">
+                        <div className="m-4 p-6 mb-0 w-auto bg-white bg-gray-800 p-6 rounded-lg w-xl border-2 border-black mb-4">
                         {/* X-Report Section */}
                         {xReport ? (
                             <table className="w-full text-black text-sm">
@@ -324,13 +326,13 @@ export default function Reports() {
                 )}
                 </div>
                     
-                <div className="flex flex-col justify-center items-center">
+                <div className="flex flex-col justify-center items-center bg-white rounded-lg">
                     <div className="mt-4 bg-white w-fit p-4 rounded-lg">
                         <h2 className="text-xl font-bold text-black" ref={ReportRef}>Z-Report</h2>
                     </div>
 
                     <button
-                        onClick={() => {setZReportButton(true); refetchZReport();}}
+                        onClick={() => {setZReportButton(true); refetchZReport(); }}
                         disabled = {loadingZReport}
                         className="rounded transform transition duration-200 hover:scale-120 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
                     >
@@ -339,13 +341,13 @@ export default function Reports() {
                     </button>
 
                     {loadingZReport ? (
-                    <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Loading...</div>
+                    <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 px-25 border-2 border-black mb-4">Loading...</div>
                     ) : !ZReportButton ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Generate Z-Report to continue</div>
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 border-black mb-4">Generate Z-Report to continue</div>
                     ) : hourlyData.length === 0 ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div>
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 border-black mb-4">No data on current date</div>
                     ) : (
-                    <div className="bg-white m-4 p-6 rounded-lg w-xl">
+                    <div className="bg-white m-4 p-6 rounded-lg w-xl border-2 border-black mb-4">
                         {/* Z-Report Section */}
                         {zReport ? (
                         <ul className="list-disc list-inside text-black text-md">
