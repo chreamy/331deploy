@@ -1,3 +1,5 @@
+\* Project Planning Meetings *\
+
 Meeting 1: Classic Dev Standup
 Topic: Assigning Roles and Tasks
 Roles - 
@@ -12,7 +14,6 @@ Christopher: Help with Customer UI
 Dean: Connect to Database and help with Customer UI
 Isaac: Work on Weather, Language, and Login API
 
-
 Meeting 2: Sprint Goal Checkpoint
 Topic: Progress Check
 Paavan: Yesterday - Drafted initial interface, Today - Will work on refining the look, Challenges - need to connect to database for menu items
@@ -20,11 +21,57 @@ Christopher: Yesterday - Added and assigned issues, Today - make the weather api
 Dean: Yesterday - Added homepage and buttons to interface, Today - will work on connecting to database, Challenges - none right now
 Isaac: Yesterday - Added weather API, Today - will work on login and language APIs, Challenges - none right now
 
-Meeting 3: Final Sprint Checkin
-Topic: Sprint 1 Final Checks
+Meeting 3: Final Sprint Checking
+Topic: Project Initialization Final Checks
 - Connected to database
 - Customer UI looks nice with css and is functioning
 - Weather API works, still need to work on login and language APIs
 - Need to update issues and add comments to code
 
+\* Sprint 1 Meetings *\
 
+Meeting 1: Classic Dev Standup
+Topic: Reviewed Issues and Final Wireframe Draft
+Paavan: Yesterday - Drafted final customer interface, Today - will continue working on the customer view, Challenges - needs to understand how the backend works
+Christopher: Yesterday - Finalized issues and setup the backend, Today - make a homepage to link all three views, Challenges - none right now
+Dean: Yesterday - Drafted final manager interface, Today - will work on implementation of manager view, Challenges - none right now
+Isaac: Yesterday - Drafted final cashier interface, Today - will work on implementation of cashier view, Challenges - none right now
+
+Meeting 2: Sprint Halfway Checkpoint
+Topic: Progress Check
+Paavan: Yesterday - Completed basic UI for customer home, menu, and drinks page, Today - will begin connecting to the backend, Challenges - none right now
+Christopher: Yesterday - Ensuring database and frontend application web host is functional, Today - work on improving the frontend UI, Challenges - none
+Dean: Yesterday - Began progress on implementing basic UI for manager view, Today - will continue working on manager view functionalities, Challenges - needs to understand how the backend works
+Isaac: Yesterday - Updated UI for the daily weather forecast, Today - will began progress on implementing basic UI for cashier view, Challenges - none right now
+
+Meeting 3: Final Sprint Checking
+Topic: Sprint 1 Final Checks
+- Reviewed the burndown charts and remaining stories from sprint
+- Customer, manager, and cashier UI looks nice, with some features still in progress
+- Weather API works
+- Login functions are needed and language APIs need to be implemented for accessibility
+- Reviewed and added new stories for issues that came up during sprint 1
+
+\* Sprint 2 Meetings *\
+
+Meeting 1: Progress Check
+Topic: Reviewed Current Project Status
+Paavan: Yesterday - Worked on fixing customer UI using feedback, Today - will continue working on the customer view, Challenges - none right now
+Christopher: Yesterday - Worked on adding homepage UI animations, Today - will perform code reviews, Challenges - none right now
+Dean: Yesterday - Worked on inventory and stock management, Today - will continue implementation of manager view, Challenges - none right now
+Isaac: Yesterday - Finished cashier UI, Today - will work begin implementing translation APIs for the application, Challenges - none right now
+
+Meeting 2: Sprint Halfway Checkpoint
+Topic: Progress Check
+Paavan: Yesterday - Continued improving customer UI, Today - will finish functionalities of modifications page, Challenges - none right now
+Christopher: Yesterday - Worked on initial implementation of manager reports and sales chart, Today - will work on improving application UI, Challenges - none right now
+Dean: Yesterday - Finished stock charts and inventory management, Today - will work on employee management functionalities, Challenges - none right now
+Isaac: Yesterday - Made progress with implementing translation functionalities, Today - will continue working on implementation of translation API, Challenges - none right now
+
+Meeting 3: Final Sprint Checking
+Topic: Sprint 2 Final Checks
+- Reviewed the burndown charts and remaining stories from sprint
+- Customer order and cart page, manager trends page, and cashier checkout needs work
+- Google translation APIs works
+- Login functions still need to be implemented
+- Reviewed and added stories for new issues that need to be addressed in sprint 3

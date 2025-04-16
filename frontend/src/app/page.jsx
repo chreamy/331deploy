@@ -115,7 +115,7 @@ export default function BubbleTeaShop() {
     ];
 
     return (
-        <div className="h-screen relative flex flex-col bg-smoke-60 from-gray-900 font-[telegraf] to-gray-700 p-4 md:p-8 font-[Roboto]">
+        <div className="h-screen relative flex flex-col bg-smoke-60 bg-[#3D2B1F] from-gray-900 font-[telegraf] to-gray-700 p-4 md:p-8 font-[Roboto]">
             {/* Top Nav Bar */}
             <Nav userRole="guest" />
 
