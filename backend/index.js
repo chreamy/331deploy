@@ -487,7 +487,7 @@ app.post("/add-item", (req, res) => {
             console.error("Error executing query:", err);
             return res.status(500).json({ error: "Failed to add item" });
         }
-        console.log("Inventory count:", results[0].inventory_count);
+        //console.log("Inventory count:", results[0].inventory_count);
     });
 
     res.status(200).json({
@@ -590,30 +590,20 @@ app.get("/z-report/:date", async (req, res) => {
         const updatedDate = `${date} 00:00:00`;
         const timestamp = new Date(updatedDate);
 
-        const sqlCheck = "SELECT COUNT(*) FROM z_report WHERE timestamp = $1";
-        const resultCheck = await pool.query(sqlCheck, [timestamp]);
+        //console.log(resultCheck.rows[0].count);
+        const sqlCheckRun = "SELECT COUNT(*) FROM z_report WHERE timestamp = $1 AND run = 1";
+        const resultCheckRun = await pool.query(sqlCheckRun, [timestamp]);
 
-        if (resultCheck.rows[0].count === 0) {
-            const sqlInsert = "INSERT INTO z_report VALUES ($1, 1)";
-            await pool.query(sqlInsert, [timestamp]);
-        } else {
-            const sqlCheckRun = "SELECT COUNT(*) FROM z_report WHERE timestamp = $1 AND run = 1";
-            const resultCheckRun = await pool.query(sqlCheckRun, [timestamp]);
-
-            if (resultCheckRun.rows[0].count > 0) {
-                return res.json({
-                    message: "Z-Report has already been run, try again tomorrow.",
-                    totalRevenue: 0,
-                    totalTax: 0,
-                    totalProfit: 0,
-                    totalDrinks: 0,
-                    totalOrders: 0,
-                    totalToppings: 0
-                });
-            }
-
-            const sqlUpdate = "UPDATE z_report SET run = 1 WHERE timestamp = $1";
-            await pool.query(sqlUpdate, [timestamp]);
+        if (resultCheckRun.rows[0].count > 0) {
+            return res.json({
+                message: "Z-Report has already been run, try again tomorrow.",
+                totalRevenue: 0,
+                totalTax: 0,
+                totalProfit: 0,
+                totalDrinks: 0,
+                totalOrders: 0,
+                totalToppings: 0
+            });
         }
 
         const sqlOrders = "SELECT COUNT(DISTINCT id) AS total_orders FROM orders WHERE DATE(timestamp) = $1";
@@ -665,6 +655,42 @@ app.get("/z-report/:date", async (req, res) => {
     } catch (err) {
         console.error("Error generating Z-Report:", err);
         res.status(500).json({ error: "Failed to generate Z-Report" });
+    }
+});
+
+app.post("/updateZReport", async (req, res) => {
+    try {
+        const { date } = req.body;
+
+        const updatedDate = `${date} 00:00:00`;
+        const timestamp = new Date(updatedDate);
+
+        const sqlCheck = "SELECT COUNT(*) FROM z_report WHERE timestamp = $1";
+        const resultCheck = await pool.query(sqlCheck, [timestamp]);
+
+        if (resultCheck.rows[0].count === "0") {
+            const sqlUpdate = "INSERT INTO z_report VALUES ($1, 1)";
+            await pool.query(sqlUpdate, [timestamp]);
+        }
+        else {
+            const sqlCheckRun = "SELECT COUNT(*) FROM z_report WHERE DATE(timestamp) = $1";
+            const resultCheckRun = await pool.query(sqlCheckRun, [date]);
+            if (resultCheckRun.rows[0].count === "0") {
+                const sqlUpdate = "UPDATE z_report SET run = 1 WHERE timestamp = $1";
+                await pool.query(sqlUpdate, [timestamp]);
+            }
+            else {
+                // no update needed, already ran
+            }
+        }
+
+        res.status(200).json({
+            message: "Employee added successfully",
+        });
+        
+    } catch (err) {
+        console.error("Error updating Z-Report:", err);
+        res.status(500).json({ error: "Failed to update Z-Report" });
     }
 });
 

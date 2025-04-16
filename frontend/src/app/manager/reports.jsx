@@ -21,6 +21,7 @@ export default function Reports() {
     const [xReport, setXReport] = useState(null);
     const [zReport, setZReport] = useState(null);
     const [loadingXReport, setLoadingXRep] = useState(false);
+    const [loadingZReport, setLoadingZRep] = useState(false);
     const [XReportButton, setXReportButton] = useState(false);
     const [ZReportButton, setZReportButton] = useState(false);
 
@@ -29,7 +30,7 @@ export default function Reports() {
         try {
             const response = await fetch(`${SERVER}/hourly-product-usage/${date}`);
             const data = await response.json();
-            console.log("Fetched data:", data);
+            //console.log("Fetched data:", data);
             setHourlyData(data);
             // Initialize visibility state
             const initialVisibility = data.reduce((acc, item) => {
@@ -44,13 +45,12 @@ export default function Reports() {
     };
 
     const fetchXReport = async () => {
+        setLoadingXRep(true);
         try {
-            setLoadingXRep(true);
             const response = await fetch(`${SERVER}/x-report/${date}`);
             const data = await response.json();
-            console.log("Fetched X-Report:", data);
+            //console.log("Fetched X-Report:", data);
             setXReport(data);
-            setXReportButton(false);
         } catch (error) {
             console.error("Error fetching X-Report:", error);
         }
@@ -58,6 +58,7 @@ export default function Reports() {
     };
 
     const fetchZReport = async () => {
+        setLoadingZRep(true);
         try {
             const response = await fetch(`${SERVER}/z-report/${date}`);
             const data = await response.json();
@@ -65,6 +66,7 @@ export default function Reports() {
         } catch (error) {
             console.error("Error fetching Z-Report:", error);
         }
+        setLoadingZRep(false);
     };
 
     useEffect(() => {
@@ -72,6 +74,17 @@ export default function Reports() {
         fetchXReport();
         fetchZReport();
     }, [date]);
+
+    const refetchXReport = async () => {
+        await fetchXReport();
+        setXReportButton(true);
+    };
+
+    const refetchZReport = async () => {
+        await fetchZReport();
+        await updateZReport();
+        setZReportButton(true);
+    };
 
     // Group data by product name
     const groupedData = hourlyData.reduce((acc, item) => {
@@ -104,13 +117,61 @@ export default function Reports() {
             ReportRef.current?.scrollIntoView({ behavior: "smooth" });
         };
 
+    const updateZReport = async () => {
+        setLoadingZRep(true);
+        try {
+            const response = await fetch(`${SERVER}/updateZReport`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify( {date} ),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update Z-Report");
+            }
+        } catch (error) {
+            console.error("Error updating Z-Report:", error);
+        }
+        setLoadingZRep(false);
+    };
+
+    const [notification, setNotification] = useState({ message: '', type: '' });
+    const timeoutRef = useRef(null);
+
+    const showNotification = (message, type = 'Success') => {
+        setNotification({ message: message, type });
+       
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        timeoutRef.current = setTimeout(() => {
+            setNotification({ message: '', type: ',' });
+        }, 3000);
+    };
+
+    const getBackground = () => {
+        return notification.type === 'Success'
+            ? 'bg-green-500'
+            : notification.type === 'Error'
+            ? 'bg-red-500'
+            : 'bg-gray-400';
+    };
+
     return (
-        <div className="overflow-auto h-screen">
-            <div className="flex-1 bg-[#3D2B1F] pb-4">
-                <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full shadow-md z-50 border-b-[#3D2B1F] border-b-5">
-                    <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
+        <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">
+            <div className="sticky top-0 w-full z-50">
+                <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full z-50 shadow-md border-b-[#3D2B1F] border-b-5">
+                   <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
                         Manage Reports
                     </h1> 
+                    {notification.message && (
+                        <div className={`absolute right-3 top-23 z-50 px-6 py-4 rounded shadow-md text-white text-xl font-bold ${getBackground()}`}>
+                        {notification.message}
+                    </div>
+                    )}
                     {/* Top Navigation */}
                     <div className="flex gap-4">
                         <button onClick={scrollToProductUsage} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
@@ -128,7 +189,7 @@ export default function Reports() {
                         <input
                             type="date"
                             value={date}
-                            onChange={(e) => {setDate(e.target.value); setXReportButton(false);}}
+                            onChange={(e) => {setDate(e.target.value); setXReportButton(false); setZReportButton(false);}}
                             className="p-2 rounded text-black border-black border-2"
                         />
                     </div>
@@ -218,7 +279,8 @@ export default function Reports() {
                         <h2 className="text-xl font-bold text-black" ref={ReportRef}>X-Report</h2>
                     </div>
                     <button
-                        onClick={() => setXReportButton(true)}
+                        onClick={() => {setXReportButton(true); refetchXReport();}}
+                        disabled = {loadingXReport}
                         className="rounded hover:bg-blue-400 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
                     >
                         <FaPlayCircle className="text-3xl" />
@@ -266,19 +328,20 @@ export default function Reports() {
                     </div>
 
                     <button
-                        onClick={() => setZReportButton(true)}
+                        onClick={() => {setZReportButton(true); refetchZReport();}}
+                        disabled = {loadingZReport}
                         className="rounded hover:bg-blue-400 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
                     >
                         <FaPlayCircle className="text-3xl" />
                         <span>Generate</span>
                     </button>
 
-                    {loadingChart ? (
+                    {loadingZReport ? (
                     <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Loading...</div>
-                    ) : hourlyData.length === 0 ? (
-                    <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div>
                     ) : !ZReportButton ? (
-                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Generate X-Report to continue</div>
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Generate Z-Report to continue</div>
+                    ) : hourlyData.length === 0 ? (
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div>
                     ) : (
                     <div className="bg-white m-4 p-6 rounded-lg w-xl">
                         {/* Z-Report Section */}

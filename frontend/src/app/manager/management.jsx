@@ -655,11 +655,11 @@ export function Management() {
 
     const getBackground = () => {
         return notification.type === 'Success'
-          ? 'bg-green-500'
-          : notification.type === 'Error'
-          ? 'bg-red-500'
-          : 'bg-gray-400';
-      };
+            ? 'bg-green-500'
+            : notification.type === 'Error'
+            ? 'bg-red-500'
+            : 'bg-gray-400';
+    };
 
     return (
         <div className="overflow-auto h-screen">
