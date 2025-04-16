@@ -117,7 +117,7 @@ export default function BubbleTeaShop() {
     return (
         <div className="h-screen relative flex flex-col bg-smoke-60 from-gray-900 font-[telegraf] to-gray-700 p-4 md:p-8 font-[Roboto]">
             {/* Top Nav Bar */}
-            <Nav userRole="customer" />
+            <Nav userRole="guest" />
 
             {/* Welcome Message */}
             <div className="text-center mt-6 mb-6">

@@ -77,13 +77,10 @@ export function Management() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    title: {
-                        display: true,
-                        font: {
-                            size: 25, 
-                            weight: "bold",
+                    layout: {
+                        padding: {
+                            bottom: 50, 
                         },
-                        color: 'black',
                     },
                     annotation: {
                         annotations: {
@@ -94,7 +91,7 @@ export function Management() {
                                 borderColor: "red", 
                                 borderWidth: 5, 
                                 label: {
-                                    content: 'Low Inventory', 
+                                    content: 'Low Stock', 
                                     enabled: true,
                                     display: true,
                                     position: "start", 
@@ -113,6 +110,14 @@ export function Management() {
                 scales: {
                     y: {
                         beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Stock Quantity', 
+                            font: {
+                                size: 18,
+                                weight: 'bold',
+                            },
+                        },
                         ticks: {
                             font: {
                                 size: 16, 
@@ -193,10 +198,13 @@ export function Management() {
                     body: JSON.stringify(drinkInformation),
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to add drink");
+                    throw new Error("Failed to delete drink");
                 }
                 refreshData();
-            } catch (error) {}
+                showNotification('Product deleted', 'Success');
+            } catch (error) {
+                showNotification('Product not deleted', 'Error');
+            }
         }
         else if (drinkid === null) {
             try {
@@ -211,13 +219,15 @@ export function Management() {
                     },
                     body: JSON.stringify(toppingInformation),
                 });
-                console.log("Refreshing data after delete");
+                //console.log("Refreshing data after delete");
                 if (!response.ok) {
                     throw new Error("Failed to delete product");
                 }
-                
+                showNotification('Product deleted', 'Success');
                 refreshData();
-            } catch (error) {}
+            } catch (error) {
+                showNotification('Product not deleted', 'Error');
+            }
         }
     };
 
@@ -250,7 +260,21 @@ export function Management() {
             !quantityInput ||
             !selectedCategoryInput
         ) {
-            alert("Missing fields");
+            showNotification('Missing drink information', 'Error');
+            return;
+        }
+
+        if (
+            priceInput < "0"
+        ) {
+            showNotification('Negative drink price', 'Error');
+            return;
+        }
+
+        if (
+            quantityInput < "0"
+        ) {
+            showNotification('Negative quantity', 'Error');
             return;
         }
 
@@ -274,13 +298,15 @@ export function Management() {
                 throw new Error("Failed to add drink");
             }
 
+            showNotification('New drink added', 'Success');
             setDrinkNameI("");
             setPriceI("");
             setQuantityI("");
             setSelectedCategoryI("");
             refreshData();
         } catch (error) {
-            console.error("Error in adding drink:", error);
+            //console.error("Error in adding drink:", error);
+            showNotification('Failed to add drink', 'Error');
         }
     };
 
@@ -300,7 +326,21 @@ export function Management() {
             !toppingPrice ||
             !toppingQuantity
         ) {
-            alert("Missing fields");
+            showNotification('Missing topping information', 'Error');
+            return;
+        }
+
+        if (
+            toppingPrice < "0"
+        ) {
+            showNotification('Negative topping price', 'Error');
+            return;
+        }
+
+        if (
+            toppingQuantity < "0"
+        ) {
+            showNotification('Negative quantity', 'Error');
             return;
         }
 
@@ -322,13 +362,14 @@ export function Management() {
             if (!response.ok) {
                 throw new Error("Failed to add topping");
             }
-
+            showNotification('New topping added', 'Success');
             setToppingName("");
             setToppingPrice("");
             setToppingQuantity("");
             refreshData();
         } catch (error) {
-            console.error("Error in adding drink:", error);
+            //console.error("Error in adding drink:", error);
+            showNotification('Failed add topping', 'Error');
         }
     };
 
@@ -363,7 +404,8 @@ export function Management() {
             setEmpIdInput("");
             setEmpRoleI("");
             setEmpShiftI("");
-            throw new Error("Cannot Modify Admin");
+            showNotification('Cannot edit admin', 'Error');
+            return;
         }
         
         if (
@@ -371,7 +413,7 @@ export function Management() {
             (!employeeShiftInput &&
             !employeeRoleInput)
         ) {
-            alert("Missing fields");
+            showNotification('Missing employee information', 'Error');
             return;
         }
 
@@ -405,12 +447,13 @@ export function Management() {
             if (!response.ok) {
                 throw new Error("Failed to update Employee");
             }
-
+            showNotification('Updated employee information', 'Success');
             setEmpIdInput("");
             setEmpRoleI("");
             setEmpShiftI("");
         } catch (error) {
-            console.error("Error:", error);
+            //console.error("Error:", error);
+            showNotification('Failed to update employee information', 'Error');
         }
     };
 
@@ -426,7 +469,21 @@ export function Management() {
             (!itemUpdatePrice &&
             !itemUpdateQuantity)
         ) {
-            alert("Missing fields");
+            showNotification('Missing item information', 'Error');
+            return;
+        }
+
+        if (
+            itemUpdatePrice < "0"
+        ) {
+            showNotification('Negative item price', 'Error');
+            return;
+        }
+
+        if (
+            itemUpdateQuantity < "0"
+        ) {
+            showNotification('Negative quantity', 'Error');
             return;
         }
 
@@ -460,13 +517,14 @@ export function Management() {
             if (!response.ok) {
                 throw new Error("Failed to update Item");
             }
-
+            showNotification('Updated item', 'Success');
             setItemName("");
             setItemPrice("");
             setItemQuantity("");
             refreshData();
         } catch (error) {
-            console.error("Error:", error);
+            //console.error("Error:", error);
+            showNotification('Failed to update item', 'Error');
         }
     };
 
@@ -478,14 +536,15 @@ export function Management() {
         if (
             !employeeIdRem
         ) {
-            alert("Missing fields");
+            showNotification('Missing employee information', 'Error');
             return;
         }
 
         try {
             if (employeeIdRem === "0") {
                 setEmpRemIdInput("");
-                throw new Error("Cannot Fire Admin");
+                showNotification('Cannot fire Admin', 'Error');
+                return;
             }
 
             const updateInfo = {};
@@ -503,10 +562,12 @@ export function Management() {
                 throw new Error("Failed to remove Employee");
             }
 
+            showNotification('Fired employee', 'Success');
             setEmpRemIdInput("");
             refreshData();
         } catch (error) {
-            console.error("Error:", error);
+            //console.error("Error:", error);
+            showNotification('Failed to remove employee', 'Error');
         }
     };
 
@@ -520,7 +581,7 @@ export function Management() {
         if (
             !employeeNameAdd || !employeeShiftAdd || !employeeRoleAdd
         ) {
-            alert("Missing fields");
+            showNotification('Missing employee information', 'Error');
             return;
         }
 
@@ -540,68 +601,113 @@ export function Management() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to update Employee");
+                throw new Error("Failed to add Employee");
             }
-
+            showNotification('Added new employee', 'Success');
             setEmpAddNameInput("");
             setEmpAddRoleI("");
             setEmpAddShiftI("");
             refreshData();
         } catch (error) {
-            console.error("Error:", error);
+            //console.error("Error:", error);
+            showNotification('Failed to add employee', 'Error');
         }
     };
 
-        const scrollRef = useRef(null);
+    const productListRef = useRef(null);
 
-  const scrollByPixels = (amount) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        top: amount,
-        behavior: 'smooth',
-      })
-    }}
+    const scrollToProductList = () => {
+        productListRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const currentStockRef = useRef(null);
+
+    const scrollToCurrentStock = () => {
+        currentStockRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const manageInventoryRef = useRef(null);
+
+    const scrollToManageInventory = () => {
+        manageInventoryRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const manageEmployeeRef = useRef(null);
+
+    const scrollToManageEmployee = () => {
+        manageEmployeeRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const [notification, setNotification] = useState({ message: '', type: '' });
+    const timeoutRef = useRef(null);
+
+    const showNotification = (message, type = 'Success') => {
+        setNotification({ message: `${type}: ${message}`, type });
+       
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        timeoutRef.current = setTimeout(() => {
+            setNotification({ message: '', type: ',' });
+        }, 3000);
+    };
+
+    const getBackground = () => {
+        return notification.type === 'Success'
+          ? 'bg-green-500'
+          : notification.type === 'Error'
+          ? 'bg-red-500'
+          : 'bg-gray-400';
+      };
 
     return (
         <div className="overflow-auto h-screen">
-            <div className="flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black pb-6">
-                <h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400 sticky top-0 w-full">
-                    Management Dashboard
-                </h1>
-
-                {/* Top Navigation */}
-                <div className="w-full bg-gray-800 text-white flex justify-center gap-4 py-4 z-50 shadow-md">
-                    <button onClick={() => scrollByPixels(100)} className="px-4 py-2 rounded hover:bg-gray-600">
-                    View Stock
-                    </button>
-                    <button onClick={() => scrollToSection('section2')} className="px-4 py-2 rounded hover:bg-gray-600">
-                    Product List
-                    </button>
-                    <button onClick={() => scrollToSection('section3')} className="px-4 py-2 rounded hover:bg-gray-600">
-                    Inventory Management
-                    </button>
-
-                </div>                
+            <div className="flex-1 bg-black pb-4">
+                <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full shadow-md z-50 border-b-black border-b-5">
+                    <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
+                        Management Dashboard
+                    </h1> 
+                    {notification.message && (
+                        <div className={`absolute right-3 top-23 z-50 px-6 py-4 rounded shadow-md text-white text-xl font-bold ${getBackground()}`}>
+                        {notification.message}
+                    </div>
+                    )}
+                    {/* Top Navigation */}
+                    <div className="flex gap-4">
+                        <button onClick={scrollToCurrentStock} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                            View Stock
+                        </button>
+                        <button onClick={scrollToProductList} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                            Product List
+                        </button>
+                        <button onClick={scrollToManageInventory} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                            Inventory Management
+                        </button>
+                        <button onClick={scrollToManageEmployee} className="py-2 w-40 rounded hover:bg-gray-400 bg-black text-white">
+                            Employee Management
+                        </button>
+                    </div>    
+                </div>             
 
                 {/* Display the bar graph showing inventory stock */}
-                <div className="flex justify-center">
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-4 mb-4 max-w-[1280px] w-full h-[700px] overflow-hidden">
-                        <h1 className="text-2xl font-bold mb-6 text-black text-center">Product List</h1>
+                <div className="flex justify-center pb-4" ref={currentStockRef}>
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 ml-4 mt-8 mb-6 pb-20 pt-5 max-w-[1250px] w-full h-[800px]">
+                        <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                        Current Stock
+                        </h1>
                         <canvas
-                            className="bg-white rounded-2xl"
+                            width={1200}
+                            height={700}
+                            className="w-full h-auto block"
                             ref={chartRef}
-                            style={{
-                                width: "100%",
-                                height: "100%", 
-                            }}
-                        ></canvas>
+                        />
                     </div>
                 </div>
 
-
                 {/* Display a list of all product names, prices, and deletion button */ }
-                <div className="flex justify-center">
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-4 mb-4">
+                <div className="flex justify-center pb-4" ref={productListRef}>
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-10 mb-2 mr-10 w-full">
                     <h1 className="text-2xl font-bold mb-6 text-black text-center">
                         Product List
                     </h1>
@@ -629,117 +735,30 @@ export function Management() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row gap-6 m-4 w-300 mx-auto">
-                    <div className="flex-1 p-2 mb-2">
-                        <h2 className="text-2xl font-bold mb-6 text-black text-center">
-                            Add New Drink
-                        </h2>
-
-                        {/* Input for Drink Name */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-black">
-                                Drink Name
-                            </label>
-                            <input
-                                type="text"
-                                id="drinkName"
-                                value={drinkNameInput}
-                                onChange={(e) => setDrinkNameI(e.target.value)}
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                placeholder="Enter drink name"
-                            />
-                        </div>
-
-                        {/* Input for Drink Price */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-black">
-                                Price
-                            </label>
-                            <input
-                                type="number"
-                                id="price"
-                                value={priceInput}
-                                onChange={(e) => setPriceI(e.target.value)}
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                placeholder="Enter price"
-                                step="0.01"
-                            />
-                        </div>
-
-                        {/* Input for Drink Quantity */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-black">
-                                Quantity
-                            </label>
-                            <input
-                                type="number"
-                                id="price"
-                                value={quantityInput}
-                                onChange={(e) => setQuantityI(e.target.value)}
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                placeholder="Enter quantity"
-                                step="0.01"
-                            />
-                        </div>
-
-                        {/* Dropdown for Drink Category Selection */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-black">
-                                Category
-                            </label>
-                            <select
-                                id="category"
-                                value={selectedCategoryInput}
-                                onChange={(e) =>
-                                    setSelectedCategoryI(e.target.value)
-                                }
-                                className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                            >
-                                <option value="" disabled>
-                                    Select a category
-                                </option>
-                                {categories && categories.categories && categories.categories.length > 0 ? (
-                                    categories.categories.map((category) => (
-                                
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                                ))
-                            ): []}
-                            </select>
-                        </div>
-                        
-                        {/* Add Drink Button */}
-                        <button
-                            onClick={addDrink}
-                            className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
-                        >
-                            Add Drink
-                        </button>
-                    </div>
-
-                    <div className="h-[425px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
-                        <div className="flex-1">
-                            <h2 className="text-2xl font-bold mb-6 text-black text-center">
-                                Add New Topping
+                <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto mb-10" ref={manageInventoryRef}>
+                    <h1 className="text-2xl font-bold mb-4 text-black pb-4 text-center"> Manage Inventory</h1>
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <div className="flex-1 mb-4">
+                            <h2 className="text-xl font-bold mb-6 text-black text-center">
+                                Add New Drink
                             </h2>
 
-                            {/* Input for Topping Name */}
+                            {/* Input for Drink Name */}
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-black">
-                                    Topping Name
+                                    Drink Name
                                 </label>
                                 <input
                                     type="text"
-                                    id="toppingName"
-                                    value={toppingName}
-                                    onChange={(e) => setToppingName(e.target.value)}
+                                    id="drinkName"
+                                    value={drinkNameInput}
+                                    onChange={(e) => setDrinkNameI(e.target.value)}
                                     className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                    placeholder="Enter topping name"
+                                    placeholder="Enter drink name"
                                 />
                             </div>
 
-                            {/* Input for Topping Price */}
+                            {/* Input for Drink Price */}
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-black">
                                     Price
@@ -747,15 +766,15 @@ export function Management() {
                                 <input
                                     type="number"
                                     id="price"
-                                    value={toppingPrice}
-                                    onChange={(e) => setToppingPrice(e.target.value)}
+                                    value={priceInput}
+                                    onChange={(e) => setPriceI(e.target.value)}
                                     className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
                                     placeholder="Enter price"
                                     step="0.01"
                                 />
                             </div>
 
-                            {/* Input for Topping Quantity */}
+                            {/* Input for Drink Quantity */}
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-black">
                                     Quantity
@@ -763,56 +782,72 @@ export function Management() {
                                 <input
                                     type="number"
                                     id="price"
-                                    value={toppingQuantity}
-                                    onChange={(e) => setToppingQuantity(e.target.value)}
+                                    value={quantityInput}
+                                    onChange={(e) => setQuantityI(e.target.value)}
                                     className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
                                     placeholder="Enter quantity"
                                     step="0.01"
                                 />
                             </div>
 
-                            {/* Add Topping Button */}
+                            {/* Dropdown for Drink Category Selection */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-black">
+                                    Category
+                                </label>
+                                <select
+                                    id="category"
+                                    value={selectedCategoryInput}
+                                    onChange={(e) =>
+                                        setSelectedCategoryI(e.target.value)
+                                    }
+                                    className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                >
+                                    <option value="" disabled>
+                                        Select a category
+                                    </option>
+                                    {categories && categories.categories && categories.categories.length > 0 ? (
+                                        categories.categories.map((category) => (
+                                    
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                    ))
+                                ): []}
+                                </select>
+                            </div>
+                            
+                            {/* Add Drink Button */}
                             <button
-                                onClick={addTopping}
-                                className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
+                                onClick={addDrink}
+                                className="w-full p-3 text-black rounded-md shadow-sm hover:bg-blue-600 cursor-pointer border-black border-3"
                             >
-                                Add Topping
+                                Add Drink
                             </button>
                         </div>
 
                         <div className="h-[425px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
                             <div className="flex-1">
-                                <h2 className="text-2xl font-bold mb-6 text-black text-center">
-                                    Update Inventory
+                                <h2 className="text-xl font-bold mb-6 text-black text-center">
+                                    Add New Topping
                                 </h2>
 
-                                {/* Input for Item Name */}
+                                {/* Input for Topping Name */}
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-black">
-                                        Item Name
+                                        Topping Name
                                     </label>
-                                    <select
-                                        id="name"
-                                        value={itemUpdateName}
-                                        onChange={(e) =>
-                                            setItemName(e.target.value)
-                                        }
+                                    <input
+                                        type="text"
+                                        id="toppingName"
+                                        value={toppingName}
+                                        onChange={(e) => setToppingName(e.target.value)}
                                         className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
-                                    >
-                                        <option value="" disabled>
-                                            Select an item
-                                        </option>
-                                        {inventory && inventory.length > 0 ? (
-                                        inventory.map((index) => (
-                                            <option key={index.inventoryid} value={index.name}>
-                                                {index.name}
-                                            </option>
-                                            ))
-                                        ): []}
-                                    </select>
+                                        placeholder="Enter topping name"
+                                    />
                                 </div>
 
-                                {/* Input for Price */}
+                                {/* Input for Topping Price */}
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-black">
                                         Price
@@ -820,24 +855,24 @@ export function Management() {
                                     <input
                                         type="number"
                                         id="price"
-                                        value={itemUpdatePrice}
-                                        onChange={(e) => setItemPrice(e.target.value)}
+                                        value={toppingPrice}
+                                        onChange={(e) => setToppingPrice(e.target.value)}
                                         className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
                                         placeholder="Enter price"
                                         step="0.01"
                                     />
                                 </div>
 
-                                {/* Input for Quantity */}
+                                {/* Input for Topping Quantity */}
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-black">
                                         Quantity
                                     </label>
                                     <input
                                         type="number"
-                                        id="quantity"
-                                        value={itemUpdateQuantity}
-                                        onChange={(e) => setItemQuantity(e.target.value)}
+                                        id="price"
+                                        value={toppingQuantity}
+                                        onChange={(e) => setToppingQuantity(e.target.value)}
                                         className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
                                         placeholder="Enter quantity"
                                         step="0.01"
@@ -846,19 +881,94 @@ export function Management() {
 
                                 {/* Add Topping Button */}
                                 <button
-                                    onClick={updateInventory}
-                                    className="w-full p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
+                                    onClick={addTopping}
+                                    className="w-full p-3 text-black border-black border-3 rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
                                 >
-                                    Save Changes
+                                    Add Topping
                                 </button>
+                            </div>
+
+                            <div className="h-[425px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                                <div className="flex-1">
+                                    <h2 className="text-xl font-bold mb-6 text-black text-center">
+                                        Update Inventory
+                                    </h2>
+
+                                    {/* Input for Item Name */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-black">
+                                            Item Name
+                                        </label>
+                                        <select
+                                            id="name"
+                                            value={itemUpdateName}
+                                            onChange={(e) =>
+                                                setItemName(e.target.value)
+                                            }
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                        >
+                                            <option value="" disabled>
+                                                Select an item
+                                            </option>
+                                            {inventory && inventory.length > 0 ? (
+                                            inventory.map((index) => (
+                                                <option key={index.inventoryid} value={index.name}>
+                                                    {index.name}
+                                                </option>
+                                                ))
+                                            ): []}
+                                        </select>
+                                    </div>
+
+                                    {/* Input for Price */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-black">
+                                            Price
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="price"
+                                            value={itemUpdatePrice}
+                                            onChange={(e) => setItemPrice(e.target.value)}
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                            placeholder="Enter price"
+                                            step="0.01"
+                                        />
+                                    </div>
+
+                                    {/* Input for Quantity */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-black">
+                                            Quantity
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="quantity"
+                                            value={itemUpdateQuantity}
+                                            onChange={(e) => setItemQuantity(e.target.value)}
+                                            className="mt-1 p-2 w-full border rounded-md shadow-sm text-black"
+                                            placeholder="Enter quantity"
+                                            step="0.01"
+                                        />
+                                    </div>
+
+                                    {/* Add Topping Button */}
+                                    <button
+                                        onClick={updateInventory}
+                                        className="w-full p-3 text-black border-black border-3 rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     
-                        <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col gap-6 m-4 mt-8 my-0 w-300 mx-auto">
-                            <div className="flex w-full">
+                        <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto" ref={manageEmployeeRef}>
+                            <h1 className="text-2xl font-bold mb-4 text-black pb-4 text-center"> Employee Management</h1>
+                            <div className="flex flex-col md:flex-row gap-6">
+                                <div className="flex-1 mb-4">
                                 {/* Dropdown for Employee List */}
-                                <div className="flex-1 mx-4">
-                                    <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                                    <h1 className="text-xl font-bold mb-6 text-black text-center">
                                         Employee Management 
                                     </h1>
                                     <form>
@@ -929,7 +1039,7 @@ export function Management() {
                                             </select>
                                         </div>
                                     </form>
-                                    <button onClick={editEmployee} className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 cursor-pointer">
+                                    <button onClick={editEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-blue-600 cursor-pointer">
                                         Save Changes
                                     </button>
                                 </div>
@@ -937,7 +1047,7 @@ export function Management() {
                                 {/* Dropdown for employee selection */} 
                                 <div className="flex-1 mx-4 ">
                                     <form>
-                                    <h1 className="text-2xl font-bold mb-6 text-black text-center">
+                                    <h1 className="text-xl font-bold mb-6 text-black text-center">
                                         Remove Employee
                                     </h1>
                                         <div className="mb-4">
@@ -965,7 +1075,7 @@ export function Management() {
                                             </select>
                                         </div>
                                     </form>
-                                    <button onClick={fireEmployee} className="w-full bg-red-500 text-white p-2 rounded-md hover:bg-red-600 cursor-pointer">
+                                    <button onClick={fireEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-red-600 cursor-pointer">
                                         Fire Employee
                                     </button>
                                 </div>
@@ -973,7 +1083,7 @@ export function Management() {
                                 <div className="h-[330px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
                                     {/* Input for employee name */} 
                                     <div className="flex-1 mx-4">
-                                        <h2 className="text-2xl font-bold mb-6 text-black text-center">
+                                        <h2 className="text-xl font-bold mb-6 text-black text-center">
                                             Add Employee 
                                         </h2>
                                         <form>
@@ -1032,7 +1142,7 @@ export function Management() {
                                         </select>
                                     </div>
                                 </form>
-                                <button onClick={addEmployee} className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 cursor-pointer">
+                                <button onClick={addEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-blue-600 cursor-pointer">
                                     Add Employee
                                 </button>
                         </div>

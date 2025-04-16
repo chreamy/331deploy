@@ -20,11 +20,11 @@ export default function Manager() {
 
     return (
         <div className="flex absolute inset-0 size-auto">
-            <div className={`bg-[#0a0a0a] font-[telegraf] text-white p-4 overflow-auto h-screen`}>
+            <div className={`bg-white font-[telegraf] text-white p-4 overflow-auto h-screen`}>
                 {/* Menu Toggle Button */}
                 <button className="text-4xl p-4 hover:text-red-500">
                     <FaGripHorizontal
-                        onClick={() => setIsMenuOpen((prev) => !prev)}
+                        onClick={() => setIsMenuOpen((prev) => !prev)} style={{ color: 'black' }}
                     />
                 </button>
 
@@ -34,12 +34,12 @@ export default function Manager() {
                         onClick={() => setTab("management")}
                         className="cursor-pointer w-full"
                     >
-                        <button className="p-6 flex justify-center w-full border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
-                            <FaHome className="text-3xl w-20 text-left" />
+                        <button className="p-6 flex justify-center w-full border-zinc-200 border rounded-[10px] px-4 bg-[#EED9C4] items-center hover:scale-[1.1] cursor-pointer">
+                            <FaHome className="text-3xl w-20 text-left" style={{ color: 'black' }}/>
                             {isMenuOpen ? (
                                 ""
                             ) : (
-                                <h3 className="ml-4 text-2xl w-full">Home</h3>
+                                <h3 className="ml-4 text-2xl w-full text-black font-bold">Home</h3>
                             )}
                         </button>{" "}
                     </a>
@@ -48,12 +48,12 @@ export default function Manager() {
                         onClick={() => setTab("report")}
                         className="cursor-pointer w-full"
                     >
-                        <button className="p-6 flex w-full border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
-                            <FaPen className="text-3xl w-20 text-left" />
+                        <button className="p-6 flex w-full border-zinc-200 border rounded-[10px] px-4 bg-[#EED9C4] items-center hover:scale-[1.1] cursor-pointer">
+                            <FaPen className="text-3xl w-20 text-left" style={{ color: 'black'}}/>
                             {isMenuOpen ? (
                                 ""
                             ) : (
-                                <h3 className="ml-4 text-2xl w-full">Reports</h3>
+                                <h3 className="ml-4 text-2xl w-full text-black font-bold">Reports</h3>
                             )}
                         </button>
                     </a>
@@ -61,12 +61,12 @@ export default function Manager() {
                         onClick={() => setTab("trend")}
                         className="cursor-pointer w-full items-center"
                     >
-                        <button className="p-6 flex w-full justify-center border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
-                            <FaChartLine className="text-3xl w-20" />
+                        <button className="p-6 flex w-full justify-center border-zinc-200 border rounded-[10px] px-4 bg-[#EED9C4] items-center hover:scale-[1.1] cursor-pointer">
+                            <FaChartLine className="text-3xl w-20" style={{ color: 'black' }} />
                             {isMenuOpen ? (
                                 ""
                             ) : (
-                                <h3 className="ml-4 text-2xl w-full">Trends</h3>
+                                <h3 className="ml-4 text-2xl w-full text-black font-bold">Trends</h3>
                             )}
                         </button>{" "}
                     </a>
@@ -74,12 +74,12 @@ export default function Manager() {
                         href="/"
                         className="cursor-pointer w-full"
                     >
-                        <button className="p-6 flex w-full border-zinc-200 border rounded-[10px] px-4 bg-blue-900 items-center hover:scale-[1.05] cursor-pointer">
-                            <FaArrowAltCircleLeft className="text-3xl w-20 text-left" />
+                        <button className="p-6 flex w-full border-zinc-200 border rounded-[10px] px-4 bg-[#EED9C4] items-center hover:scale-[1.1] cursor-pointer">
+                            <FaArrowAltCircleLeft className="text-3xl w-20 text-left" style={{ color: 'black' }}/>
                             {isMenuOpen ? (
                                 ""
                             ) : (
-                                <h3 className="ml-4 text-2xl w-full">Log Off</h3>
+                                <h3 className="ml-4 text-2xl w-full text-black font-bold">Log Off</h3>
                             )}
                         </button>
                     </a>
