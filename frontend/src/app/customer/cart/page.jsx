@@ -23,13 +23,9 @@ export default function OrderCart() {
 
     // Calculate total price of all items in the cart
     const calculateTotal = () => {
-        let total = 0;
-        let count = 0;
-        cart.forEach((item) => {
-            total += item.totalPrice; // totalPrice is already calculated in the addToCart function
-            count+= 1;
-        });
-        return (total / count).toFixed(2);
+        return cart.reduce((total, item) => {
+            return total + (parseFloat(item.totalPrice) || 0);
+        }, 0).toFixed(2);
     };
 
     // Delete item from the cart
@@ -50,7 +46,7 @@ export default function OrderCart() {
     };
 
     return (
-        <div className="min-h-screen font-[telegraf] p-4 md:p-8">
+        <div className="min-h-screen font-[telegraf] p-4 md:p-8 bg-[#3D2B1F]">
             <Nav userRole="customer" />
 
             {/* Back Button */}
@@ -85,27 +81,23 @@ export default function OrderCart() {
 
                                 {/* Modifications */}
                                 <ul className="mt-2 text-sm text-gray-600">
-                                    {item.selectedMods && (
-                                    <>
-                                        <li>Ice Level: {item.selectedMods.ice}</li>
-                                        <li>Sugar Level: {item.selectedMods.sugar}</li>
-                                    </>
-                                    )}
+                                    {item.selectedIce && <li>Ice Level: {item.selectedIce}</li>}
+                                    {item.selectedSugar && <li>Sugar Level: {item.selectedSugar}</li>}
                                 </ul>
 
                                 {/* Toppings */}
                                 <div className="mt-3 text-sm text-gray-600">
-                                    {item.selectedToppings && item.selectedToppings.length > 0 && (
-                                    <>
-                                        <strong>Toppings:</strong>
+                                    <strong>Toppings:</strong>
+                                    {item.selectedToppings && item.selectedToppings.length > 0 ? (
                                         <ul className="list-disc list-inside">
-                                        {item.selectedToppings.map((top, i) => (
-                                            <li key={i}>
-                                            {top.name}: +${(top.price / 100).toFixed(2)}
-                                            </li>
-                                        ))}
+                                            {item.selectedToppings.map((top, i) => (
+                                                <li key={i}>
+                                                    {top.name}: +${(top.price || 0).toFixed(2)}
+                                                </li>
+                                            ))}
                                         </ul>
-                                    </>
+                                    ) : (
+                                        <span> No Toppings (Default)</span>
                                     )}
                                 </div>
 
@@ -130,7 +122,7 @@ export default function OrderCart() {
 
                             {/* Delete Item Button */}
                             <button
-                                className="text-red-500 font-bold hover:underline"
+                                className="text-red-500 font-bold hover:underline cursor-pointer"
                                 onClick={() => deleteItem(index)}
                             >
                                 Delete
