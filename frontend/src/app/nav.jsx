@@ -18,9 +18,10 @@ const Nav = ({ userRole }) => {
 
     return (
         <nav>
-            <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm rounded-lg">
+            <header className="w-full flex justify-center items-center border-b p-4 flex items-center justify-between bg-white shadow-sm rounded-lg">
                 {/* Left Icons */}
                 <div className="flex items-center gap-4">
+                    {userRole != "guest" && (
                     <Link 
                         href={userRole === "cashier" ? "/cashier" : "/customer/menu"} 
                         className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
@@ -28,6 +29,7 @@ const Nav = ({ userRole }) => {
                     >
                         <FaHome />
                     </Link>
+                )}
 
                     <button
                         className="text-2xl text-gray-700 hover:text-blue-500"
@@ -48,6 +50,18 @@ const Nav = ({ userRole }) => {
                         Log Off
                     </button>
                 </div>
+               
+                {userRole != "guest" && (
+                    <a href="/">
+                        <button                         
+                            className="bg-black text-white text-lg px-4 py-2 rounded-full hover:bg-gray-800 transition-all"
+                            title="Log Off"
+                        >
+                            Log Off
+                        </button>
+                    </a>
+                )}
+              </div>
 
                 {/* Center Title */}
                 <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
@@ -60,14 +74,20 @@ const Nav = ({ userRole }) => {
                         <input type="checkbox" className="sr-only peer" />
                         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600"></div>
                     </label>
-
-                    <a 
+                    {userRole != "guest" && (
+                    <button
+                        className="text-2xl text-gray-700 hover:text-blue-500"
+                        title="Cart"
+                    >
+                        <a 
                         href="/customer/cart" 
                         className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
                         title="Cart"
                     >
                         <FaShoppingCart />
-                    </a>
+                      </a>
+                    </button>
+                    )}
                 </div>
             </header>
         </nav>

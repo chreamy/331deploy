@@ -1,7 +1,8 @@
 "use client";
 import { SERVER } from "@/app/const";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Nav from "@/app/nav";
+import { FaPlay, FaPlayCircle } from "react-icons/fa";
 
 // Expanded color palette for more variety
 const COLORS = [
@@ -14,14 +15,17 @@ const COLORS = [
 export default function Reports() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [hourlyData, setHourlyData] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loadingChart, setLoadingChart] = useState(false);
     const [visibleLines, setVisibleLines] = useState({});
     const [hoveredLine, setHoveredLine] = useState(null);
     const [xReport, setXReport] = useState(null);
     const [zReport, setZReport] = useState(null);
+    const [loadingXReport, setLoadingXRep] = useState(false);
+    const [XReportButton, setXReportButton] = useState(false);
+    const [ZReportButton, setZReportButton] = useState(false);
 
     const fetchHourlyData = async () => {
-        setLoading(true);
+        setLoadingChart(true);
         try {
             const response = await fetch(`${SERVER}/hourly-product-usage/${date}`);
             const data = await response.json();
@@ -36,18 +40,21 @@ export default function Reports() {
         } catch (error) {
             console.error("Error fetching hourly data:", error);
         }
-        setLoading(false);
+        setLoadingChart(false);
     };
 
     const fetchXReport = async () => {
         try {
+            setLoadingXRep(true);
             const response = await fetch(`${SERVER}/x-report/${date}`);
             const data = await response.json();
             console.log("Fetched X-Report:", data);
             setXReport(data);
+            setXReportButton(false);
         } catch (error) {
             console.error("Error fetching X-Report:", error);
         }
+        setLoadingXRep(false);
     };
 
     const fetchZReport = async () => {
@@ -85,49 +92,62 @@ export default function Reports() {
         }));
     };
 
+    const productUsageRef = useRef(null);
+    
+        const scrollToProductUsage = () => {
+            productUsageRef.current?.scrollIntoView({ behavior: "smooth" });
+        };
+    
+        const ReportRef= useRef(null);
+    
+        const scrollToXReport = () => {
+            ReportRef.current?.scrollIntoView({ behavior: "smooth" });
+        };
+
     return (
         <div className="overflow-auto h-screen">
-            <div className={`flex-1 bg-gradient-to-b from-gray-900 to-gray-700 border-l-6 border-black`}>
-                <h1 className="text-3xl text-left font-bold text-black p-4 text-center bg-neutral-400 sticky top-0 w-full z-500">
-                    Manager Reports
-                </h1>
-
-                {/* Top Navigation */}
-                <div className="w-full bg-gray-800 text-white flex justify-center gap-4 py-4 z-50 shadow-md">
-                    <button onClick={() => scrollToSection('section1')} className="px-4 py-2 rounded hover:bg-gray-600">
-                    Section 1
-                    </button>
-                    <button onClick={() => scrollToSection('section2')} className="px-4 py-2 rounded hover:bg-gray-600">
-                    Section 2
-                    </button>
-                    <button onClick={() => scrollToSection('section3')} className="px-4 py-2 rounded hover:bg-gray-600">
-                    Section 3
-                    </button>
-                </div>
+            <div className="flex-1 bg-black pb-4">
+                <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full shadow-md z-50 border-b-black border-b-5">
+                    <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
+                        Manage Reports
+                    </h1> 
+                    {/* Top Navigation */}
+                    <div className="flex gap-4">
+                        <button onClick={scrollToProductUsage} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                            Product Usage
+                        </button>
+                        <button onClick={scrollToXReport} className="w-40 py-5 rounded hover:bg-gray-400 bg-black text-white">
+                            View Reports
+                        </button>
+                    </div>    
+                </div>  
                 
-                <div className="p-4">
-                    <div className="mb-4">
-                        <h2 className="text-xl font-bold text-white mb-4">Product Usage Chart</h2>
-                        <label className="block text-white mb-2">Select Date:</label>
+                <div className="p-4 flex flex-col items-center">
+                    <div className="m-4 bg-white w-fit p-4 rounded-lg mb-4 mt-0">
+                        <h2 className="block text-black text-xl font-bold mb-2">Select Report Date:</h2>
                         <input
                             type="date"
                             value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="p-2 rounded"
+                            onChange={(e) => {setDate(e.target.value); setXReportButton(false);}}
+                            className="p-2 rounded text-black border-black border-2"
                         />
                     </div>
 
-                    {loading ? (
-                        <div className="text-white">Loading...</div>
+                    <div className="m-4 bg-white w-fit p-4 rounded-lg mb-0 justify-center items-center" ref={productUsageRef}>
+                        <h2 className="block text-black text-xl font-bold" >Product Usage Chart</h2>
+                    </div>
+
+                    {loadingChart ? (
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Loading...</div>
                     ) : hourlyData.length === 0 ? (
-                        <div className="text-white">No data on current date</div>
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div>
                     ) : (
-                        <div className="bg-gray-800 p-6 flex flex-col h-[600px] rounded-lg">
+                        <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] rounded-lg">
                             <div className="relative h-full">
                                 {/* Y-axis labels */}
                                 <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-between">
                                     {[maxValue, maxValue/2, 0].map((value) => (
-                                        <div key={value} className="text-white text-xs">
+                                        <div key={value} className="text-black text-xs">
                                             {value}
                                         </div>
                                     ))}
@@ -162,7 +182,7 @@ export default function Reports() {
                                 {/* X-axis labels */}
                                 <div className="absolute bottom-0 left-8 right-0 flex justify-between">
                                     {Array.from({length: 12}, (_, i) => i + 11).map((hour) => (
-                                        <div key={hour} className="text-white text-xs" style={{ transform: 'rotate(-45deg)', transformOrigin: 'left' }}>
+                                        <div key={hour} className="text-black text-xs" style={{ transform: 'rotate(-45deg)', transformOrigin: 'left' }}>
                                             {hour}:00
                                         </div>
                                     ))}
@@ -184,7 +204,7 @@ export default function Reports() {
                                             className="w-4 h-4 mr-2"
                                             style={{ backgroundColor: COLORS[index % COLORS.length] }}
                                         />
-                                        <span className="text-white">{product}</span>
+                                        <span className="text-black">{product}</span>
                                     </div>
                                 ))}
                             </div>
@@ -192,38 +212,78 @@ export default function Reports() {
                     )}
                 </div>
 
-                {/* X-Report Section */}
-                <div className="mt-8 bg-gray-800 p-6 rounded-lg">
-                    <h2 className="text-xl font-bold text-white mb-4">X-Report</h2>
-                    {xReport ? (
-                        <table className="w-full text-white text-xs">
-                            <thead>
-                                <tr>
-                                    <th className="border-b border-gray-600 p-2 text-left">Hour</th>
-                                    <th className="border-b border-gray-600 p-2 text-left">Total Orders</th>
-                                    <th className="border-b border-gray-600 p-2 text-left">Total Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {xReport.map((row, index) => (
-                                    <tr key={index}>
-                                        <td className="border-b border-gray-600 p-2">{row.hour}:00</td>
-                                        <td className="border-b border-gray-600 p-2">{row.totalOrders}</td>
-                                        <td className="border-b border-gray-600 p-2">${row.totalSales.toFixed(2)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className="text-white">Loading X-Report...</div>
-                    )}
-                </div>
+            <div className="flex flex-row justify-center items-start gap-x-8">
+                <div className="flex flex-col justify-center items-center">
+                    <div className="mt-4 bg-white w-fit p-4 rounded-lg">
+                        <h2 className="text-xl font-bold text-black" ref={ReportRef}>X-Report</h2>
+                    </div>
+                    <button
+                        onClick={() => setXReportButton(true)}
+                        className="rounded hover:bg-blue-400 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
+                    >
+                        <FaPlayCircle className="text-3xl" />
+                        <span>Generate</span>
+                    </button>
 
-                {/* Z-Report Section */}
-                <div className="mt-8 bg-gray-800 p-6 rounded-lg">
-                    <h2 className="text-xl font-bold text-white mb-4">Z-Report</h2>
-                    {zReport ? (
-                        <ul className="list-disc list-inside text-white text-xs">
+                    {loadingXReport ? (
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Loading...</div>
+                    ) : !XReportButton ? (
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Generate X-Report to continue</div>
+                    ) : hourlyData.length === 0 ? (
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div> 
+                    ) : (
+                        <div className="m-4 p-6 mb-0 w-auto bg-white bg-gray-800 p-6 rounded-lg w-xl">
+                        {/* X-Report Section */}
+                        {xReport ? (
+                            <table className="w-full text-black text-sm">
+                                <thead>
+                                    <tr>
+                                        <th className="border-b border-gray-600 p-2 text-left">Hour</th>
+                                        <th className="border-b border-gray-600 p-2 text-left">Total Orders</th>
+                                        <th className="border-b border-gray-600 p-2 text-left">Total Sales</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {xReport.map((row, index) => (
+                                        <tr key={index}>
+                                            <td className="border-b border-gray-600 p-2">{row.hour}:00</td>
+                                            <td className="border-b border-gray-600 p-2">{row.totalOrders}</td>
+                                            <td className="border-b border-gray-600 p-2">${row.totalSales.toFixed(2)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <div className="text-white">No report data available.</div> // Optional fallback
+                        )}
+                    </div>
+                )}
+                </div>
+                    
+                <div className="flex flex-col justify-center items-center">
+                    <div className="mt-4 bg-white w-fit p-4 rounded-lg">
+                        <h2 className="text-xl font-bold text-black" ref={ReportRef}>Z-Report</h2>
+                    </div>
+
+                    <button
+                        onClick={() => setZReportButton(true)}
+                        className="rounded hover:bg-blue-400 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
+                    >
+                        <FaPlayCircle className="text-3xl" />
+                        <span>Generate</span>
+                    </button>
+
+                    {loadingChart ? (
+                    <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Loading...</div>
+                    ) : hourlyData.length === 0 ? (
+                    <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">No data on current date</div>
+                    ) : !ZReportButton ? (
+                        <div className="text-black bg-white m-4 p-6 rounded-lg mb-0">Generate X-Report to continue</div>
+                    ) : (
+                    <div className="bg-white m-4 p-6 rounded-lg w-xl">
+                        {/* Z-Report Section */}
+                        {zReport ? (
+                        <ul className="list-disc list-inside text-black text-md">
                             <li>Total Revenue: ${zReport.totalRevenue}</li>
                             <li>Total Tax: ${zReport.totalTax}</li>
                             <li>Total Profit: ${zReport.totalProfit}</li>
@@ -231,11 +291,14 @@ export default function Reports() {
                             <li>Total Orders: {zReport.totalOrders}</li>
                             <li>Total Toppings Used: {zReport.totalToppings}</li>
                         </ul>
-                    ) : (
+                        ) : (
                         <div className="text-white">Loading Z-Report...</div>
+                        )}
+                    </div>
                     )}
-                </div>
+                </div> 
             </div>
         </div>
+    </div>
     );
 }
