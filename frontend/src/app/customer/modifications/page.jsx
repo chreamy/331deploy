@@ -97,6 +97,31 @@ function DrinkDetails() {
         top.name?.toLowerCase().includes(search.toLowerCase())
     );
 
+    // Add drink to cart
+    const addToCart = () => {
+        const cartItem = {
+            drinkName,
+            drinkPrice,
+            selectedIce,
+            selectedSugar,
+            selectedMods,
+            selectedToppings,
+            totalPrice: getTotalPrice(),
+        };
+
+        // Get current cart data from localStorage, or initialize an empty array
+        const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Add new drink to the cart
+        currentCart.push(cartItem);
+
+        // Save updated cart to localStorage
+        localStorage.setItem("cart", JSON.stringify(currentCart));
+
+        // Optionally, navigate to cart page
+        router.push("/customer/cart");
+    };
+
     return (
         <div className="min-h-screen p-4 md:p-8 font-[telegraf]">
             <Nav userRole="customer" />
@@ -129,6 +154,9 @@ function DrinkDetails() {
             <div className="flex flex-col md:flex-row gap-6 flex-grow">
                 {/* Drink Image */}
                 <div className="w-full md:w-1/3 flex flex-col items-center">
+                    <h3 className="text-3xl font-extrabold mt-0 mb-6 text-center text-[#EED9C4] drop-shadow-md font-[Roboto]">
+                        {(drinkName || "Selected Drink").replace(/-/g, " ")}
+                    </h3>
                     <img
                         src={`/drink-images/${toSnakeCase(drinkName)}.png`}
                         alt={drinkName}
@@ -138,9 +166,14 @@ function DrinkDetails() {
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-2 mt-6 w-full items-center">
                         <a href="/customer/cart" className="w-4/5">
-                            <button className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white">
-                                Add to Cart ${getTotalPrice()}
-                            </button>
+                        <button
+                            className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white"
+                            onClick={addToCart} // Ensure this triggers addToCart
+                        >
+                            Add to Cart 
+                            <span className="ml-2 font-extrabold text-back-1000 text-xl stroke-text">${getTotalPrice()}</span>
+                        </button>
+
                         </a>
                         <a href="/customer/menu" className="w-4/5">
                             <button className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white">
@@ -149,7 +182,8 @@ function DrinkDetails() {
                         </a>
                         <a href="/customer/checkout" className="w-4/5">
                             <button className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white">
-                                Buy Now ${getTotalPrice()}
+                                Buy Now 
+                                <span className="ml-2 font-extrabold text-back-1000 text-xl stroke-text">${getTotalPrice()}</span>
                             </button>
                         </a>
                     </div>
