@@ -106,8 +106,8 @@ export default function Reports() {
 
     return (
         <div className="overflow-auto h-screen">
-            <div className="flex-1 bg-black pb-4">
-                <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full shadow-md z-50 border-b-black border-b-5">
+            <div className="flex-1 bg-[#3D2B1F] pb-4">
+                <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full shadow-md z-50 border-b-[#3D2B1F] border-b-5">
                     <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
                         Manage Reports
                     </h1> 
