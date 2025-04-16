@@ -99,16 +99,25 @@ function DrinkDetails() {
 
     // Add drink to cart
     const addToCart = () => {
+        // Initialize selectedToppings as empty array if none selected
+        const selectedToppingObjects = selectedToppings.length > 0 
+        ? toppings.filter(top => selectedToppings.includes(top.name))
+                .map(top => ({
+                    name: top.name,
+                    price: top.price || 0
+                }))
+        : [];
+
         const cartItem = {
             drinkName,
             drinkPrice,
-            selectedIce,
-            selectedSugar,
-            selectedMods,
-            selectedToppings,
+            selectedIce: selectedIce || "Full Ice (Default)",
+            selectedSugar: selectedSugar || "100% Sugar (Default)",
+            selectedToppings: selectedToppingObjects,
+            quantity: 1,
             totalPrice: getTotalPrice(),
         };
-
+    
         // Get current cart data from localStorage, or initialize an empty array
         const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -117,13 +126,10 @@ function DrinkDetails() {
 
         // Save updated cart to localStorage
         localStorage.setItem("cart", JSON.stringify(currentCart));
-
-        // Optionally, navigate to cart page
-        router.push("/customer/cart");
     };
 
     return (
-        <div className="min-h-screen p-4 md:p-8 font-[telegraf]">
+        <div className="min-h-screen p-4 md:p-8 font-[telegraf] bg-[#3D2B1F]">
             <Nav userRole="customer" />
 
             <div className="mt-6">
@@ -181,10 +187,13 @@ function DrinkDetails() {
                             </button>
                         </a>
                         <a href="/customer/checkout" className="w-4/5">
-                            <button className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white">
-                                Buy Now 
-                                <span className="ml-2 font-extrabold text-back-1000 text-xl stroke-text">${getTotalPrice()}</span>
-                            </button>
+                        <button
+                            className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white"
+                            onClick={addToCart} // Ensure this triggers addToCart
+                        >
+                            Buy Now
+                            <span className="ml-2 font-extrabold text-back-1000 text-xl stroke-text">${getTotalPrice()}</span>
+                        </button>
                         </a>
                     </div>
                 </div>
@@ -275,7 +284,7 @@ function DrinkDetails() {
                                 />
                                 <span className="text-[#EED9C4] text-lg">{mod.name}</span>
                                 </div>
-                                <span className="text-xs text-gray-400">${mod.price?.toFixed(2)}</span>
+                                <span className="text-medium font-bold text-white">${mod.price?.toFixed(2)}</span>
                             </label>
                             ))}
                         </div>

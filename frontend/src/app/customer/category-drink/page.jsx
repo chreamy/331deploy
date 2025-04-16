@@ -43,7 +43,7 @@ function CategoryContent() {
     );
 
     return (
-        <div className="min-h-screen font-[telegraf] p-4 md:p-8 ">
+        <div className="min-h-screen font-[telegraf] p-4 md:p-8 bg-[#3D2B1F]">
             <Nav userRole="customer" />
 
             {/* Back Button */}
