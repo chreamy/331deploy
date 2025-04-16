@@ -11,6 +11,13 @@ function toSnakeCase(str) {
     return str.toLowerCase().replace(/ /g, "-");
 }
 
+function formatDrinkName(str) {
+    return str
+        .split('-') // Split by dashes
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+        .join(' '); // Join with spaces
+}
+
 function DrinkDetails() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -161,7 +168,7 @@ function DrinkDetails() {
                 {/* Drink Image */}
                 <div className="w-full md:w-1/3 flex flex-col items-center">
                     <h3 className="text-3xl font-extrabold mt-0 mb-6 text-center text-[#EED9C4] drop-shadow-md font-[Roboto]">
-                        {(drinkName || "Selected Drink").replace(/-/g, " ")}
+                        {formatDrinkName(drinkName)}
                     </h3>
                     <img
                         src={`/drink-images/${toSnakeCase(drinkName)}.png`}

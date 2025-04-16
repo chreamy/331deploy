@@ -9,6 +9,13 @@ function toSnakeCase(str) {
     return str.toLowerCase().replace(/ /g, "-");
 }
 
+function formatDrinkName(str) {
+    return str
+        .split('-') // Split by dashes
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+        .join(' '); // Join with spaces
+}
+
 export default function OrderCart() {
     const router = useRouter();
 
@@ -76,8 +83,9 @@ export default function OrderCart() {
                                 className="w-24 h-24 object-contain rounded-md"
                             />
 
-                            <div className="flex-1">
-                                <h3 className="text-xl text-gray-600 font-semibold">{item.drinkName}</h3>
+                            <div className="flex-1"> 
+                                <h3 className="text-xl text-gray-600 font-semibold">{formatDrinkName(item.drinkName)}</h3>
+                                <h3 className="text-xl text-gray-600 font-semibold">${item.totalPrice}</h3>
 
                                 {/* Modifications */}
                                 <ul className="mt-2 text-sm text-gray-600">
