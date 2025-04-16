@@ -42,18 +42,10 @@ const Nav = ({ userRole }) => {
                         <TranslateToggle />
                     </div>
                     
-                    <button
-                        onClick={handleLogout}
-                        className="bg-black text-white text-lg px-4 py-2 rounded-full hover:bg-gray-800 transition-all"
-                        title="Log Off"
-                    >
-                        Log Off
-                    </button>
-                </div>
-               
-                {userRole != "guest" && (
+                    {userRole != "guest" && (
                     <a href="/">
-                        <button                         
+                        <button      
+                            onClick={handleLogout}                   
                             className="bg-black text-white text-lg px-4 py-2 rounded-full hover:bg-gray-800 transition-all"
                             title="Log Off"
                         >
@@ -61,7 +53,7 @@ const Nav = ({ userRole }) => {
                         </button>
                     </a>
                 )}
-              </div>
+                </div>
 
                 {/* Center Title */}
                 <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
