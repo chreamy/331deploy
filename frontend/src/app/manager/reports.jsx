@@ -25,6 +25,18 @@ export default function Reports() {
     const [XReportButton, setXReportButton] = useState(false);
     const [ZReportButton, setZReportButton] = useState(false);
 
+    const productUsageRef = useRef(null);
+    
+    const scrollToProductUsage = () => {
+        productUsageRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    
+    const ReportRef= useRef(null);
+    
+    const scrollToXReport = () => {
+        ReportRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
     const fetchHourlyData = async () => {
         setLoadingChart(true);
         try {
@@ -77,13 +89,18 @@ export default function Reports() {
 
     const refetchXReport = async () => {
         await fetchXReport();
+        await checkZReport();
         setXReportButton(true);
+        setTimeout(() => {
+            ReportRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100)
     };
 
     const refetchZReport = async () => {
         await fetchZReport();
         await updateZReport();
         setZReportButton(true);
+        ReportRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     // Group data by product name
@@ -104,19 +121,7 @@ export default function Reports() {
             [product]: !prev[product],
         }));
     };
-
-    const productUsageRef = useRef(null);
     
-        const scrollToProductUsage = () => {
-            productUsageRef.current?.scrollIntoView({ behavior: "smooth" });
-        };
-    
-        const ReportRef= useRef(null);
-    
-        const scrollToXReport = () => {
-            ReportRef.current?.scrollIntoView({ behavior: "smooth" });
-        };
-
     const updateZReport = async () => {
         setLoadingZRep(true);
         try {
@@ -128,6 +133,13 @@ export default function Reports() {
                 body: JSON.stringify( {date} ),
             });
 
+            const data = await response.json();
+
+            const message = String(data.message);
+            if (message === "Z-Report has already been generated today") {
+                showNotification(message);
+            }
+
             if (!response.ok) {
                 throw new Error("Failed to update Z-Report");
             }
@@ -137,11 +149,38 @@ export default function Reports() {
         setLoadingZRep(false);
     };
 
+    const checkZReport = async () => {
+        setLoadingXRep(true);
+        try {
+            const response = await fetch(`${SERVER}/checkZReport`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify( {date} ),
+            });
+
+            const data = await response.json();
+
+            const message = String(data.message);
+            if (message === "Z-Report has already been generated today") {
+                showNotification(message);
+            }
+
+            if (!response.ok) {
+                throw new Error("Failed to check Z-Report");
+            }
+        } catch (error) {
+            console.error("Error checking Z-Report:", error);
+        }
+        setLoadingXRep(false);
+    };
+
     const [notification, setNotification] = useState({ message: '', type: '' });
     const timeoutRef = useRef(null);
 
     const showNotification = (message, type = 'Success') => {
-        setNotification({ message: message, type });
+        setNotification({ message: `${message}`, type });
        
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -154,7 +193,7 @@ export default function Reports() {
 
     const getBackground = () => {
         return notification.type === 'Success'
-            ? 'bg-green-500'
+            ? 'bg-blue-500'
             : notification.type === 'Error'
             ? 'bg-red-500'
             : 'bg-gray-400';
@@ -194,7 +233,7 @@ export default function Reports() {
                         />
                     </div>
                     
-                    <div className="bg-white items-center content-center rounded-lg">
+                    <div className="bg-white items-center content-center rounded-lg mb-4">
                         <div className="w-full p-4 rounded-lg mt-3" ref={productUsageRef}>
                             <div className="w-full flex justify-center">
                                 <h2 className="text-black text-xl font-bold">Product Usage Chart</h2>
@@ -206,10 +245,10 @@ export default function Reports() {
                         ) : hourlyData.length === 0 ? (
                             <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
                         ) : (
-                            <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] rounded-lg  border-2 p-4 border-black mb-4">
+                            <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] rounded-lg border-2 p-4 border-black mb-4">
                                 <div className="relative h-full">
                                     {/* Y-axis labels */}
-                                    <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between">
+                                    <div className="absolute left-4 -top-1 bottom-6 w-8 flex flex-col justify-between">
                                         {[maxValue, maxValue/2, 0].map((value) => (
                                             <div key={value} className="text-black text-xs">
                                                 {value}
@@ -218,7 +257,7 @@ export default function Reports() {
                                     </div>
 
                                     {/* Graph area */}
-                                    <div className="absolute left-8 right-0 top-0 bottom-8 overflow-hidden bg-gray-100">
+                                    <div className="absolute left-8 right-0 top-0 bottom-8 overflow-hidden bg-gray-100 border-black border-1">
                                         {/* Lines */}
                                         {Object.entries(groupedData).map(([product, hours], index) => (
                                             visibleLines[product] && (
@@ -229,8 +268,9 @@ export default function Reports() {
                                                     preserveAspectRatio="none"
                                                 >
                                                     <path
-                                                        d={hours.slice(11, 23).map((value, hour) => {
-                                                            const x = (hour / 11) * 100;
+                                                        d={hours.slice(11, 24).map((value, hour) => {
+                                                            const x = (hour / 12) * 100;
+                                                            //console.log(hour);
                                                             const y = 100 - (value / maxValue) * 100;
                                                             return `${hour === 0 ? 'M' : 'L'} ${x} ${y}`;
                                                         }).join(' ')}
@@ -244,8 +284,8 @@ export default function Reports() {
                                     </div>
 
                                     {/* X-axis labels */}
-                                    <div className="absolute bottom-0 left-8 right-0 flex justify-between">
-                                        {Array.from({length: 12}, (_, i) => i + 11).map((hour) => (
+                                    <div className="absolute -bottom-1 left-4 -right-2 flex justify-between">
+                                        {Array.from({length: 13}, (_, i) => i + 11).map((hour) => (
                                             <div key={hour} className="text-black text-xs" style={{ transform: 'rotate(-45deg)', transformOrigin: 'left' }}>
                                                 {hour}:00
                                             </div>
@@ -280,7 +320,7 @@ export default function Reports() {
             <div className="flex flex-row justify-center items-start gap-x-8">
                 <div className="flex flex-col justify-center items-center bg-white rounded-lg">
                     <div className="mt-4 bg-white w-fit p-4 rounded-lg pb-4">
-                        <h2 className="text-xl font-bold text-black" ref={ReportRef}>X-Report</h2>
+                        <h2 className="text-xl font-bold text-black">X-Report</h2>
                     </div>
                     <button
                         onClick={() => {setXReportButton(true); refetchXReport();}}
@@ -298,7 +338,7 @@ export default function Reports() {
                     ) : hourlyData.length === 0 ? (
                         <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 border-black mb-4">No data on current date</div> 
                     ) : (
-                        <div className="m-4 p-6 mb-0 w-auto bg-white bg-gray-800 p-6 rounded-lg w-xl border-2 border-black mb-4">
+                        <div className="m-4 p-6 mb-0 w-auto bg-white bg-gray-800 p-6 rounded-lg w-xl border-2 border-black mb-4" ref={ReportRef}>
                         {/* X-Report Section */}
                         {xReport ? (
                             <table className="w-full text-black text-sm">
@@ -328,11 +368,11 @@ export default function Reports() {
                     
                 <div className="flex flex-col justify-center items-center bg-white rounded-lg">
                     <div className="mt-4 bg-white w-fit p-4 rounded-lg">
-                        <h2 className="text-xl font-bold text-black" ref={ReportRef}>Z-Report</h2>
+                        <h2 className="text-xl font-bold text-black">Z-Report</h2>
                     </div>
 
                     <button
-                        onClick={() => {setZReportButton(true); refetchZReport(); }}
+                        onClick={() => {setZReportButton(true); refetchZReport();}}
                         disabled = {loadingZReport}
                         className="rounded transform transition duration-200 hover:scale-120 bg-green-400 text-black font-bold p-4 flex items-center space-x-2 mt-4"
                     >
