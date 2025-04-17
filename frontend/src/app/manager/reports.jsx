@@ -136,7 +136,7 @@ export default function Reports() {
             const data = await response.json();
 
             const message = String(data.message);
-            if (message === "Z-Report has already been generated today") {
+            if (message === "Z-Report has already been generated") {
                 showNotification(message);
             }
 
@@ -163,7 +163,7 @@ export default function Reports() {
             const data = await response.json();
 
             const message = String(data.message);
-            if (message === "Z-Report has already been generated today") {
+            if (message === "Z-Report has already been generated") {
                 showNotification(message);
             }
 
@@ -234,7 +234,7 @@ export default function Reports() {
                     </div>
                     
                     <div className="bg-white items-center content-center rounded-lg mb-4">
-                        <div className="w-full p-4 rounded-lg mt-3" ref={productUsageRef}>
+                        <div className="w-full p-2 rounded-lg mt-3" ref={productUsageRef}>
                             <div className="w-full flex justify-center">
                                 <h2 className="text-black text-xl font-bold">Product Usage Chart</h2>
                             </div>
@@ -319,7 +319,7 @@ export default function Reports() {
 
             <div className="flex flex-row justify-center items-start gap-x-8">
                 <div className="flex flex-col justify-center items-center bg-white rounded-lg">
-                    <div className="mt-4 bg-white w-fit p-4 rounded-lg pb-4">
+                    <div className="mt-4 bg-white w-fit p-2 rounded-lg">
                         <h2 className="text-xl font-bold text-black">X-Report</h2>
                     </div>
                     <button
@@ -367,7 +367,7 @@ export default function Reports() {
                 </div>
                     
                 <div className="flex flex-col justify-center items-center bg-white rounded-lg">
-                    <div className="mt-4 bg-white w-fit p-4 rounded-lg">
+                    <div className="mt-4 bg-white w-fit p-2 rounded-lg">
                         <h2 className="text-xl font-bold text-black">Z-Report</h2>
                     </div>
 
