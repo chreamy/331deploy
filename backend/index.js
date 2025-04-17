@@ -658,6 +658,43 @@ app.get("/z-report/:date", async (req, res) => {
     }
 });
 
+app.post("/checkZReport", async (req, res) => {
+    try {
+        const { date } = req.body;
+
+        const updatedDate = `${date} 00:00:00`;
+        const timestamp = new Date(updatedDate);
+
+        const sqlCheck = "SELECT COUNT(*) FROM z_report WHERE timestamp = $1";
+        const resultCheck = await pool.query(sqlCheck, [timestamp]);
+
+        if (resultCheck.rows[0].count === "0") {
+            res.status(200).json({
+                message: "Success",
+            });
+        }
+        else {
+            const sqlCheckRun = "SELECT COUNT(*) FROM z_report WHERE DATE(timestamp) = $1";
+            const resultCheckRun = await pool.query(sqlCheckRun, [date]);
+            if (resultCheckRun.rows[0].count === "0") {
+                res.status(200).json({
+                    message: "Success",
+                });
+            }
+            else {
+                // already ran
+                res.status(200).json({
+                    message: "Z-Report has already been generated today",
+                });
+            }
+        }
+        
+    } catch (err) {
+        res.status(500).json({ error: "Failed to check Z-Report" });
+        console.error("Error checking Z-Report:", err);
+    }
+});
+
 app.post("/updateZReport", async (req, res) => {
     try {
         const { date } = req.body;
@@ -671,6 +708,9 @@ app.post("/updateZReport", async (req, res) => {
         if (resultCheck.rows[0].count === "0") {
             const sqlUpdate = "INSERT INTO z_report VALUES ($1, 1)";
             await pool.query(sqlUpdate, [timestamp]);
+            res.status(200).json({
+                message: "Success",
+            });
         }
         else {
             const sqlCheckRun = "SELECT COUNT(*) FROM z_report WHERE DATE(timestamp) = $1";
@@ -678,19 +718,21 @@ app.post("/updateZReport", async (req, res) => {
             if (resultCheckRun.rows[0].count === "0") {
                 const sqlUpdate = "UPDATE z_report SET run = 1 WHERE timestamp = $1";
                 await pool.query(sqlUpdate, [timestamp]);
+                res.status(200).json({
+                    message: "Success",
+                });
             }
             else {
                 // no update needed, already ran
+                res.status(200).json({
+                    message: "Z-Report has already been generated today",
+                });
             }
         }
-
-        res.status(200).json({
-            message: "Employee added successfully",
-        });
         
     } catch (err) {
-        console.error("Error updating Z-Report:", err);
         res.status(500).json({ error: "Failed to update Z-Report" });
+        console.error("Error updating Z-Report:", err);
     }
 });
 

@@ -826,7 +826,7 @@ export function Management() {
                             </button>
                         </div>
 
-                        <div className="h-[440px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                        <div className="h-[440px] min-h-[1em] w-1 self-stretch bg-black rounded-lg"></div>
                             <div className="flex-1">
                                 <h2 className="text-xl font-bold mb-6 text-black text-center">
                                     Add New Topping
@@ -888,7 +888,7 @@ export function Management() {
                                 </button>
                             </div>
 
-                            <div className="h-[440px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                            <div className="h-[440px] min-h-[1em] w-1 self-stretch bg-black rounded-lg"></div>
                                 <div className="flex-1">
                                     <h2 className="text-xl font-bold mb-6 text-black text-center">
                                         Update Inventory
@@ -1043,9 +1043,9 @@ export function Management() {
                                         Save Changes
                                     </button>
                                 </div>
-                            <div className="h-[330px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                            <div className="h-[340px] min-h-[1em] w-1 self-stretch bg-black rounded-lg"></div>
                                 {/* Dropdown for employee selection */} 
-                                <div className="flex-1 mx-4 ">
+                                <div className="flex-1">
                                     <form>
                                     <h1 className="text-xl font-bold mb-6 text-black text-center">
                                         Remove Employee
@@ -1080,9 +1080,9 @@ export function Management() {
                                     </button>
                                 </div>
                                 
-                                <div className="h-[330px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent dark:via-neutral-400"></div>
+                                <div className="h-[340px] min-h-[1em] w-1 self-stretch bg-black rounded-lg"></div>
                                     {/* Input for employee name */} 
-                                    <div className="flex-1 mx-4">
+                                    <div className="flex-1">
                                         <h2 className="text-xl font-bold mb-6 text-black text-center">
                                             Add Employee 
                                         </h2>
