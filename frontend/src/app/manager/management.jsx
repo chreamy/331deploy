@@ -692,7 +692,7 @@ export function Management() {
 
                 {/* Display the bar graph showing inventory stock */}
                 <div className="flex justify-center pb-4" ref={currentStockRef}>
-                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 ml-4 mt-8 mb-6 pb-20 pt-5 max-w-[1250px] w-full h-[800px]">
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 mt-8 mb-6 pb-20 pt-5 max-w-[1250px] w-full h-[800px]">
                         <h1 className="text-2xl font-bold mb-6 text-black text-center">
                         Current Stock
                         </h1>
@@ -737,7 +737,7 @@ export function Management() {
 
                 <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto mb-10" ref={manageInventoryRef}>
                     <h1 className="text-2xl font-bold mb-4 text-black pb-2 text-center"> Manage Inventory</h1>
-                    <div className="flex flex-col md:flex-row gap-6 bg-gray-200 p-4 rounded-lg">
+                    <div className="flex flex-col md:flex-row gap-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                         <div className="flex-1 mb-4">
                             <h2 className="text-xl font-bold mb-6 text-black text-center">
                                 Add New Drink
@@ -965,7 +965,7 @@ export function Management() {
                     
                         <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto" ref={manageEmployeeRef}>
                             <h1 className="text-2xl font-bold mb-4 text-black pb-2 text-center"> Employee Management</h1>
-                            <div className="flex flex-col md:flex-row gap-6 bg-gray-200 p-4 rounded-lg">
+                            <div className="flex flex-col md:flex-row gap-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                                 <div className="flex-1 mb-4">
                                 {/* Dropdown for Employee List */}
                                     <h1 className="text-xl font-bold mb-6 text-black text-center">

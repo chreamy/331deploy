@@ -519,6 +519,50 @@ app.get("/hourly-product-usage/:date", async (req, res) => {
     }
 });
 
+app.get("/daily-product-popularity/:date", async (req, res) => {
+    try {
+        const { date } = req.params;
+        const query = `
+            SELECT distinct name, count(name)
+            FROM order_drink_modifications_toppings odmt 
+            JOIN drinks d ON odmt.drinkid = d.id 
+            JOIN orders o ON odmt.orderid = o.id 
+            WHERE o.timestamp >= $1::timestamp 
+            AND o.timestamp < ($1::timestamp + interval '1 day')
+            GROUP BY name 
+            ORDER by name;
+        `;
+        
+        const result = await pool.query(query, [date]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching daily product usage:", err);
+        res.status(500).json({ error: "Failed to fetch daily product usage" });
+    }
+});
+
+app.get("/monthly-product-popularity/:date", async (req, res) => {
+    try {
+        const { date } = req.params;
+        const query = `
+            SELECT distinct name, count(name)
+            FROM order_drink_modifications_toppings odmt 
+            JOIN drinks d ON odmt.drinkid = d.id 
+            JOIN orders o ON odmt.orderid = o.id 
+            WHERE o.timestamp >= date_trunc('month', $1::timestamp)
+            AND o.timestamp < (date_trunc('month', $1::timestamp) + interval '1 month')
+            GROUP BY name 
+            ORDER by name;
+        `;
+        
+        const result = await pool.query(query, [date]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching daily product usage:", err);
+        res.status(500).json({ error: "Failed to fetch daily product usage" });
+    }
+});
+
 app.get("/x-report/:date", async (req, res) => {
     try {
         const date = req.params.date;
@@ -684,7 +728,7 @@ app.post("/checkZReport", async (req, res) => {
             else {
                 // already ran
                 res.status(200).json({
-                    message: "Z-Report has already been generated today",
+                    message: "Z-Report has already been generated",
                 });
             }
         }
@@ -725,7 +769,7 @@ app.post("/updateZReport", async (req, res) => {
             else {
                 // no update needed, already ran
                 res.status(200).json({
-                    message: "Z-Report has already been generated today",
+                    message: "Z-Report has already been generated",
                 });
             }
         }

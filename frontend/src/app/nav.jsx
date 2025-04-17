@@ -38,7 +38,7 @@ const Nav = ({ userRole }) => {
                         <FaVolumeUp />
                     </button>
   
-                    <div className="flex items-center justify-center h-full">
+                    <div className="flex items-center justify-center h-full mt-0 -mb-2">
                         <TranslateToggle />
                     </div>
                     
@@ -46,7 +46,7 @@ const Nav = ({ userRole }) => {
                     <a href="/">
                         <button      
                             onClick={handleLogout}                   
-                            className="bg-black text-white text-lg px-4 py-2 rounded-full hover:bg-gray-800 transition-all"
+                            className="bg-black text-white text-lg px-3 py-1 -my-2 rounded-xl hover:bg-gray-800 transition-all"
                             title="Log Off"
                         >
                             Log Off

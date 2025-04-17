@@ -35,10 +35,19 @@ export default function BubbleTeaShop() {
 
     const currentDate = new Date();
     var hours = currentDate.getHours();
-    var AMPM = "";
+    var AMPM = " AM";
+
+    var timeOfDay = "";
+    if (hours < 7) {
+        timeOfDay = " night";
+    } else if (hours > 20) {
+        timeOfDay = " night";
+    } else {
+        timeOfDay = " day";
+    }
+
     if (hours === 0) {
         hours = 12;
-        AMPM = " AM";
     } else if (hours > 12) {
         hours = hours - 12;
         AMPM = " PM";
@@ -74,7 +83,7 @@ export default function BubbleTeaShop() {
             ) {
                 imageName =
                     data.weather[0].description +
-                    (AMPM === " PM" ? " night" : " day");
+                    (timeOfDay === " night" ? " night" : " day");
             } else {
                 imageName = data.weather[0].description;
             }
