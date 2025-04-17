@@ -9,12 +9,23 @@ export default function Trends() {
     const [loadingPieChart, setLoadingPieChart] = useState(false);
     const [stockNames, setName] = useState([]);
     const [stockPopCount, setPopCount] = useState([]);
-    const [loadingPieChartMonth, setLoadingPieChartMonth] = useState(false);
+    const [stockNamesWeek, setNameWeek] = useState([]);
+    const [stockPopCountWeek, setPopCountWeek] = useState([]);
     const [stockNamesMonth, setNameMonth] = useState([]);
     const [stockPopCountMonth, setPopCountMonth] = useState([]);
+    const [stockNamesYear, setNameYear] = useState([]);
+    const [stockPopCountYear, setPopCountYear] = useState([]);
     const [timeframeInput, setTimeFrame] = useState("");
     const popularityChartRef = useRef(null);
-        
+    const popularityPieRef = useRef(null);
+    var pieGraphInstance = useRef(null);
+    const popularityPieWeekRef = useRef(null);
+    var pieGraphWeekInstance = useRef(null);
+    const popularityPieMonthRef = useRef(null);
+    var pieGraphMonthInstance = useRef(null);
+    const popularityPieYearRef = useRef(null);
+    var pieGraphYearInstance = useRef(null);
+
     const scrollToChartRef = () => {
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -30,22 +41,28 @@ export default function Trends() {
             setName(nameArray);
             setPopCount(countArray);
         } catch (error) {
-            console.error("Error fetching hourly data:", error);
+            console.error("Error fetching daily data:", error);
         }
         setLoadingPieChart(false);
     };
 
-    const popularityPieRef = useRef(null);
-    var pieGraphInstance = useRef(null);
-
     useEffect(() => {
-        if (!stockNames.length || !stockPopCount.length) return; // Ensure data is loaded before rendering
+        if (!stockNames.length || !stockPopCount.length || timeframeInput != "Daily") return; // Ensure data is loaded before rendering
     
         const xValues = stockNames;
         const yValues = stockPopCount.map(count => parseInt(count, 10));
 
         if (pieGraphInstance.current) {
             pieGraphInstance.current.destroy();
+        }
+        if (pieGraphWeekInstance.current) {
+            pieGraphWeekInstance.current.destroy();
+        }
+        if (pieGraphMonthInstance.current) {
+            pieGraphMonthInstance.current.destroy();
+        }
+        if (pieGraphYearInstance.current) {
+            pieGraphYearInstance.current.destroy();
         }
     
         const sliceColors = [
@@ -69,12 +86,10 @@ export default function Trends() {
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
-                title: {
-                    display: true,
-                },
                 cutout: "30%"
             }
         });
+        popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
         return () => {
             if (pieGraphInstance.current) {
                 pieGraphInstance.current.destroy();
@@ -82,14 +97,75 @@ export default function Trends() {
         };
     }, [stockNames, stockPopCount]);
 
-    const popularityChartRefMonth = useRef(null);
-        
-    const scrollToChartRefMonth = () => {
-        popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
+    const fetchWeeklyData = async () => {
+        setLoadingPieChart(true);
+        try {
+            const response = await fetch(`${SERVER}/weekly-product-popularity/${date}`);
+            const data = await response.json();
+            const nameArray = data.map(item => item.name);
+            const countArray = data.map(item => item.count);
+
+            setNameWeek(nameArray);
+            setPopCountWeek(countArray);
+        } catch (error) {
+            console.error("Error fetching weekly data:", error);
+        }
+        setLoadingPieChart(false);
     };
 
+    useEffect(() => {
+        if (!stockNamesWeek.length || !stockPopCountWeek.length || timeframeInput != "Weekly") return; // Ensure data is loaded before rendering
+    
+        const xValues = stockNamesWeek;
+        const yValues = stockPopCountWeek.map(count => parseInt(count, 10));
+
+        if (pieGraphInstance.current) {
+            pieGraphInstance.current.destroy();
+        }
+        if (pieGraphWeekInstance.current) {
+            pieGraphWeekInstance.current.destroy();
+        }
+        if (pieGraphMonthInstance.current) {
+            pieGraphMonthInstance.current.destroy();
+        }
+        if (pieGraphYearInstance.current) {
+            pieGraphYearInstance.current.destroy();
+        }
+    
+        const sliceColors = [
+            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+            '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+            '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'
+        ];
+    
+        pieGraphWeekInstance.current = new Chart(popularityPieWeekRef.current, {
+            type: "doughnut",
+            data: {
+                labels: xValues,
+                datasets: [
+                    {
+                        backgroundColor: sliceColors,
+                        data: yValues
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                cutout: "30%"
+            }
+        });
+        popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
+        return () => {
+            if (pieGraphWeekInstance.current) {
+                pieGraphWeekInstance.current.destroy();
+            }
+        };
+    }, [stockNamesWeek, stockPopCountWeek]);
+
     const fetchMonthlyData = async () => {
-        setLoadingPieChartMonth(true);
+        setLoadingPieChart(true);
         try {
             const response = await fetch(`${SERVER}/monthly-product-popularity/${date}`);
             const data = await response.json();
@@ -101,20 +177,26 @@ export default function Trends() {
         } catch (error) {
             console.error("Error fetching monthly data:", error);
         }
-        setLoadingPieChartMonth(false);
+        setLoadingPieChart(false);
     };
 
-    const popularityPieMonthRef = useRef(null);
-    var pieGraphMonthInstance = useRef(null);
-
     useEffect(() => {
-        if (!stockNamesMonth.length || !stockPopCountMonth.length) return; // Ensure data is loaded before rendering
+        if (!stockNamesMonth.length || !stockPopCountMonth.length || timeframeInput != "Monthly") return; // Ensure data is loaded before rendering
     
         const xValues = stockNamesMonth;
         const yValues = stockPopCountMonth.map(count => parseInt(count, 10));
 
         if (pieGraphMonthInstance.current) {
             pieGraphMonthInstance.current.destroy();
+        }
+        if (pieGraphWeekInstance.current) {
+            pieGraphWeekInstance.current.destroy();
+        }
+        if (pieGraphInstance.current) {
+            pieGraphInstance.current.destroy();
+        }
+        if (pieGraphYearInstance.current) {
+            pieGraphYearInstance.current.destroy();
         }
     
         const sliceColors = [
@@ -138,12 +220,10 @@ export default function Trends() {
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
-                title: {
-                    display: true,
-                },
                 cutout: "30%"
             }
         });
+        popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
         return () => {
             if (pieGraphMonthInstance.current) {
                 pieGraphMonthInstance.current.destroy();
@@ -151,12 +231,79 @@ export default function Trends() {
         };
     }, [stockNamesMonth, stockPopCountMonth]);
 
+    const fetchYearlyData = async () => {
+        setLoadingPieChart(true);
+        try {
+            const response = await fetch(`${SERVER}/yearly-product-popularity/${date}`);
+            const data = await response.json();
+            const nameArray = data.map(item => item.name);
+            const countArray = data.map(item => item.count);
+
+            setNameYear(nameArray);
+            setPopCountYear(countArray);
+        } catch (error) {
+            console.error("Error fetching yearly data:", error);
+        }
+        setLoadingPieChart(false);
+    };
+
+    useEffect(() => {
+        if (!stockNamesYear.length || !stockPopCountYear.length || timeframeInput != "Yearly") return; // Ensure data is loaded before rendering
+    
+        const xValues = stockNamesYear;
+        const yValues = stockPopCountYear.map(count => parseInt(count, 10));
+
+        if (pieGraphMonthInstance.current) {
+            pieGraphMonthInstance.current.destroy();
+        }
+        if (pieGraphWeekInstance.current) {
+            pieGraphWeekInstance.current.destroy();
+        }
+        if (pieGraphInstance.current) {
+            pieGraphInstance.current.destroy();
+        }
+        if (pieGraphYearInstance.current) {
+            pieGraphYearInstance.current.destroy();
+        }
+    
+        const sliceColors = [
+            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+            '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+            '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'
+        ];
+    
+        pieGraphYearInstance.current = new Chart(popularityPieYearRef.current, {
+            type: "doughnut",
+            data: {
+                labels: xValues,
+                datasets: [
+                    {
+                        backgroundColor: sliceColors,
+                        data: yValues
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                cutout: "30%"
+            }
+        });
+        popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
+        return () => {
+            if (pieGraphYearInstance.current) {
+                pieGraphYearInstance.current.destroy();
+            }
+        };
+    }, [stockNamesYear, stockPopCountYear]);
+
     useEffect(() => {
         fetchDailyData();
+        fetchWeeklyData();
         fetchMonthlyData();
+        fetchYearlyData();
     }, [date, timeframeInput]);
-
-    console.log(timeframeInput);
 
     return (
         <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">
@@ -184,7 +331,7 @@ export default function Trends() {
                             onChange={(e) => setDate(e.target.value)}
                             className="p-2 rounded text-black border-black border-2"
                         />
-                        <h2 className="block text-black text-xl font-bold mt-2 ml-2 mr-2">Select Timeframe:</h2>
+                        <h2 className="block text-black text-xl font-bold pl-20 mt-2 ml-2 mr-2">Select Timeframe:</h2>
                         <select
                             id="shift"
                             value={timeframeInput}
@@ -193,6 +340,7 @@ export default function Trends() {
                             }
                             className="mt-1 p-2 w-fit border rounded-md shadow-sm text-black"
                         >
+                            <option value="" disabled>Select a Timeframe</option>
                             <option value="Daily">Daily</option>
                             <option value="Weekly">Weekly</option>
                             <option value="Monthly">Monthly</option>
@@ -202,15 +350,17 @@ export default function Trends() {
                     
                     <div className="flex flex-row justify-center items-start gap-x-8">
                         <div className="flex flex-col justify-center items-center bg-white rounded-lg">
-                            <div className="mt-4 bg-white w-fit p-2 rounded-lg">
-                                <h2 className="text-bflack text-xl font-bold">Daily Drink Popularity Chart</h2>
+                            <div className="mt-4 bg-white w-fit p-2 pb-0 rounded-lg">
+                                <h2 className="text-black text-xl font-bold p-4">{timeframeInput} Popularity Chart</h2>
                             </div>
 
                         {loadingPieChart ? (
                             <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">Loading...</div>
-                        ) : stockNames.length === 0 ? (
+                        ) :  timeframeInput === "" ? (
+                            <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">Select a timeframe to continue</div>
+                        ) : stockNames.length === 0 && stockNamesWeek.length === 0 && stockNamesMonth.length === 0 && stockNamesYear.length === 0 ? (
                             <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
-                        ) : timeframeInput === "Daily" ? (
+                        ) : timeframeInput === "Daily" && stockNames.length > 0 ? (
                             <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
                                 <div className="relative w-full h-full">
                                 <canvas
@@ -219,21 +369,16 @@ export default function Trends() {
                                 />
                                 </div>
                             </div>
-                        ) : (
-                            null
-                        )}
-                        </div>
-
-                        <div className="flex flex-col justify-center items-center bg-white rounded-lg">
-                            <div className="mt-4 bg-white w-fit p-2 rounded-lg">
-                                <h2 className="text-black text-xl font-bold">Monthly Drink Popularity Chart</h2>
+                        ) : timeframeInput === "Weekly" && stockNamesWeek.length > 0 ? ( 
+                            <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
+                                <div className="relative w-full h-full">
+                                <canvas
+                                    className="w-full h-full"
+                                    ref={popularityPieWeekRef}
+                                />
+                                </div>
                             </div>
-
-                        {loadingPieChartMonth ? (
-                            <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">Loading...</div>
-                        ) : stockNamesMonth.length === 0 ? (
-                            <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
-                        ) : (
+                        ) : timeframeInput === "Monthly" && stockNamesMonth.length > 0 ? (
                             <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
                                 <div className="relative w-full h-full">
                                 <canvas
@@ -242,6 +387,17 @@ export default function Trends() {
                                 />
                                 </div>
                             </div>
+                        ) : timeframeInput === "Yearly" && stockNamesYear.length > 0 ? (
+                            <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
+                                <div className="relative w-full h-full">
+                                <canvas
+                                    className="w-full h-full"
+                                    ref={popularityPieYearRef}
+                                />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
                         )}
                         </div>
 

@@ -541,6 +541,28 @@ app.get("/daily-product-popularity/:date", async (req, res) => {
     }
 });
 
+app.get("/weekly-product-popularity/:date", async (req, res) => {
+    try {
+        const { date } = req.params;
+        const query = `
+            SELECT distinct name, count(name)
+            FROM order_drink_modifications_toppings odmt 
+            JOIN drinks d ON odmt.drinkid = d.id 
+            JOIN orders o ON odmt.orderid = o.id 
+            WHERE o.timestamp >= date_trunc('week', $1::timestamp)
+            AND o.timestamp < (date_trunc('week', $1::timestamp) + interval '1 week')
+            GROUP BY name 
+            ORDER by name;
+        `;
+        
+        const result = await pool.query(query, [date]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching daily product usage:", err);
+        res.status(500).json({ error: "Failed to fetch daily product usage" });
+    }
+});
+
 app.get("/monthly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
@@ -551,6 +573,28 @@ app.get("/monthly-product-popularity/:date", async (req, res) => {
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= date_trunc('month', $1::timestamp)
             AND o.timestamp < (date_trunc('month', $1::timestamp) + interval '1 month')
+            GROUP BY name 
+            ORDER by name;
+        `;
+        
+        const result = await pool.query(query, [date]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching daily product usage:", err);
+        res.status(500).json({ error: "Failed to fetch daily product usage" });
+    }
+});
+
+app.get("/yearly-product-popularity/:date", async (req, res) => {
+    try {
+        const { date } = req.params;
+        const query = `
+            SELECT distinct name, count(name)
+            FROM order_drink_modifications_toppings odmt 
+            JOIN drinks d ON odmt.drinkid = d.id 
+            JOIN orders o ON odmt.orderid = o.id 
+            WHERE o.timestamp >= date_trunc('year', $1::timestamp)
+            AND o.timestamp < (date_trunc('year', $1::timestamp) + interval '1 year')
             GROUP BY name 
             ORDER by name;
         `;
