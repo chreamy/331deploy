@@ -30,9 +30,10 @@ export default function OrderCart() {
 
     // Calculate total price of all items in the cart
     const calculateTotal = () => {
-        return cart.reduce((total, item) => {
+        const rawTotal = cart.reduce((total, item) => {
             return total + (parseFloat(item.totalPrice) || 0);
-        }, 0).toFixed(2);
+        }, 0);
+        return parseFloat(rawTotal.toFixed(2)); // Ensure final total is also properly rounded
     };
 
     // Delete item from the cart
@@ -47,24 +48,12 @@ export default function OrderCart() {
     const updateQuantity = (index, change) => {
         const updatedCart = [...cart];
         updatedCart[index].quantity = Math.max(1, updatedCart[index].quantity + change);
-        updatedCart[index].totalPrice = updatedCart[index].drinkPrice * updatedCart[index].quantity;
+        // Calculate and round the totalPrice to 2 decimal places
+        const rawTotal = updatedCart[index].drinkPrice * updatedCart[index].quantity;
+        updatedCart[index].totalPrice = parseFloat(rawTotal.toFixed(2));
+
         setCart(updatedCart);
         localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update localStorage
-    };
-
-    const [selectedTip, setSelectedTip] = useState(null);
-    const [customTip, setCustomTip] = useState(null);
-    const [tipAmount, setTipAmount] = useState(0);
-
-    const handleTipSelect = (tip, isCustom = false) => {
-        if (isCustom) {
-            setSelectedTip(null);
-            setTipAmount(tip);
-        } else {
-            setSelectedTip(tip);
-            setCustomTip(null);
-            setTipAmount(calculateTotal() * (tip / 100));
-        }
     };
 
     return (
@@ -158,13 +147,19 @@ export default function OrderCart() {
                         ))}
                     </div>
 
-                    {/* Action Button */}
-                    <div className="mt-6 flex justify-center">
+                    {/* Action Buttons */}
+                    <div className="mt-6 flex justify-center gap-4">
                         <button
                             onClick={() => router.push("/customer/menu")}
                             className="bg-[#EED9C4] text-black font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#cda37f] transition"
                         >
                             Add More Items
+                        </button>
+                        <button
+                            onClick={() => router.push("/customer/checkout")}
+                            className="bg-[#EED9C4] text-black font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#cda37f] transition"
+                        >
+                            Proceed to Checkout
                         </button>
                     </div>
                 </div>
@@ -203,112 +198,6 @@ export default function OrderCart() {
                                 <h3 className="text-lg font-semibold text-[#3D2B1F] mt-2">Contact:</h3>
                                 <p className="text-gray-600">Phone: (979) 330-4078</p>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Checkout Summary Section */}
-                    <div className="border border-[#C2A385] rounded-2xl p-6 bg-white shadow-md">
-                        <h2 className="text-2xl font-bold mb-4 text-[#3D2B1F]">Order Summary</h2>
-                        
-                        <div className="space-y-4">
-                            {/* Coupon Card
-                            <div className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-lg cursor-pointer hover:bg-[#EED9C4] transition">
-                                <span className="text-gray-600">Add a Coupon</span>
-                                <span className="text-[#3D2B1F] font-medium">+</span>
-                            </div> */}
-                            
-                            {/* Tip Options */}
-                            <div>
-                                <h3 className="text-lg font-semibold text-[#3D2B1F] mb-2">Add a Tip</h3>
-                                <div className="grid grid-cols-3 gap-2 mb-2">
-                                    {['10%', '15%', '20%'].map((tip) => {
-                                        const percentage = parseFloat(tip);
-                                        return (
-                                            <button 
-                                                key={tip}
-                                                className={`py-2 rounded-lg transition ${
-                                                    selectedTip === percentage 
-                                                        ? 'bg-[#3D2B1F] text-[#EED9C4]' 
-                                                        : 'bg-[#EED9C4] text-[#3D2B1F] hover:bg-[#cda37f]'
-                                                }`}
-                                                onClick={() => {
-                                                    if (selectedTip === percentage) {
-                                                        // If already selected, deselect it
-                                                        setSelectedTip(null);
-                                                        setTipAmount(0);
-                                                    } else {
-                                                        // Otherwise select it
-                                                        handleTipSelect(percentage);
-                                                    }
-                                                }}
-                                            >
-                                                {tip}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="relative flex-1">
-                                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">$</span>
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="0.00"
-                                            className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
-                                            value={customTip !== null ? customTip : ''}
-                                            onChange={(e) => {
-                                                const value = parseFloat(e.target.value);
-                                                if (!isNaN(value) && value >= 0) {
-                                                    setCustomTip(value);
-                                                } else if (e.target.value === '') {
-                                                    setCustomTip(null);
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                    <button 
-                                        className="py-2 px-3 bg-[#EED9C4] rounded-lg text-[#3D2B1F] hover:bg-[#cda37f] transition"
-                                        onClick={() => customTip !== null && handleTipSelect(customTip, true)}
-                                        disabled={customTip === null}
-                                    >
-                                        Apply
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            {/* Order Totals */}
-                            <div className="space-y-2 pt-4 border-t border-gray-200">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Subtotal</span>
-                                    <span className="text-[#3D2B1F] font-medium">${calculateTotal()}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Tax</span>
-                                    <span className="text-[#3D2B1F] font-medium">${(calculateTotal() * 0.08).toFixed(2)}</span>
-                                </div>
-                                {/* Tip Line - Only shows if tip is selected */}
-                                {tipAmount > 0 && (
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Tip</span>
-                                        <span className="text-[#3D2B1F] font-medium">${tipAmount.toFixed(2)}</span>
-                                    </div>
-                                )}
-                                <div className="flex justify-between pt-2 border-t border-gray-200">
-                                    <span className="text-lg font-bold text-[#3D2B1F]">Order Total</span>
-                                    <span className="text-lg font-bold text-[#3D2B1F]">
-                                        ${(parseFloat(calculateTotal()) * 1.08 + tipAmount).toFixed(2)}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            {/* Checkout Button */}
-                            <button
-                                className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
-                                disabled={cart.length === 0}
-                            >
-                                Proceed to Checkout
-                            </button>
                         </div>
                     </div>
                 </div>
