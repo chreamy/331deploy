@@ -50,15 +50,10 @@ export function Management() {
         }
 
         const barColors = [
-            "green",
-            "blue",
-            "orange",
-            "yellow",
-            "brown",
-            "cyan",
-            "purple",
-            "teal",
-            "gray"
+            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+    '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+    '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+    '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'
         ];
 
         chartInstance.current = new Chart(chartRef.current, {
@@ -114,6 +109,13 @@ export function Management() {
                             },
                         },
                     },
+                    datalabels: {
+                        color: "black",
+                        font: {
+                            weight: "bold",
+                            size: 20,
+                        }
+                    }
                 },
                 scales: {
                     y: {
@@ -700,7 +702,7 @@ export function Management() {
 
                 {/* Display the bar graph showing inventory stock */}
                 <div className="flex justify-center pb-4" ref={currentStockRef}>
-                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 mt-8 mb-6 pb-20 pt-5 max-w-[1250px] w-full h-[800px]">
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mt-10 mb-8 pb-20 pt-5 size-9/10 h-[700px]">
                         <h1 className="text-2xl font-bold mb-6 text-black text-center">
                         Current Stock
                         </h1>
@@ -715,7 +717,7 @@ export function Management() {
 
                 {/* Display a list of all product names, prices, and deletion button */ }
                 <div className="flex justify-center pb-4" ref={productListRef}>
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-10 mb-2 mr-10 w-full">
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 ml-10 mr-10 w-full">
                     <h1 className="text-2xl font-bold mb-6 text-black text-center">
                         Product List
                     </h1>
@@ -743,7 +745,7 @@ export function Management() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto mb-10" ref={manageInventoryRef}>
+                <div className="bg-white rounded-2xl p-4 shadow-md m-10" ref={manageInventoryRef}>
                     <h1 className="text-2xl font-bold mb-4 text-black pb-2 text-center"> Manage Inventory</h1>
                     <div className="flex flex-col md:flex-row gap-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                         <div className="flex-1 mb-4">
@@ -971,7 +973,7 @@ export function Management() {
                             </div>
                         </div>
                     
-                        <div className="bg-white rounded-2xl p-6 shadow-md m-4 w-[1200px] mx-auto" ref={manageEmployeeRef}>
+                        <div className="bg-white rounded-2xl p-4 shadow-md ml-10 mr-10 mt-14 mb-6" ref={manageEmployeeRef}>
                             <h1 className="text-2xl font-bold mb-4 text-black pb-2 text-center"> Employee Management</h1>
                             <div className="flex flex-col md:flex-row gap-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                                 <div className="flex-1 mb-4">

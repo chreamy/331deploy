@@ -3,6 +3,8 @@ import { SERVER } from "@/app/const";
 import { useState, useRef, useEffect } from "react";
 import Nav from "@/app/nav";
 import { Chart } from "chart.js/auto";
+import datalabels from 'chartjs-plugin-datalabels';
+Chart.register(datalabels);
 
 export default function Trends() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -86,7 +88,22 @@ export default function Trends() {
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
-                cutout: "30%"
+                cutout: "30%",
+                plugins: {
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const data = context.chart.data.datasets[0].data;
+                            const total = data.reduce((acc, val) => acc + val, 0);
+                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            return `${percentage}`;
+                        },
+                        color: 'white',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
             }
         });
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -153,7 +170,22 @@ export default function Trends() {
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
-                cutout: "30%"
+                cutout: "30%",
+                plugins: {
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const data = context.chart.data.datasets[0].data;
+                            const total = data.reduce((acc, val) => acc + val, 0);
+                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            return `${percentage}`;
+                        },
+                        color: 'white',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
             }
         });
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -220,8 +252,23 @@ export default function Trends() {
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
-                cutout: "30%"
-            }
+                cutout: "30%",
+                plugins: {
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const data = context.chart.data.datasets[0].data;
+                            const total = data.reduce((acc, val) => acc + val, 0);
+                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            return `${percentage}`;
+                        },
+                        color: 'white',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }            
         });
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
         return () => {
@@ -287,7 +334,22 @@ export default function Trends() {
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
-                cutout: "30%"
+                cutout: "30%",
+                plugins: {
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const data = context.chart.data.datasets[0].data;
+                            const total = data.reduce((acc, val) => acc + val, 0);
+                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            return `${percentage}`;
+                        },
+                        color: 'white',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
             }
         });
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -323,7 +385,7 @@ export default function Trends() {
                     </div> 
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                    <div className="m-4 bg-white w-auto p-4 rounded-lg mb-4 mt-0 flex flex-row">
+                    <div className="m-4 bg-white w-auto p-4 rounded-lg mb-4 mt-0 flex flex-row size-9/10">
                         <h2 className="block text-black text-xl font-bold mt-2 mr-2">Select Date:</h2>
                         <input
                             type="date"
