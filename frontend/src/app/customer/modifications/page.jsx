@@ -18,13 +18,8 @@ function formatDrinkName(str) {
     .join(" "); // Join with spaces
 }
 
-function DrinkDetailsContent() {
-  const searchParams = useSearchParams();
+function DrinkDetailsContent({ drinkName, drinkPrice }) {
   const router = useRouter();
-
-  // Read drink name and price from URL query params
-  const drinkName = searchParams.get("name") || "Selected Drink";
-  const drinkPrice = parseFloat(searchParams.get("price")) || 0;
 
   // Local state
   const [search, setSearch] = useState(""); // search bar input
@@ -182,7 +177,8 @@ function DrinkDetailsContent() {
             <a href="/customer/cart" className="w-4/5">
               <button
                 className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white"
-                onClick={addToCart}>
+                onClick={addToCart} // Ensure this triggers addToCart
+              >
                 Add to Cart
                 <span className="ml-2 font-extrabold text-back-1000 text-xl stroke-text">
                   ${getTotalPrice()}
@@ -197,7 +193,8 @@ function DrinkDetailsContent() {
             <a href="/customer/checkout" className="w-4/5">
               <button
                 className="w-full bg-gray-200 text-black text-lg font-bold rounded-md py-2 px-4 transition-all transform hover:scale-105 hover:bg-blue-500 hover:text-white"
-                onClick={addToCart}>
+                onClick={addToCart} // Ensure this triggers addToCart
+              >
                 Buy Now
                 <span className="ml-2 font-extrabold text-back-1000 text-xl stroke-text">
                   ${getTotalPrice()}
@@ -317,7 +314,15 @@ export default function DrinkDetails() {
           <div className="text-[#EED9C4] text-xl">Loading...</div>
         </div>
       }>
-      <DrinkDetailsContent />
+      <DrinkDetailsWithParams />
     </Suspense>
   );
+}
+
+function DrinkDetailsWithParams() {
+  const searchParams = useSearchParams();
+  const drinkName = searchParams.get("name") || "Selected Drink";
+  const drinkPrice = parseFloat(searchParams.get("price")) || 0;
+
+  return <DrinkDetailsContent drinkName={drinkName} drinkPrice={drinkPrice} />;
 }

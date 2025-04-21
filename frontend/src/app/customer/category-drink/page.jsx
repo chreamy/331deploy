@@ -11,9 +11,7 @@ function toSnakeCase(str) {
   return str.toLowerCase().replace(/ /g, "-");
 }
 
-function CategoryContent() {
-  const searchParams = useSearchParams();
-  const category = searchParams.get("name");
+function CategoryContent({ category }) {
   const router = useRouter();
 
   // Instantiate states
@@ -130,7 +128,13 @@ export default function CategoryPage() {
           <div className="text-[#EED9C4] text-xl">Loading...</div>
         </div>
       }>
-      <CategoryContent />
+      <CategoryWithParams />
     </Suspense>
   );
+}
+
+function CategoryWithParams() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get("name");
+  return <CategoryContent category={category} />;
 }
