@@ -77,6 +77,11 @@ export default function OrderCart() {
         }
     };
 
+    const handlePlaceOrder = async (cart, customerName) => {    
+        const timestamp = new Date().toISOString().slice(0, 19).replace("T", " "); 
+    
+    };
+      
     return (
         <div className="min-h-screen font-[telegraf] p-4 md:p-8 bg-[#3D2B1F]">
             <Nav userRole="customer" />
@@ -339,6 +344,7 @@ export default function OrderCart() {
                             
                             {/* Checkout Button */}
                             <button
+                                onClick={() => addOrder()}
                                 className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
                                 disabled={cart.length === 0}
                             >
