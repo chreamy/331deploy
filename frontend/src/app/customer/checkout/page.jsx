@@ -1,8 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Nav from "@/app/nav";
+import VoiceElement from "@/app/components/VoiceElement";
+import { useVoiceCommands } from "@/app/components/VoiceCommandProvider";
 
 // function to convert drink name to image file format
 function toSnakeCase(str) {
@@ -18,9 +20,15 @@ function formatDrinkName(str) {
 
 export default function OrderCart() {
     const router = useRouter();
-
-    // Initialize state to hold cart items
+    const { isListening, lastCommand } = useVoiceCommands();
     const [cart, setCart] = useState([]);
+    const [activeField, setActiveField] = useState(null);
+    const inputRefs = {
+        phone: useRef(null),
+        email: useRef(null),
+        firstName: useRef(null),
+        lastName: useRef(null)
+    };
 
     // Fetch cart data from localStorage when the component mounts
     useEffect(() => {
@@ -77,41 +85,56 @@ export default function OrderCart() {
         }
     };
 
+    // Add this function to handle input changes
+    const handleInputChange = (field, value) => {
+        setContactInfo(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
     return (
         <div className="min-h-screen font-[telegraf] p-4 md:p-8 bg-[#3D2B1F]">
             <Nav userRole="customer" />
 
             {/* Back Button */}
-            <div className="mt-6">
-                <IoArrowBackCircleOutline
-                    className="text-3xl text-[#EED9C4] cursor-pointer"
-                    onClick={() => router.back()}
-                />
-            </div>
+            <VoiceElement
+                id="back-button"
+                description="go back"                
+                onClick={() => router.back()}
+            >
+                <div className="mt-6">
+                    <IoArrowBackCircleOutline
+                        className="text-3xl text-[#EED9C4] cursor-pointer"
+                    />
+                </div>
+            </VoiceElement>
 
             {/* Cart Header */}
             <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center text-[#EED9C4] drop-shadow-md">
                 Checkout
             </h2>
 
-             {/* Three Column Layout */}
-             <div className="flex flex-col lg:flex-row gap-6">
+            {/* Three Column Layout */}
+            <div className="flex flex-col lg:flex-row gap-6">
                 {/* Left Column - Cart Items */}
                 <div className="lg:w-1/3">
                     <div className="grid grid-cols-1 gap-4">
                         {cart.map((item, index) => (
-                            <div
+                            <VoiceElement
                                 key={index}
+                                id={`cart-item-${index}`}
+                                description={`${item.drinkName} quantity ${item.quantity}`}
                                 className="border border-[#C2A385] rounded-2xl p-6 bg-white shadow-md hover:shadow-xl transition"
                             >
                                 <div className="flex items-center gap-6">
                                     <img
-                                        src={item.photo || `/drink-images/${toSnakeCase(item.drinkName)}.png`} // Default image if none is provided
+                                        src={item.photo || `/drink-images/${toSnakeCase(item.drinkName)}.png`}
                                         alt={item.drinkName}
                                         className="w-24 h-24 object-contain rounded-md"
                                     />
 
-                                    <div className="flex-1"> 
+                                    <div className="flex-1">
                                         <h3 className="text-xl text-gray-600 font-semibold">{formatDrinkName(item.drinkName)}</h3>
                                         <h3 className="text-xl text-gray-600 font-semibold">${item.totalPrice}</h3>
 
@@ -140,42 +163,54 @@ export default function OrderCart() {
                                         {/* Quantity Controls */}
                                         <div className="mt-3 flex items-center gap-3">
                                             <p className="text-sm text-gray-600">Quantity:</p>
-                                            <button
-                                                className="px-2 py-1 bg-[#EED9C4] rounded text-sm text-gray-600 hover:bg-[#cda37f]"
+                                            <VoiceElement
+                                                id={`decrease-${index}`}
+                                                description={`decrease ${item.drinkName} quantity`}
                                                 onClick={() => updateQuantity(index, -1)}
                                             >
-                                                -
-                                            </button>
+                                                <button className="px-2 py-1 bg-[#EED9C4] rounded text-sm text-gray-600 hover:bg-[#cda37f]">
+                                                    -
+                                                </button>
+                                            </VoiceElement>
                                             <span className="text-lg text-gray-600 font-medium">{item.quantity}</span>
-                                            <button
-                                                className="px-2 py-1 bg-[#EED9C4] rounded text-sm text-gray-600 hover:bg-[#cda37f]"
+                                            <VoiceElement
+                                                id={`increase-${index}`}
+                                                description={`increase ${item.drinkName} quantity`}
                                                 onClick={() => updateQuantity(index, 1)}
                                             >
-                                                +
-                                            </button>
+                                                <button className="px-2 py-1 bg-[#EED9C4] rounded text-sm text-gray-600 hover:bg-[#cda37f]">
+                                                    +
+                                                </button>
+                                            </VoiceElement>
                                         </div>
                                     </div>
 
                                     {/* Delete Item Button */}
-                                    <button
-                                        className="text-red-500 font-bold hover:underline cursor-pointer"
+                                    <VoiceElement
+                                        id={`delete-${index}`}
+                                        description={`delete ${item.drinkName}`}
                                         onClick={() => deleteItem(index)}
                                     >
-                                        Delete
-                                    </button>
+                                        <button className="text-red-500 font-bold hover:underline cursor-pointer">
+                                            Delete
+                                        </button>
+                                    </VoiceElement>
                                 </div>
-                            </div>
+                            </VoiceElement>
                         ))}
                     </div>
 
                     {/* Action Buttons */}
                     <div className="mt-6 flex justify-center gap-4">
-                        <button
+                        <VoiceElement
+                            id="add-more-items"
+                            description="add more items"
                             onClick={() => router.push("/customer/menu")}
-                            className="bg-[#EED9C4] text-black font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#cda37f] transition"
                         >
-                            Add More Items
-                        </button>
+                            <button className="bg-[#EED9C4] text-black font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#cda37f] transition">
+                                Add More Items
+                            </button>
+                        </VoiceElement>
                     </div>
                 </div>
 
@@ -195,51 +230,79 @@ export default function OrderCart() {
                             </div>
                             
                             {/* Phone Number */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Phone number</label>
-                                <input
-                                    type="number"
-                                    placeholder="Enter phone number"
-                                    className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
-                                    value={contactInfo.phone}
-                                    onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
-                                />
-                            </div>
+                            <VoiceElement
+                                id="phone-input"
+                                description="phone number"
+                                isInput={true}
+                            >
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">Phone number</label>
+                                    <input
+                                        type="tel"
+                                        placeholder="Enter phone number"
+                                        className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                        value={contactInfo.phone}
+                                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                                        onInput={(e) => handleInputChange('phone', e.target.value)}
+                                    />
+                                </div>
+                            </VoiceElement>
                             
                             {/* Email */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Email address for receipt</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter email"
-                                    className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
-                                    value={contactInfo.email}
-                                    onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
-                                />
-                            </div>
+                            <VoiceElement
+                                id="email-input"
+                                description="email"
+                                isInput={true}
+                            >
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">Email address for receipt</label>
+                                    <input
+                                        type="email"
+                                        placeholder="Enter email"
+                                        className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                        value={contactInfo.email}
+                                        onChange={(e) => handleInputChange('email', e.target.value)}
+                                        onInput={(e) => handleInputChange('email', e.target.value)}
+                                    />
+                                </div>
+                            </VoiceElement>
                             
                             {/* Name Fields */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">First name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="First Name"
-                                        className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
-                                        value={contactInfo.firstName}
-                                        onChange={(e) => setContactInfo({...contactInfo, firstName: e.target.value})}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Last name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Last Name"
-                                        className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
-                                        value={contactInfo.lastName}
-                                        onChange={(e) => setContactInfo({...contactInfo, lastName: e.target.value})}
-                                    />
-                                </div>
+                                <VoiceElement
+                                    id="first-name-input"
+                                    description="first name"
+                                    isInput={true}
+                                >
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">First name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="First Name"
+                                            className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                            value={contactInfo.firstName}
+                                            onChange={(e) => handleInputChange('firstName', e.target.value)}
+                                            onInput={(e) => handleInputChange('firstName', e.target.value)}
+                                        />
+                                    </div>
+                                </VoiceElement>
+                                <VoiceElement
+                                    id="last-name-input"
+                                    description="last name"
+                                    isInput={true}
+                                >
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Last name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Last Name"
+                                            className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                            value={contactInfo.lastName}
+                                            onChange={(e) => handleInputChange('lastName', e.target.value)}
+                                            onInput={(e) => handleInputChange('lastName', e.target.value)}
+                                        />
+                                    </div>
+                                </VoiceElement>
                             </div>
                         </div>
                     </div>
@@ -259,26 +322,29 @@ export default function OrderCart() {
                                     {['10%', '15%', '20%'].map((tip) => {
                                         const percentage = parseFloat(tip);
                                         return (
-                                            <button 
+                                            <VoiceElement
                                                 key={tip}
-                                                className={`py-2 rounded-lg transition ${
-                                                    selectedTip === percentage 
-                                                        ? 'bg-[#3D2B1F] text-[#EED9C4]' 
-                                                        : 'bg-[#EED9C4] text-[#3D2B1F] hover:bg-[#cda37f]'
-                                                }`}
+                                                id={`tip-${tip}`}
+                                                description={`${tip}`}
                                                 onClick={() => {
                                                     if (selectedTip === percentage) {
-                                                        // If already selected, deselect it
                                                         setSelectedTip(null);
                                                         setTipAmount(0);
                                                     } else {
-                                                        // Otherwise select it
                                                         handleTipSelect(percentage);
                                                     }
-                                                }}
+                                                }}className={`py-2 flex justify-center items-center cursor-pointer rounded-lg transition ${
+                                                        selectedTip === percentage 
+                                                            ? 'bg-[#3D2B1F] text-[#EED9C4]' 
+                                                            : 'bg-[#EED9C4] text-[#3D2B1F] hover:bg-[#cda37f]'
+                                                    }`}
                                             >
-                                                {tip}
-                                            </button>
+                                                <button 
+                                                className="text-center"    
+                                                >
+                                                    {tip}
+                                                </button>
+                                            </VoiceElement>
                                         );
                                     })}
                                 </div>
@@ -302,13 +368,18 @@ export default function OrderCart() {
                                             }}
                                         />
                                     </div>
-                                    <button 
-                                        className="py-2 px-3 bg-[#EED9C4] rounded-lg text-[#3D2B1F] hover:bg-[#cda37f] transition"
+                                    <VoiceElement
+                                        id="apply-custom-tip"
+                                        description="apply custom tip"
                                         onClick={() => customTip !== null && handleTipSelect(customTip, true)}
-                                        disabled={customTip === null}
                                     >
-                                        Apply
-                                    </button>
+                                        <button 
+                                            className="py-2 px-3 bg-[#EED9C4] rounded-lg text-[#3D2B1F] hover:bg-[#cda37f] transition"
+                                            disabled={customTip === null}
+                                        >
+                                            Apply
+                                        </button>
+                                    </VoiceElement>
                                 </div>
                             </div>
                             
@@ -338,12 +409,22 @@ export default function OrderCart() {
                             </div>
                             
                             {/* Checkout Button */}
-                            <button
-                                className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
-                                disabled={cart.length === 0}
+                            <VoiceElement
+                                id="place-order"
+                                description="place order"
+                                onClick={() => {
+                                    if (cart.length > 0) {
+                                        // Handle order placement
+                                    }
+                                }}
                             >
-                                Place Order
-                            </button>
+                                <button
+                                    className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
+                                    disabled={cart.length === 0}
+                                >
+                                    Place Order
+                                </button>
+                            </VoiceElement>
                         </div>
                     </div>
                 </div>

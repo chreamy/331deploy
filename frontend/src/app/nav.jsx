@@ -1,17 +1,46 @@
 "use client";
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TranslateToggle from "./components/TranslateToggle";
 import Link from "next/link";
-import { FaHome, FaVolumeUp, FaShoppingCart } from "react-icons/fa";
+import { FaHome, FaVolumeUp, FaVolumeMute, FaMicrophone, FaMicrophoneSlash, FaShoppingCart } from "react-icons/fa";
+import { useVoiceCommands } from "./components/VoiceCommandProvider";
 
 const Nav = ({ userRole }) => {
+    const voiceContext = useVoiceCommands();
+    const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false);
+    const [voiceAvailable, setVoiceAvailable] = useState(false);
+
+    useEffect(() => {
+        // Check if voice context is available
+        setVoiceAvailable(!!voiceContext);
+        
+        // Initialize voice state from localStorage only if voice is available
+        if (voiceContext) {
+            const savedVoiceState = localStorage.getItem('voiceEnabled');
+            if (savedVoiceState !== null) {
+                const isEnabled = savedVoiceState === 'true';
+                setLocalVoiceEnabled(isEnabled);
+                if (isEnabled !== voiceContext.voiceEnabled) {
+                    voiceContext.toggleVoiceEnabled();
+                }
+            }
+        }
+    }, [voiceContext]);
+
+    const handleVoiceToggle = () => {
+        if (!voiceContext) return;
+        
+        const newState = !localVoiceEnabled;
+        setLocalVoiceEnabled(newState);
+        localStorage.setItem('voiceEnabled', newState.toString());
+        voiceContext.toggleVoiceEnabled();
+    };
+
     const handleLogout = () => {
         // Clear the cart from localStorage
         localStorage.removeItem("cart");
-        // Clear any other user-related data if needed
-        // localStorage.removeItem("authToken");
-        
+        // Clear voice state
+        localStorage.removeItem("voiceEnabled");
         // Force a full page reload to reset all states
         window.location.href = "/";
     };
@@ -22,37 +51,51 @@ const Nav = ({ userRole }) => {
                 {/* Left Icons */}
                 <div className="flex items-center gap-4">
                     {userRole != "guest" && (
-                    <Link 
-                        href={userRole === "cashier" ? "/cashier" : "/customer/menu"} 
-                        className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
-                        title="Home"
-                    >
-                        <FaHome />
-                    </Link>
-                )}
+                        <Link 
+                            href={userRole === "cashier" ? "/cashier" : "/customer/menu"} 
+                            className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
+                            title="Home"
+                        >
+                            <FaHome />
+                        </Link>
+                    )}
 
-                    <button
-                        className="text-2xl text-gray-700 hover:text-blue-500"
-                        title="Sound"
-                    >
-                        <FaVolumeUp />
-                    </button>
-  
+                    {voiceAvailable && (
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={handleVoiceToggle}
+                                className={`text-2xl ${localVoiceEnabled ? 'text-blue-500' : 'text-gray-700'} hover:text-blue-500`}
+                                title={localVoiceEnabled ? "Disable voice commands" : "Enable voice commands"}
+                            >
+                                {localVoiceEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
+                            </button>
+                            {localVoiceEnabled && (
+                                <button
+                                    onClick={voiceContext.toggleListening}
+                                    className={`text-2xl ${voiceContext.isListening ? 'text-green-500 animate-pulse' : 'text-gray-700'} hover:text-green-500`}
+                                    title={voiceContext.isListening ? "Stop listening" : "Start listening"}
+                                >
+                                    {voiceContext.isListening ? <FaMicrophone /> : <FaMicrophoneSlash />}
+                                </button>
+                            )}
+                        </div>
+                    )}
+
                     <div className="flex items-center justify-center h-full mt-0 -mb-2">
                         <TranslateToggle />
                     </div>
                     
                     {userRole != "guest" && (
-                    <a href="/">
-                        <button      
-                            onClick={handleLogout}                   
-                            className="bg-black text-white text-lg px-3 py-1 -my-2 rounded-xl hover:bg-gray-800 transition-all"
-                            title="Log Off"
-                        >
-                            Log Off
-                        </button>
-                    </a>
-                )}
+                        <a href="/">
+                            <button      
+                                onClick={handleLogout}                   
+                                className="bg-black text-white text-lg px-3 py-1 -my-2 rounded-xl hover:bg-gray-800 transition-all"
+                                title="Log Off"
+                            >
+                                Log Off
+                            </button>
+                        </a>
+                    )}
                 </div>
 
                 {/* Center Title */}
@@ -66,19 +109,14 @@ const Nav = ({ userRole }) => {
                         <input type="checkbox" className="sr-only peer" />
                         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600"></div>
                     </label>
-                    {userRole != "customer" || userRole != "cashier" && (
-                    <button
-                        className="text-2xl text-gray-700 hover:text-blue-500"
-                        title="Cart"
-                    >
-                        <a 
-                        href="/customer/cart" 
-                        className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
-                        title="Cart"
-                    >
-                        <FaShoppingCart />
-                      </a>
-                    </button>
+                    {userRole === "customer" && (
+                        <Link 
+                            href="/customer/cart" 
+                            className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
+                            title="Cart"
+                        >
+                            <FaShoppingCart />
+                        </Link>
                     )}
                 </div>
             </header>
