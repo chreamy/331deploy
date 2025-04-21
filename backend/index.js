@@ -824,6 +824,60 @@ app.post("/updateZReport", async (req, res) => {
     }
 });
 
+
+app.post('/newOrder', async (req, res) => {
+    const { customer_id, order_date, order_details } = req.body;
+    const empid = 0;
+
+    const newID = await pool.query(
+        "SELECT COALESCE(MAX(orderid), 0) + 1 AS new_id FROM order_drink_modifications_toppings;"
+    );
+    const order_id = newID.rows[0].new_id;
+
+    try {
+        const insertOrderSQL = `
+            INSERT INTO orders (id, customerid, employeeid, timestamp)
+            VALUES ($1, $2, $3, $4)
+            `;
+        await pool.query(insertOrderSQL, [order_id, customer_id, empid, order_date]);
+
+        for (const detail of order_details) {
+            const {
+                drink_id,
+                quantity,
+                ice_id,
+                sugar_id,
+                topping_ids = [],
+            } = detail;
+
+            for (const topping_id of topping_ids) {
+                const insertODMT = `
+                    INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
+                    VALUES ($1, $2, $3, $4)
+                `;
+                await pool.query(insertODMT, [order_id, drink_id, topping_id, quantity]);
+            }
+
+            const insertIce = `
+                INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
+                VALUES ($1, $2, $3, $4)
+            `;
+            await pool.query(insertIce, [order_id, drink_id, ice_id, quantity]);
+
+            const insertSugar = `
+                INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
+                VALUES ($1, $2, $3, $4)
+            `;
+            await pool.query(insertSugar, [order_id, drink_id, sugar_id, quantity]);
+        }
+
+        res.status(200).json({ message: 'Order placed successfully', order_id });
+    } catch (err) {
+        console.error('Failed to place order:', err);
+        res.status(500).json({ error: 'Failed to place order' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
