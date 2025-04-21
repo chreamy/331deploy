@@ -314,7 +314,7 @@ export default function Trends() {
                     </h1> 
                     {/* Top Navigation */}
                     <div className="flex gap-4">
-                        <button onClick={scrollToChartRef} className="w-40 py-5 rounded hover:bg-gray-400 bg-black text-white">
+                        <button onClick={scrollToChartRef} className="w-40 py-5 rounded hover:bg-gray-600 bg-black text-white">
                             Popularity Chart
                         </button>
                         {/* <button onClick={scrollToXReport} className="w-40 rounded hover:bg-gray-400 bg-black text-white">

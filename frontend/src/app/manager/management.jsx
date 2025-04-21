@@ -84,12 +84,20 @@ export function Management() {
                     },
                     annotation: {
                         annotations: {
+                            box1: {
+                                type: 'box',
+                                xMin: -2,
+                                xMax: 50,
+                                yMin: 0,
+                                yMax: 15,
+                                backgroundColor: 'rgba(255,0,0,0.1)'
+                            },
                             line1: {
                                 type: "line",
                                 yMin: 15, 
                                 yMax: 15,
                                 borderColor: "red", 
-                                borderWidth: 5, 
+                                borderWidth: 2, 
                                 label: {
                                     content: 'Low Stock', 
                                     enabled: true,
@@ -675,16 +683,16 @@ export function Management() {
                     )}
                     {/* Top Navigation */}
                     <div className="flex gap-4">
-                        <button onClick={scrollToCurrentStock} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                        <button onClick={scrollToCurrentStock} className="w-40 rounded hover:bg-gray-600 bg-black text-white">
                             View Stock
                         </button>
-                        <button onClick={scrollToProductList} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                        <button onClick={scrollToProductList} className="w-40 rounded hover:bg-gray-600 bg-black text-white">
                             Product List
                         </button>
-                        <button onClick={scrollToManageInventory} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                        <button onClick={scrollToManageInventory} className="w-40 rounded hover:bg-gray-600 bg-black text-white">
                             Inventory Management
                         </button>
-                        <button onClick={scrollToManageEmployee} className="py-2 w-40 rounded hover:bg-gray-400 bg-black text-white">
+                        <button onClick={scrollToManageEmployee} className="py-2 w-40 rounded hover:bg-gray-600 bg-black text-white">
                             Employee Management
                         </button>
                     </div>    
@@ -820,7 +828,7 @@ export function Management() {
                             {/* Add Drink Button */}
                             <button
                                 onClick={addDrink}
-                                className="w-full p-3 text-black rounded-md shadow-sm hover:bg-blue-600 cursor-pointer border-black border-3"
+                                className="w-full p-3 text-black rounded-md shadow-sm hover:bg-blue-600 cursor-pointer border-black border-3 hover:scale-105 transition-transform"
                             >
                                 Add Drink
                             </button>
@@ -882,7 +890,7 @@ export function Management() {
                                 {/* Add Topping Button */}
                                 <button
                                     onClick={addTopping}
-                                    className="w-full p-3 text-black border-black border-3 rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
+                                    className="w-full p-3 text-black border-black border-3 rounded-md shadow-sm hover:bg-blue-600 cursor-pointer hover:scale-105 transition-transform"
                                 >
                                     Add Topping
                                 </button>
@@ -955,7 +963,7 @@ export function Management() {
                                     {/* Add Topping Button */}
                                     <button
                                         onClick={updateInventory}
-                                        className="w-full p-3 text-black border-black border-3 rounded-md shadow-sm hover:bg-blue-600 cursor-pointer"
+                                        className="w-full p-3 text-black border-black border-3 rounded-md shadow-sm hover:bg-blue-600 cursor-pointer hover:scale-105 transition-transform"
                                     >
                                         Save Changes
                                     </button>
@@ -1039,7 +1047,7 @@ export function Management() {
                                             </select>
                                         </div>
                                     </form>
-                                    <button onClick={editEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-blue-600 cursor-pointer">
+                                    <button onClick={editEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-blue-600 cursor-pointer hover:scale-105 transition-transform">
                                         Save Changes
                                     </button>
                                 </div>
@@ -1075,7 +1083,7 @@ export function Management() {
                                             </select>
                                         </div>
                                     </form>
-                                    <button onClick={fireEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-red-600 cursor-pointer">
+                                    <button onClick={fireEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-red-600 cursor-pointer hover:scale-105 transition-transform">
                                         Fire Employee
                                     </button>
                                 </div>
@@ -1142,7 +1150,7 @@ export function Management() {
                                         </select>
                                     </div>
                                 </form>
-                                <button onClick={addEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-blue-600 cursor-pointer">
+                                <button onClick={addEmployee} className="w-full text-black border-black border-3 p-2 rounded-md hover:bg-blue-600 cursor-pointer hover:scale-105 transition-transform">
                                     Add Employee
                                 </button>
                         </div>

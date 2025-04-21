@@ -213,10 +213,10 @@ export default function Reports() {
                     )}
                     {/* Top Navigation */}
                     <div className="flex gap-4">
-                        <button onClick={scrollToProductUsage} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
+                        <button onClick={scrollToProductUsage} className="w-40 rounded hover:bg-gray-600 bg-black text-white">
                             Product Usage
                         </button>
-                        <button onClick={scrollToXReport} className="w-40 py-5 rounded hover:bg-gray-400 bg-black text-white">
+                        <button onClick={scrollToXReport} className="w-40 py-5 rounded hover:bg-gray-600 bg-black text-white">
                             View Reports
                         </button>
                     </div>    
@@ -229,7 +229,7 @@ export default function Reports() {
                             type="date"
                             value={date}
                             onChange={(e) => {setDate(e.target.value); setXReportButton(false); setZReportButton(false);}}
-                            className="p-2 rounded text-black border-black border-2"
+                            className="p-2 rounded text-black border-black border-2 content-center"
                         />
                     </div>
                     
