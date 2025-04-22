@@ -38,6 +38,17 @@ export function Management() {
     const chartRef = useRef(null);
     var chartInstance = useRef(null);
 
+    function formatInput(sentence) {
+        var words = sentence.split(' '); 
+    
+        for (var i = 0; i < words.length; i++) {
+            var word = words[i];  
+            words[i] = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();  
+        }
+    
+        return words.join(' ');  
+    }
+
     // UseEffect and jschart to make stock bar graphs
     useEffect(() => {
         if (!stockNames.length || !stockQuantities.length) return; // Ensure data is loaded before rendering
@@ -288,8 +299,9 @@ export function Management() {
             return;
         }
 
+        const name = formatInput(drinkNameInput);
         const drinkToInventory = {
-            drinkNameInput,
+            name,
             quantityInput,
             priceInput,
             selectedCategoryInput,
@@ -354,8 +366,9 @@ export function Management() {
             return;
         }
 
+        const name = formatInput(toppingName);
         const toppingToInv = {
-            toppingName,
+            name,
             toppingPrice,
             toppingQuantity,
         };

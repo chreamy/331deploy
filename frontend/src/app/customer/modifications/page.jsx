@@ -116,8 +116,8 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
     const cartItem = {
       drinkName,
       drinkPrice,
-      selectedIce: selectedIce || "Full Ice (Default)",
-      selectedSugar: selectedSugar || "100% Sugar (Default)",
+      selectedIce: selectedIce || "Full Ice",
+      selectedSugar: selectedSugar || "100% Sugar",
       selectedToppings: selectedToppingObjects,
       quantity: 1,
       totalPrice: getTotalPrice(),
