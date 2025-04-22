@@ -319,14 +319,14 @@ app.delete("/removeTopping", async (req, res) => {
 app.post("/addInventory", async (req, res) => {
     try {
         const {
-            drinkNameInput,
+            name,
             quantityInput,
             priceInput,
             selectedCategoryInput,
         } = req.body;
 
         if (
-            !drinkNameInput ||
+            !name ||
             !quantityInput ||
             !priceInput ||
             !selectedCategoryInput
@@ -340,7 +340,7 @@ app.post("/addInventory", async (req, res) => {
 
         const drinkCheck = await pool.query(
             "SELECT count(*) FROM drinks where name = ($1)",
-            [drinkNameInput]
+            [name]
         );
         const nameExists = parseInt(drinkCheck.rows[0].count, 10); // convert to int
 
@@ -360,12 +360,12 @@ app.post("/addInventory", async (req, res) => {
 
         await pool.query(
             "INSERT INTO inventory (id, name, quantity, price) VALUES ($1, $2, $3, $4)",
-            [newInventoryId, drinkNameInput, quantityInput, priceInput]
+            [newInventoryId, name, quantityInput, priceInput]
         );
 
         await pool.query(
             "INSERT INTO drinks (id, name, price) VALUES ($1, $2, $3)",
-            [newDrinkId, drinkNameInput, priceInput]
+            [newDrinkId, name, priceInput]
         );
 
         await pool.query(
@@ -389,9 +389,9 @@ app.post("/addInventory", async (req, res) => {
 
 app.post("/addTopping", async (req, res) => {
     try {
-        const { toppingName, toppingPrice, toppingQuantity } = req.body;
+        const { name, toppingPrice, toppingQuantity } = req.body;
 
-        if (!toppingName || !toppingPrice || !toppingQuantity) {
+        if (!name || !toppingPrice || !toppingQuantity) {
             return res.status(400).json({ error: "Missing fields" });
         }
 
@@ -401,7 +401,7 @@ app.post("/addTopping", async (req, res) => {
 
         const toppingCheck = await pool.query(
             "SELECT count(*) FROM toppings where name = ($1)",
-            [toppingName]
+            [name]
         );
         const nameExists = parseInt(toppingCheck.rows[0].count, 10); // convert to int
 
@@ -421,12 +421,12 @@ app.post("/addTopping", async (req, res) => {
 
         await pool.query(
             "INSERT INTO inventory (id, name, quantity, price) VALUES ($1, $2, $3, $4)",
-            [newInventoryId, toppingName, toppingQuantity, toppingPrice]
+            [newInventoryId, name, toppingQuantity, toppingPrice]
         );
 
         await pool.query(
             "INSERT INTO toppings (id, name, price) VALUES ($1, $2, $3)",
-            [newToppingId, toppingName, toppingPrice]
+            [newToppingId, name, toppingPrice]
         );
 
         await pool.query(
@@ -824,51 +824,87 @@ app.post("/updateZReport", async (req, res) => {
     }
 });
 
+function formatDrinkName(str) {
+    return str
+        .split('-') 
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+        .join(' '); // Join with spaces
+}
 
 app.post('/newOrder', async (req, res) => {
-    const { customer_id, order_date, order_details } = req.body;
-    const empid = 0;
-
-    const newID = await pool.query(
-        "SELECT COALESCE(MAX(orderid), 0) + 1 AS new_id FROM order_drink_modifications_toppings;"
-    );
-    const order_id = newID.rows[0].new_id;
+    const { customerName, cart } = req.body;
 
     try {
+        if (!(Array.isArray(cart) && cart.length > 0)) {
+            res.status(500).json({ error: "Error fetching items in" });
+        }
+    
+        const empid = 0;
+        const timestamp = new Date().toISOString().slice(0, 19).replace("T", " "); 
+        
+        const newID = await pool.query(
+            "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM orders;"
+        );
+        const orderId = newID.rows[0].new_id;
+    
+        const sqlCheck = "SELECT COUNT(*) FROM customers WHERE name = $1";
+        const resultCheck = await pool.query(sqlCheck, [customerName]);
+    
+        var custId = 0; 
+        if (resultCheck.rows[0].count === "0") {
+            const userID = await pool.query(
+                "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM customers;"
+            );
+            custId = userID.rows[0].new_id;     
+        }
+        else {
+            const sqlQuery = "SELECT id AS new_id FROM customers where name = $1";
+            const userID = await pool.query(sqlQuery, [customerName]);
+            custId = userID.rows[0].new_id;   
+        }
+
         const insertOrderSQL = `
             INSERT INTO orders (id, customerid, employeeid, timestamp)
             VALUES ($1, $2, $3, $4)
             `;
-        await pool.query(insertOrderSQL, [order_id, customer_id, empid, order_date]);
+        await pool.query(insertOrderSQL, [orderId, custId, empid, timestamp]);
 
-        for (const detail of order_details) {
-            const {
-                drink_id,
-                quantity,
-                ice_id,
-                sugar_id,
-                topping_ids = [],
-            } = detail;
+        for (const item of cart) {
+            const formattedDrinkName = formatDrinkName(item.drinkName);
+        
+            const drinkQuery = await pool.query(
+                "SELECT id FROM drinks WHERE name = $1",
+                [formattedDrinkName]
+            );
+                
+        //     const drinkId = drinkQuery.rows[0].id;
 
-            for (const topping_id of topping_ids) {
-                const insertODMT = `
-                    INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-                    VALUES ($1, $2, $3, $4)
-                `;
-                await pool.query(insertODMT, [order_id, drink_id, topping_id, quantity]);
-            }
+        //     await pool.query(
+        //         `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
+        //             VALUES ($1, $2, $3, $4)
+        //         `,
+        //            [orderId, drinkId,                      ]
+        //     );
 
-            const insertIce = `
-                INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-                VALUES ($1, $2, $3, $4)
-            `;
-            await pool.query(insertIce, [order_id, drink_id, ice_id, quantity]);
+        //     for (const topping_id of topping_ids) {
+        //         const insertODMT = `
+        //             INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
+        //             VALUES ($1, $2, $3, $4)
+        //         `;
+        //         await pool.query(insertODMT, [order_id, drink_id, topping_id, quantity]);
+        //     }
 
-            const insertSugar = `
-                INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-                VALUES ($1, $2, $3, $4)
-            `;
-            await pool.query(insertSugar, [order_id, drink_id, sugar_id, quantity]);
+        //     const insertIce = `
+        //         INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
+        //         VALUES ($1, $2, $3, $4)
+        //     `;
+        //     await pool.query(insertIce, [order_id, drink_id, ice_id, quantity]);
+
+        //     const insertSugar = `
+        //         INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
+        //         VALUES ($1, $2, $3, $4)
+        //     `;
+        //     await pool.query(insertSugar, [order_id, drink_id, sugar_id, quantity]);
         }
 
         res.status(200).json({ message: 'Order placed successfully', order_id });

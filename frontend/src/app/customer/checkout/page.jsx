@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { SERVER } from "@/app/const";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Nav from "@/app/nav";
 
@@ -11,7 +12,7 @@ function toSnakeCase(str) {
 
 function formatDrinkName(str) {
     return str
-        .split('-') // Split by dashes
+        .split('-') 
         .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
         .join(' '); // Join with spaces
 }
@@ -77,11 +78,36 @@ export default function OrderCart() {
         }
     };
 
-    const handlePlaceOrder = async (cart, customerName) => {    
-        const timestamp = new Date().toISOString().slice(0, 19).replace("T", " "); 
-    
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    const custName = capitalizeFirstLetter(contactInfo.firstName) + " " + capitalizeFirstLetter(contactInfo.lastName);
+
+    console.log(cart);
+
+    const addOrder = async () => {    
+        try {
+            const response = await fetch(`${SERVER}/newOrder`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    customerName: custName,
+                    cart: cart
+                })
+            });
+        
+            if (!response.ok) {
+                throw new Error("Failed to add order");
+            }
+        
+        } catch (error) {
+            console.error("Failed to add order", error);
+        }
     };
-      
+    
     return (
         <div className="min-h-screen font-[telegraf] p-4 md:p-8 bg-[#3D2B1F]">
             <Nav userRole="customer" />
