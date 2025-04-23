@@ -366,7 +366,15 @@ export default function Trends() {
         fetchWeeklyData();
         fetchMonthlyData();
         fetchYearlyData();
-    }, [date, timeframeInput]);
+    }, [timeframeInput]);
+
+    useEffect(() => {
+        fetchDailyData();
+        fetchWeeklyData();
+        fetchMonthlyData();
+        fetchYearlyData();
+        setTimeFrame("");
+    }, [date]);
 
     return (
         <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">

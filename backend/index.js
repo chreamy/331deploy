@@ -132,10 +132,14 @@ app.post("/updateInventory", async (req, res) => {
 
         else if (quantity === null) {
             await pool.query('UPDATE inventory SET price = ($1) where name = ($2)', [price, name]);
+            await pool.query('UPDATE toppings SET price = ($1) where name = ($2)', [price, name]); 
+            await pool.query('UPDATE drinks SET price = ($1) where name = ($2)', [price, name]); 
         }
 
         else { // update all
             await pool.query('UPDATE inventory SET price = ($1), quantity = ($2) where name = ($3)', [price, quantity, name]);
+            await pool.query('UPDATE toppings SET price = ($1) where name = ($2)', [price, name]); 
+            await pool.query('UPDATE drinks SET price = ($1) where name = ($2)', [price, name]); 
         }
 
         res.status(200).json({
