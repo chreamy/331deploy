@@ -501,12 +501,13 @@ app.get("/hourly-product-usage/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name), EXTRACT(hour FROM o.timestamp) as hour 
+            SELECT distinct name, count(distinct odmt.orderid), EXTRACT(hour FROM o.timestamp) as hour 
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= $1::timestamp 
             AND o.timestamp < ($1::timestamp + interval '1 day')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY hour, name 
             ORDER by name, hour;
         `;
@@ -523,12 +524,13 @@ app.get("/daily-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= $1::timestamp 
             AND o.timestamp < ($1::timestamp + interval '1 day')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -545,12 +547,13 @@ app.get("/weekly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= date_trunc('week', $1::timestamp)
             AND o.timestamp < (date_trunc('week', $1::timestamp) + interval '1 week')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -567,12 +570,13 @@ app.get("/monthly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= date_trunc('month', $1::timestamp)
             AND o.timestamp < (date_trunc('month', $1::timestamp) + interval '1 month')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -589,12 +593,13 @@ app.get("/yearly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= date_trunc('year', $1::timestamp)
             AND o.timestamp < (date_trunc('year', $1::timestamp) + interval '1 year')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -839,8 +844,20 @@ app.post('/newOrder', async (req, res) => {
             res.status(500).json({ error: "Error fetching items in cart" });
         }
     
+        const intlDateObj = new Intl.DateTimeFormat('en-US', {
+            timeZone: "America/Chicago",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        });
+        
+        const timestamp = intlDateObj.format(new Date());  
+
         const empid = 0;
-        const timestamp = new Date().toISOString().slice(0, 19).replace("T", " "); 
         
         const newID = await pool.query(
             "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM orders;"
@@ -951,8 +968,20 @@ app.post('/newOrderCashier', async (req, res) => {
             res.status(500).json({ error: "Error fetching items in order" });
         }
     
+        const intlDateObj = new Intl.DateTimeFormat('en-US', {
+            timeZone: "America/Chicago",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        });
+        
+        const timestamp = intlDateObj.format(new Date());  
+
         const empid = 0;
-        const timestamp = new Date().toISOString().slice(0, 19).replace("T", " "); 
         const custId = 0; 
 
         const newID = await pool.query(

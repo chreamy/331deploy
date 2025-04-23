@@ -19,7 +19,7 @@ export default function TranslateToggle() {
         <div className="relative">
             <button
                 onClick={toggleDropdown}
-                className="text-2xl text-black hover:text-blue-500"
+                className="text-2xl text-gray-700 hover:text-blue-500"
                 title="Translate"
             >
                 <FaLanguage />

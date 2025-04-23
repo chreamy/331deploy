@@ -200,6 +200,8 @@ export default function Reports() {
             : 'bg-gray-400';
     };
 
+    console.log(groupedData);
+
     return (
         <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">
             <div className="sticky top-0 w-full z-50">
@@ -249,7 +251,7 @@ export default function Reports() {
                         ) : hourlyData.length === 0 ? (
                             <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
                         ) : (
-                            <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] rounded-lg border-2 p-4 border-black mb-4">
+                            <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] w-[1100px] rounded-lg border-2 p-4 border-black mb-4">
                                 <div className="relative h-full">
                                     {/* Y-axis labels */}
                                     <div className="absolute left-4 -top-1 bottom-6 w-8 flex flex-col justify-between">

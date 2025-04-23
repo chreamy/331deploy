@@ -2,6 +2,7 @@
 import { SERVER } from "@/app/const";
 import { useEffect, useState } from "react";
 import Nav from "@/app/nav";
+import { FaStopCircle } from "react-icons/fa";
 
 export default function CashierView() {
     const [categories, setCategories] = useState([]);
@@ -10,11 +11,12 @@ export default function CashierView() {
     const [searchTerm, setSearchTerm] = useState("");
     const [order, setOrder] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [options, setOptions] = useState({ toppings: [], modifications: [] });
     const [selectedOptions, setSelectedOptions] = useState({ toppings: [], modifications: {} });
+    const [processingOrder, setProcessStatus] = useState(false);
+    const [showProcessModal, setProcessModal] = useState(false);
 
     useEffect(() => {
         fetch(`${SERVER}/categories`)
@@ -52,8 +54,18 @@ export default function CashierView() {
         }
     };
 
+    const handlePayment = () => {
+        setProcessModal(true);    
+    
+        setTimeout(() => {
+            setProcessModal(false);     
+        }, 3000);
+    };
+
     const addOrder = async () => {    
         try {
+            setProcessStatus(true);
+            handlePayment();
             const response = await fetch(`${SERVER}/newOrderCashier`, {
                 method: "POST",
                 headers: {
@@ -63,9 +75,11 @@ export default function CashierView() {
             });
         
             if (!response.ok) {
+                setProcessStatus(false);
                 throw new Error("Failed to add order");
             }
             setOrder([]);
+            setProcessStatus(false);
 
         } catch (error) {
             console.error("Failed to add order", error);
@@ -157,6 +171,15 @@ export default function CashierView() {
                 </div>
             </div>
 
+            {/* Popup Modal */}
+            {showProcessModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative border-5 border-black">
+                        <p className="text-gray-700 text-center text-lg">Processing Payment...</p>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Sidebar */}
                 <div className="w-full lg:w-1/6 bg-zinc-800 p-4 rounded-xl shadow-md">
@@ -242,7 +265,8 @@ export default function CashierView() {
                             <button 
                                 onClick={() => {
                                     if (order.length > 0) {
-                                       addOrder()
+                                       
+                                        addOrder();
                                     }
                                 }}
                                 className="mt-4 w-full bg-[#C2A385] text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition-transform"
