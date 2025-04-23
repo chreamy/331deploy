@@ -407,22 +407,23 @@ export default function Trends() {
                             id="shift"
                             value={timeframeInput}
                             onChange={(e) =>
-                            setTimeFrame(e.target.value)
+                           { setTimeFrame(e.target.value)
+                            console.log(timeframeInput)}
                             }
                             className="mt-1 p-2 w-fit border rounded-md shadow-sm text-black"
                         >
                             <option value="" disabled>Select a Timeframe</option>
-                            <option value="Daily">Daily</option>
-                            <option value="Weekly">Weekly</option>
-                            <option value="Monthly">Monthly</option>
-                            <option value="Yearly">Yearly</option>
+                            <option value={"Daily"}>Daily</option>
+                            <option value={"Weekly"}>Weekly</option>
+                            <option value={"Monthly"}>Monthly</option>
+                            <option value={"Yearly"}>Yearly</option>
                         </select>
                     </div>
                     
                     <div className="flex flex-row justify-center items-start gap-x-8">
                         <div className="flex flex-col justify-center items-center bg-white rounded-lg">
                             <div className="mt-4 bg-white w-fit p-2 pb-0 rounded-lg">
-                                <h2 className="text-black text-xl font-bold p-4">{timeframeInput} Popularity Chart</h2>
+                                <h2 className="text-black text-xl font-bold p-4">{timeframeInput || "Daily"} Popularity Chart</h2>
                             </div>
 
                         {loadingPieChart ? (
