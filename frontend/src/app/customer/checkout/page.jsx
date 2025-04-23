@@ -127,6 +127,7 @@ export default function OrderCart() {
             localStorage.setItem("cart", JSON.stringify([]));
             setShowSuccessModal(true);
             setorderComplete(true);
+            handleReset();
     
         } catch (error) {
             console.error("Failed to add order", error);
@@ -139,6 +140,12 @@ export default function OrderCart() {
             ...prev,
             [field]: value
         }));
+    };
+
+    const handleReset = () => {
+        setTimeout(() => {
+            router.push("/customer/menu");
+        }, 7000);
     };
     
     return (
@@ -531,7 +538,7 @@ export default function OrderCart() {
                                 }}
                                 className="bg-[#3D2B1F] text-[#EED9C4] font-semibold px-4 py-2 rounded-lg hover:bg-[#2a1d15] transition"
                             >
-                                Continue Shopping
+                                Exit
                             </button>
                         </div>
                     </div>
