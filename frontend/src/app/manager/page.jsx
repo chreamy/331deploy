@@ -13,6 +13,7 @@ import {
 import { Management } from "./management";
 import Reports from "./reports";
 import Trends from "./trends";
+import TranslateToggle from "../components/TranslateToggle";
 
 export default function Manager() {
     const [tab, setTab] = useState("management");
@@ -27,6 +28,9 @@ export default function Manager() {
                         onClick={() => setIsMenuOpen((prev) => !prev)} style={{ color: 'black' }}
                     />
                 </button>
+                <div className="flex items-center pl-5">
+                    <TranslateToggle className="text-sm bg-gray-800 text-white px-2 py-1 rounded"/>
+                </div>
 
                 {/* Menu Buttons */}
                 <div className="flex flex-col mt-4 items-start gap-6 w-ful">
@@ -82,7 +86,7 @@ export default function Manager() {
                                 <h3 className="ml-4 text-2xl w-full text-black font-bold">Log Off</h3>
                             )}
                         </button>
-                    </a>
+                    </a>                 
                 </div>
             </div>
             <div

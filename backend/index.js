@@ -870,44 +870,73 @@ app.post('/newOrder', async (req, res) => {
         await pool.query(insertOrderSQL, [orderId, custId, empid, timestamp]);
 
         for (const item of cart) {
-            const formattedDrinkName = formatDrinkName(item.drinkName);
-        
-            const drinkQuery = await pool.query(
-                "SELECT id FROM drinks WHERE name = $1",
-                [formattedDrinkName]
-            );
+            const {
+                drinkName,
+                drinkPrice,
+                quantity,
+                selectedIce,
+                selectedSugar,
+                selectedToppings = [],
+                totalPrice
+            } = item;
+
+            for (let i = 0; i < quantity; i++) {
+                const formattedDrinkName = formatDrinkName(drinkName);
+            
+                const drinkQuery = await pool.query(
+                    "SELECT id FROM drinks WHERE name = $1",
+                    [formattedDrinkName]
+                );
+                    
+                const drinkId = drinkQuery.rows[0].id;
+
+                const iceQuery = await pool.query(
+                    "SELECT id FROM modifications WHERE name = $1",
+                    [selectedIce]
+                );
+                    
+                const iceId = iceQuery.rows[0].id;
+
+                await pool.query(
+                    `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                        VALUES ($1, $2, $3)
+                    `,
+                    [orderId, drinkId, iceId]
+                );
+
+                const sugarQuery = await pool.query(
+                    "SELECT id FROM modifications WHERE name = $1",
+                    [selectedSugar]
+                );
                 
-        //     const drinkId = drinkQuery.rows[0].id;
+                const sugarId = sugarQuery.rows[0].id;
 
-        //     await pool.query(
-        //         `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-        //             VALUES ($1, $2, $3, $4)
-        //         `,
-        //            [orderId, drinkId,                      ]
-        //     );
+                await pool.query(
+                    `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                        VALUES ($1, $2, $3)
+                    `,
+                    [orderId, drinkId, sugarId]
+                );
 
-        //     for (const topping_id of topping_ids) {
-        //         const insertODMT = `
-        //             INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-        //             VALUES ($1, $2, $3, $4)
-        //         `;
-        //         await pool.query(insertODMT, [order_id, drink_id, topping_id, quantity]);
-        //     }
+                for (const topping of selectedToppings) {
+                    
+                    const toppingQuery = await pool.query(
+                        "SELECT id FROM toppings WHERE name = $1",
+                        [topping.name]
+                    );
+                    
+                    const toppingId = toppingQuery.rows[0].id;
 
-        //     const insertIce = `
-        //         INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-        //         VALUES ($1, $2, $3, $4)
-        //     `;
-        //     await pool.query(insertIce, [order_id, drink_id, ice_id, quantity]);
+                    const insertODMT = `
+                        INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                        VALUES ($1, $2, $3)
+                    `;
+                    await pool.query(insertODMT, [orderId, drinkId, toppingId]);
+                }
+            }
+        };
 
-        //     const insertSugar = `
-        //         INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-        //         VALUES ($1, $2, $3, $4)
-        //     `;
-        //     await pool.query(insertSugar, [order_id, drink_id, sugar_id, quantity]);
-        }
-
-        res.status(200).json({ message: 'Order placed successfully', order_id });
+        res.status(200).json({ message: 'Order placed successfully', orderId });
     } catch (err) {
         console.error('Failed to place order:', err);
         res.status(500).json({ error: 'Failed to place order' });

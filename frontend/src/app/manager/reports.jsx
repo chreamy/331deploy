@@ -3,6 +3,7 @@ import { SERVER } from "@/app/const";
 import { useState, useEffect, useRef } from "react";
 import Nav from "@/app/nav";
 import { FaPlay, FaPlayCircle } from "react-icons/fa";
+import TranslateToggle from "../components/TranslateToggle";
 
 // Expanded color palette for more variety
 const COLORS = [
@@ -203,7 +204,7 @@ export default function Reports() {
         <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">
             <div className="sticky top-0 w-full z-50">
                 <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full z-50 shadow-md border-b-[#3D2B1F] border-b-5">
-                   <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
+                   <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0">
                         Manage Reports
                     </h1> 
                     {notification.message && (
@@ -213,6 +214,9 @@ export default function Reports() {
                     )}
                     {/* Top Navigation */}
                     <div className="flex gap-4">
+                        <a href="/cashier" className="w-40 rounded hover:bg-gray-300 bg-[#EED9C4] text-black text-center inline-block py-5">
+                            Cashier View
+                        </a>
                         <button onClick={scrollToProductUsage} className="w-40 rounded hover:bg-gray-600 bg-black text-white">
                             Product Usage
                         </button>

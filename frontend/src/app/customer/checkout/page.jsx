@@ -92,8 +92,6 @@ export default function OrderCart() {
 
     const custName = capitalizeFirstLetter(contactInfo.firstName) + " " + capitalizeFirstLetter(contactInfo.lastName);
 
-    console.log(cart);
-
     const addOrder = async () => {    
         try {
             const response = await fetch(`${SERVER}/newOrder`, {
