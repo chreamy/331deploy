@@ -202,7 +202,7 @@ export default function CashierView() {
                 {/* Items and Summary */}
                 <div className="flex-1 flex flex-col lg:flex-row gap-6">
                     {/* Item Grid */}
-                    <div className="w-full lg:w-2/3 bg-zinc-100 rounded-xl p-4 text-black shadow-xl">
+                    <div className="w-full lg:w-3/5 bg-zinc-100 rounded-xl p-6 text-black shadow-xl">
                         <h2 className="text-2xl font-bold mb-4">Select Items</h2>
                         <div className="space-y-4">
                             {filteredItems.map((item, idx) => (
@@ -218,7 +218,7 @@ export default function CashierView() {
                     </div>
 
                     {/* Summary Panel */} 
-                    <div className="w-full lg:w-1/3 bg-zinc-100 rounded-xl p-6 text-black shadow-xl flex flex-col justify-between">
+                    <div className="w-full lg:w-2/5 bg-zinc-100 rounded-xl p-6 text-black shadow-xl flex flex-col justify-between">
                         <div>
                             <h2 className="text-xl font-bold mb-4">Summary</h2>
                             <div className="h-64 overflow-y-auto border p-3 rounded-lg bg-gray-50 space-y-2">

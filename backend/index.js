@@ -935,6 +935,11 @@ app.post('/newOrder', async (req, res) => {
                     [orderId, drinkId, sugarId]
                 );
 
+                await pool.query(
+                    "UPDATE inventory SET quantity = quantity - 1 where name = $1",
+                    [formattedDrinkName]
+                );
+
                 for (const topping of selectedToppings) {
                     
                     const toppingQuery = await pool.query(
@@ -943,6 +948,11 @@ app.post('/newOrder', async (req, res) => {
                     );
                     
                     const toppingId = toppingQuery.rows[0].id;
+
+                    await pool.query(
+                        "UPDATE inventory SET quantity = quantity - 1 where id = $1",
+                        [toppingId]
+                    );
 
                     const insertODMT = `
                         INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
@@ -1033,6 +1043,11 @@ app.post('/newOrderCashier', async (req, res) => {
                 `,
                 [orderId, id, sugarId]
             );
+            
+            await pool.query(
+                "UPDATE inventory SET quantity = quantity - 1 where name = $1",
+                [name]
+            );
 
             for (const topping of toppings) {
                 const toppingQuery = await pool.query(
@@ -1041,6 +1056,11 @@ app.post('/newOrderCashier', async (req, res) => {
                 );
                     
                 const toppingId = toppingQuery.rows[0].id;
+
+                await pool.query(
+                    "UPDATE inventory SET quantity = quantity - 1 where id = $1",
+                    [toppingId]
+                );
 
                 const insertODMT = `
                     INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
