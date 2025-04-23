@@ -485,14 +485,14 @@ export function Management() {
         }
 
         if (
-            itemUpdatePrice < "0"
+            itemUpdatePrice && itemUpdatePrice < "0"
         ) {
             showNotification('Negative item price', 'Error');
             return;
         }
 
         if (
-            itemUpdateQuantity < "0"
+            itemUpdateQuantity && itemUpdateQuantity < "0"
         ) {
             showNotification('Negative quantity', 'Error');
             return;
