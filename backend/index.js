@@ -44,12 +44,8 @@ app.get("/drinks", (req, res) => {
 });
 
 app.get("/modifications", (req, res) => {
-    modifications = [];
     pool.query("SELECT * FROM modifications;").then((query_res) => {
-        for (let i = 0; i < query_res.rowCount; i++) {
-            modifications.push(query_res.rows[i]);
-        }
-        res.send({ modifications: modifications });
+        res.send({ modifications: query_res.rows });
     });
 });
 

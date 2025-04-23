@@ -43,6 +43,7 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
         fetch(`${SERVER}/modifications`)
         .then((res) => res.json())
         .then((data) => {
+            console.log(data);
             setModifications(data.modifications || []);
             setLoading(false);
         })

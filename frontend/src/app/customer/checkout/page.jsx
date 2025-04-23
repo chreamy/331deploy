@@ -21,18 +21,36 @@ function formatDrinkName(str) {
 
 export default function OrderCart() {
     const router = useRouter();
-    const { isListening, lastCommand } = useVoiceCommands();
+    const { isListening, lastCommand, setActiveInputField } = useVoiceCommands();
     const [cart, setCart] = useState([]);
-    const [activeField, setActiveField] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
+    const [orderComplete, setorderComplete] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [selectedTip, setSelectedTip] = useState(null);
+    const [customTip, setCustomTip] = useState(null);
+    const [tipAmount, setTipAmount] = useState(0);
+    const [contactInfo, setContactInfo] = useState({
+        phone: "",
+        email: "",
+        firstName: "",
+        lastName: ""
+    });
+
+    // Use refs as the source of truth for input values
     const inputRefs = {
         phone: useRef(null),
         email: useRef(null),
         firstName: useRef(null),
-        lastName: useRef(null),
+        lastName: useRef(null)
     };
-    const [orderComplete, setorderComplete] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [validationErrors, setValidationErrors] = useState({});
+
+    // Function to get current contact info from refs
+    const getContactInfo = () => ({
+        phone: inputRefs.phone.current?.value || '',
+        email: inputRefs.email.current?.value || '',
+        firstName: inputRefs.firstName.current?.value || '',
+        lastName: inputRefs.lastName.current?.value || ''
+    });
 
     // Fetch cart data from localStorage when the component mounts
     useEffect(() => {
@@ -72,16 +90,6 @@ export default function OrderCart() {
         localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update localStorage
     };
 
-    const [selectedTip, setSelectedTip] = useState(null);
-    const [customTip, setCustomTip] = useState(null);
-    const [tipAmount, setTipAmount] = useState(0);
-    const [contactInfo, setContactInfo] = useState({
-        phone: "",
-        email: "",
-        firstName: "",
-        lastName: "",
-    });
-
     const handleTipSelect = (tip, isCustom = false) => {
         if (isCustom) {
             setSelectedTip(null);
@@ -97,10 +105,60 @@ export default function OrderCart() {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    const custName =
-        capitalizeFirstLetter(contactInfo.firstName) +
-        " " +
-        capitalizeFirstLetter(contactInfo.lastName);
+    const custName = () => {
+        const info = getContactInfo();
+        return `${capitalizeFirstLetter(info.firstName || '')} ${capitalizeFirstLetter(info.lastName || '')}`.trim();
+    };
+
+    // Handle voice input changes
+    useEffect(() => {
+        if (lastCommand && lastCommand.startsWith('input ')) {
+            const value = lastCommand.slice(6).trim();
+            console.log('Voice command value:', value);
+            
+            // The active field is already being tracked by VoiceCommandProvider
+            // The input will be updated through the onChange event
+        }
+    }, [lastCommand]);
+
+    // Handle manual input changes
+    const handleInputChange = (field, value) => {
+        console.log('handleInputChange called:', { field, value });
+        console.log('Current contactInfo:', contactInfo);
+        
+        // Format phone numbers to remove spaces and non-numeric characters
+        let formattedValue = value;
+        if (field === 'phone') {
+            formattedValue = value.replace(/[^0-9]/g, '');
+            console.log('Formatted phone number:', formattedValue);
+        }
+        
+        setContactInfo(prev => {
+            const newState = {
+                ...prev,
+                [field]: formattedValue
+            };
+            console.log('Setting new contactInfo:', newState);
+            return newState;
+        });
+        
+        // Clear validation error if it exists
+        if (validationErrors[field]) {
+            console.log('Clearing validation error for:', field);
+            setValidationErrors(prev => ({
+                ...prev,
+                [field]: undefined
+            }));
+        }
+    };
+
+    // Handle input focus
+    const handleInputFocus = (field) => {
+        console.log('Focus handler called for:', field);
+        const voiceElementId = `${field}-input`;
+        console.log('Setting active field to:', voiceElementId);
+        setActiveInputField(voiceElementId);
+    };
 
     const addOrder = async () => {
         // Validate fields
@@ -122,7 +180,7 @@ export default function OrderCart() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    customerName: custName,
+                    customerName: custName(),
                     cart: cart,
                 }),
             });
@@ -138,14 +196,6 @@ export default function OrderCart() {
         } catch (error) {
             console.error("Failed to add order", error);
         }
-    };
-
-    // Add this function to handle input changes
-    const handleInputChange = (field, value) => {
-        setContactInfo((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
     };
 
     const handleReset = () => {
@@ -333,7 +383,7 @@ export default function OrderCart() {
 
                             {/* Phone Number */}
                             <VoiceElement
-                                id="phone-change"
+                                id="phone-input"
                                 description="phone number"
                                 isInput={true}
                             >
@@ -343,6 +393,8 @@ export default function OrderCart() {
                                     </label>
                                     <input
                                         type="tel"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
                                         placeholder="Enter phone number"
                                         className={`w-full py-2 pl-7 pr-3 border ${
                                             validationErrors.phone
@@ -351,17 +403,12 @@ export default function OrderCart() {
                                         } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                         value={contactInfo.phone}
                                         onChange={(e) => {
-                                            handleInputChange(
-                                                "phone",
-                                                e.target.value
-                                            );
-                                            // Clear validation error when typing
-                                            if (validationErrors.phone) {
-                                                setValidationErrors((prev) => ({
-                                                    ...prev,
-                                                    phone: undefined,
-                                                }));
-                                            }
+                                            console.log('Phone input onChange event:', e.target.value);
+                                            handleInputChange("phone", e.target.value);
+                                        }}
+                                        onFocus={(e) => {
+                                            console.log('Phone input focused');
+                                            handleInputFocus("phone");
                                         }}
                                     />
                                     {validationErrors.phone && (
@@ -392,17 +439,12 @@ export default function OrderCart() {
                                         } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                         value={contactInfo.email}
                                         onChange={(e) => {
-                                            handleInputChange(
-                                                "email",
-                                                e.target.value
-                                            );
-                                            // Clear validation error when typing
-                                            if (validationErrors.email) {
-                                                setValidationErrors((prev) => ({
-                                                    ...prev,
-                                                    email: undefined,
-                                                }));
-                                            }
+                                            console.log('Email input onChange event:', e.target.value);
+                                            handleInputChange("email", e.target.value);
+                                        }}
+                                        onFocus={(e) => {
+                                            console.log('Email input focused');
+                                            handleInputFocus("email");
                                         }}
                                     />
                                     {validationErrors.email && (
@@ -434,22 +476,12 @@ export default function OrderCart() {
                                             } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                             value={contactInfo.firstName}
                                             onChange={(e) => {
-                                                handleInputChange(
-                                                    "firstName",
-                                                    e.target.value
-                                                );
-                                                // Clear validation error when typing
-                                                if (
-                                                    validationErrors.firstName
-                                                ) {
-                                                    setValidationErrors(
-                                                        (prev) => ({
-                                                            ...prev,
-                                                            firstName:
-                                                                undefined,
-                                                        })
-                                                    );
-                                                }
+                                                console.log('First name input onChange event:', e.target.value);
+                                                handleInputChange("firstName", e.target.value);
+                                            }}
+                                            onFocus={(e) => {
+                                                console.log('First name input focused');
+                                                handleInputFocus("firstName");
                                             }}
                                         />
                                         {validationErrors.firstName && (
@@ -478,19 +510,12 @@ export default function OrderCart() {
                                             } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                             value={contactInfo.lastName}
                                             onChange={(e) => {
-                                                handleInputChange(
-                                                    "lastName",
-                                                    e.target.value
-                                                );
-                                                // Clear validation error when typing
-                                                if (validationErrors.lastName) {
-                                                    setValidationErrors(
-                                                        (prev) => ({
-                                                            ...prev,
-                                                            lastName: undefined,
-                                                        })
-                                                    );
-                                                }
+                                                console.log('Last name input onChange event:', e.target.value);
+                                                handleInputChange("lastName", e.target.value);
+                                            }}
+                                            onFocus={(e) => {
+                                                console.log('Last name input focused');
+                                                handleInputFocus("lastName");
                                             }}
                                         />
                                         {validationErrors.lastName && (
@@ -675,7 +700,7 @@ export default function OrderCart() {
                             Order Placed Successfully! 🎉
                         </h3>
                         <p className="text-gray-600 mb-6">
-                            Thank you, {custName}! Your order has been placed
+                            Thank you, {custName()}! Your order has been placed
                             successfully.
                         </p>
                         <div className="flex justify-end">

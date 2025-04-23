@@ -20,6 +20,7 @@ export default function VoiceCommandProvider({ children }) {
     const [activeField, setActiveField] = useState(null);
     const pathname = usePathname();
     const messageTimeoutRef = useRef(null);
+    const isInitialized = useRef(false);
     
     const {
         transcript,
@@ -28,21 +29,57 @@ export default function VoiceCommandProvider({ children }) {
         browserSupportsSpeechRecognition
     } = useSpeechRecognition();
 
-    // Function to safely set message with cleanup
-    const setMessageWithCleanup = useCallback((newMessage) => {
-        // Clear any existing timeout
+    // Function to set message with auto-clear
+    const setMessageWithTimeout = useCallback((newMessage, timeout = 2000) => {
+        setMessage(newMessage);
         if (messageTimeoutRef.current) {
             clearTimeout(messageTimeoutRef.current);
         }
-        // Clear current message
-        setMessage('');
-        // Set new message after a brief delay
-        messageTimeoutRef.current = setTimeout(() => {
-            setMessage(newMessage);
-        }, 100);
+        if (timeout) {
+            messageTimeoutRef.current = setTimeout(() => {
+                setMessage('');
+            }, timeout);
+        }
     }, []);
 
-    // Cleanup on unmount or route change
+    // Update message when listening state changes
+    useEffect(() => {
+        if (isListening) {
+            setMessage('Listening...');
+        } else {
+            setMessage('');
+        }
+    }, [isListening]);
+
+    // Initialize voice state from localStorage
+    useEffect(() => {
+        if (isInitialized.current) return;
+        
+        const savedVoiceState = localStorage.getItem('voiceEnabled');
+        const savedListeningState = localStorage.getItem('isListening');
+        
+        if (savedVoiceState !== null) {
+            const isEnabled = savedVoiceState === 'true';
+            setVoiceEnabled(isEnabled);
+            
+            if (isEnabled && savedListeningState === 'true') {
+                SpeechRecognition.startListening({ continuous: true });
+                setIsListening(true);
+            }
+        }
+        
+        isInitialized.current = true;
+    }, []);
+
+    // Restart listening when route changes if it was previously listening
+    useEffect(() => {
+        if (voiceEnabled && localStorage.getItem('isListening') === 'true') {
+            SpeechRecognition.startListening({ continuous: true });
+            setIsListening(true);
+        }
+    }, [pathname, voiceEnabled]);
+
+    // Cleanup on unmount
     useEffect(() => {
         return () => {
             if (messageTimeoutRef.current) {
@@ -52,26 +89,18 @@ export default function VoiceCommandProvider({ children }) {
             setLastCommand('');
             setProcessingCommand(false);
             setActiveField(null);
-        };
-    }, [pathname]);
-
-    // Initialize voice state from localStorage
-    useEffect(() => {
-        const savedVoiceState = localStorage.getItem('voiceEnabled');
-        const savedListeningState = localStorage.getItem('isListening');
-        
-        if (savedVoiceState !== null) {
-            const isEnabled = savedVoiceState === 'true';
-            setVoiceEnabled(isEnabled);
             
-            // If voice is enabled and was previously listening, start listening
-            if (isEnabled && savedListeningState === 'true') {
-                SpeechRecognition.startListening({ continuous: true });
-                setIsListening(true);
-                setMessageWithCleanup("Listening for commands...");
+            // Ensure processing is stopped
+            if (processingCommand) {
+                setProcessingCommand(false);
             }
-        }
-    }, []);
+        };
+    }, [pathname, processingCommand]);
+
+    // Additional effect to handle route changes
+    useEffect(() => {
+        setProcessingCommand(false);
+    }, [pathname]);
 
     // Register a voice-enabled element with an ID and description
     const registerVoiceElement = useCallback((id, description, element) => {
@@ -103,42 +132,60 @@ export default function VoiceCommandProvider({ children }) {
             setProcessingCommand(true);
             setLastCommand(transcript);
             
-            // Clear current message
-            setMessage('');
+            // Show user's last command for 2 seconds
+            setMessageWithTimeout(transcript);
             
             const commandText = transcript.toLowerCase();
             
             // Handle input commands first
             if (commandText.startsWith('input ') && activeField) {
-                let inputValue = commandText.replace('input ', '').trim();
+                console.log('Active Field:', activeField);
+                console.log('Voice Elements:', voiceElements);
+
+                // Extract the value after "input"
+                let value = commandText.slice(6).trim();
                 
+                // If this is a phone input, remove all spaces and non-numeric characters
                 if (activeField === 'phone-input') {
-                    inputValue = inputValue.replace(/\s+/g, '');
-                } else if (/^\d+(?:\s+\d+)*$/.test(inputValue)) {
-                    inputValue = inputValue.replace(/\s+/g, '');
+                    value = value.replace(/[^0-9]/g, '');
+                    console.log('Formatted phone number:', value);
                 }
+                
+                console.log('Processing voice command - Value:', value);
 
                 const element = voiceElements[activeField]?.element;
-                if (element && element.current) {
-                    element.current.value = inputValue;
-                    const inputEvent = new Event('input', { bubbles: true });
-                    Object.defineProperty(inputEvent, 'target', {
-                        writable: false,
-                        value: element.current
-                    });
-                    element.current.dispatchEvent(inputEvent);
-
-                    const changeEvent = new Event('change', { bubbles: true });
-                    Object.defineProperty(changeEvent, 'target', {
-                        writable: false,
-                        value: element.current
-                    });
-                    element.current.dispatchEvent(changeEvent);
-
-                    setMessageWithCleanup(`Input: "${inputValue}"`);
-                    resetTranscript();
-                    setProcessingCommand(false);
-                    return;
+                if (element?.current) {
+                    console.log('Found input element:', element.current);
+                    
+                    try {
+                        // Create and dispatch input event with value
+                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+                            window.HTMLInputElement.prototype,
+                            "value"
+                        ).set;
+                        nativeInputValueSetter.call(element.current, value);
+                        
+                        const inputEvent = new Event('input', { bubbles: true });
+                        element.current.dispatchEvent(inputEvent);
+                        
+                        console.log('Input event dispatched');
+                        
+                        // Create and dispatch change event
+                        const changeEvent = new Event('change', { bubbles: true });
+                        element.current.dispatchEvent(changeEvent);
+                        
+                        console.log('Change event dispatched');
+                        
+                        // Trigger a focus event to ensure the input is active
+                        element.current.focus();
+                        
+                        console.log('Final input value:', element.current.value);
+                    } catch (error) {
+                        console.error('Error updating input:', error);
+                    }
+                } else {
+                    console.warn('No active input element found. Active field:', activeField);
+                    console.warn('Available voice elements:', Object.keys(voiceElements));
                 }
             }
             
@@ -159,13 +206,9 @@ export default function VoiceCommandProvider({ children }) {
                     matchFound = true;
                     if (element && element.current) {
                         element.current.click();
-                        setMessageWithCleanup(`Executed: "${description}"`);
                     }
                 }
             });
-            
-            if (!matchFound) {
-                return ;   }
             
             resetTranscript();
             setProcessingCommand(false);
@@ -176,7 +219,7 @@ export default function VoiceCommandProvider({ children }) {
         }, 1000);
 
         return () => clearTimeout(timer);
-    }, [transcript, isListening, processingCommand, resetTranscript, voiceElements, activeField, setMessageWithCleanup]);
+    }, [transcript, isListening, processingCommand, resetTranscript, voiceElements, activeField, setMessageWithTimeout]);
 
     // Toggle voice functionality
     const toggleVoiceEnabled = useCallback(() => {
@@ -185,11 +228,9 @@ export default function VoiceCommandProvider({ children }) {
         localStorage.setItem('voiceEnabled', newState.toString());
         
         if (newState) {
-            setMessageWithCleanup("Voice commands enabled");
             if (localStorage.getItem('isListening') === 'true') {
                 SpeechRecognition.startListening({ continuous: true });
                 setIsListening(true);
-                setMessageWithCleanup("Listening for commands...");
             }
         } else {
             if (isListening) {
@@ -197,29 +238,23 @@ export default function VoiceCommandProvider({ children }) {
                 setIsListening(false);
                 localStorage.setItem('isListening', 'false');
             }
-            setMessageWithCleanup("Voice commands disabled");
         }
-    }, [voiceEnabled, isListening, setMessageWithCleanup]);
+    }, [voiceEnabled, isListening]);
 
     // Toggle listening
     const toggleListening = useCallback(() => {
-        if (!browserSupportsSpeechRecognition) {
-            setMessageWithCleanup("Your browser doesn't support speech recognition.");
-            return;
-        }
+        if (!browserSupportsSpeechRecognition) return;
 
         if (isListening) {
             SpeechRecognition.stopListening();
-            setMessageWithCleanup("Voice commands paused");
             localStorage.setItem('isListening', 'false');
         } else {
             SpeechRecognition.startListening({ continuous: true });
-            setMessageWithCleanup("Listening for commands...");
             localStorage.setItem('isListening', 'true');
         }
         
         setIsListening(prev => !prev);
-    }, [isListening, browserSupportsSpeechRecognition, setMessageWithCleanup]);
+    }, [isListening, browserSupportsSpeechRecognition]);
 
     // Provide value to context
     const contextValue = {
