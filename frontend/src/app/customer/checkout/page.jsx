@@ -31,6 +31,8 @@ export default function OrderCart() {
         lastName: useRef(null)
     };
     const [orderComplete, setorderComplete] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [validationErrors, setValidationErrors] = useState({});
 
     // Fetch cart data from localStorage when the component mounts
     useEffect(() => {
@@ -94,6 +96,18 @@ export default function OrderCart() {
     const custName = capitalizeFirstLetter(contactInfo.firstName) + " " + capitalizeFirstLetter(contactInfo.lastName);
 
     const addOrder = async () => {    
+        // Validate fields
+        const errors = {};
+        if (!contactInfo.phone) errors.phone = 'Phone number is required';
+        if (!contactInfo.email) errors.email = 'Email is required';
+        if (!contactInfo.firstName) errors.firstName = 'First name is required';
+        if (!contactInfo.lastName) errors.lastName = 'Last name is required';
+    
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
+    
         try {
             const response = await fetch(`${SERVER}/newOrder`, {
                 method: "POST",
@@ -111,8 +125,9 @@ export default function OrderCart() {
             }
             setCart([]);
             localStorage.setItem("cart", JSON.stringify([]));
+            setShowSuccessModal(true);
             setorderComplete(true);
-
+    
         } catch (error) {
             console.error("Failed to add order", error);
         }
@@ -264,8 +279,7 @@ export default function OrderCart() {
                             
                             {/* Phone Number */}
                             <VoiceElement
-                                id="phone-change
-                                "
+                                id="phone-change"
                                 description="phone number"
                                 isInput={true}
                             >
@@ -274,11 +288,21 @@ export default function OrderCart() {
                                     <input
                                         type="tel"
                                         placeholder="Enter phone number"
-                                        className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                        className={`w-full py-2 pl-7 pr-3 border ${
+                                            validationErrors.phone ? 'border-red-500' : 'border-[#C2A385]'
+                                        } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                         value={contactInfo.phone}
-                                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                                        onInput={(e) => handleInputChange('phone', e.target.value)}
+                                        onChange={(e) => {
+                                            handleInputChange('phone', e.target.value);
+                                            // Clear validation error when typing
+                                            if (validationErrors.phone) {
+                                                setValidationErrors(prev => ({...prev, phone: undefined}));
+                                            }
+                                        }}
                                     />
+                                    {validationErrors.phone && (
+                                        <p className="text-red-500 text-xs mt-1">{validationErrors.phone}</p>
+                                    )}
                                 </div>
                             </VoiceElement>
                             
@@ -293,11 +317,21 @@ export default function OrderCart() {
                                     <input
                                         type="email"
                                         placeholder="Enter email"
-                                        className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                        className={`w-full py-2 pl-7 pr-3 border ${
+                                            validationErrors.email ? 'border-red-500' : 'border-[#C2A385]'
+                                        } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                         value={contactInfo.email}
-                                        onChange={(e) => handleInputChange('email', e.target.value)}
-                                        onInput={(e) => handleInputChange('email', e.target.value)}
+                                        onChange={(e) => {
+                                            handleInputChange('email', e.target.value);
+                                            // Clear validation error when typing
+                                            if (validationErrors.email) {
+                                                setValidationErrors(prev => ({...prev, email: undefined}));
+                                            }
+                                        }}
                                     />
+                                    {validationErrors.email && (
+                                        <p className="text-red-500 text-xs mt-1">{validationErrors.email}</p>
+                                    )}
                                 </div>
                             </VoiceElement>
                             
@@ -313,11 +347,21 @@ export default function OrderCart() {
                                         <input
                                             type="text"
                                             placeholder="First Name"
-                                            className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                            className={`w-full py-2 pl-7 pr-3 border ${
+                                                validationErrors.firstName ? 'border-red-500' : 'border-[#C2A385]'
+                                            } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                             value={contactInfo.firstName}
-                                            onChange={(e) => handleInputChange('firstName', e.target.value)}
-                                            onInput={(e) => handleInputChange('firstName', e.target.value)}
+                                            onChange={(e) => {
+                                                handleInputChange('firstName', e.target.value);
+                                                // Clear validation error when typing
+                                                if (validationErrors.firstName) {
+                                                    setValidationErrors(prev => ({...prev, firstName: undefined}));
+                                                }
+                                            }}
                                         />
+                                        {validationErrors.firstName && (
+                                            <p className="text-red-500 text-xs mt-1">{validationErrors.firstName}</p>
+                                        )}
                                     </div>
                                 </VoiceElement>
                                 <VoiceElement
@@ -330,11 +374,21 @@ export default function OrderCart() {
                                         <input
                                             type="text"
                                             placeholder="Last Name"
-                                            className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
+                                            className={`w-full py-2 pl-7 pr-3 border ${
+                                                validationErrors.lastName ? 'border-red-500' : 'border-[#C2A385]'
+                                            } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
                                             value={contactInfo.lastName}
-                                            onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                            onInput={(e) => handleInputChange('lastName', e.target.value)}
+                                            onChange={(e) => {
+                                                handleInputChange('lastName', e.target.value);
+                                                // Clear validation error when typing
+                                                if (validationErrors.lastName) {
+                                                    setValidationErrors(prev => ({...prev, lastName: undefined}));
+                                                }
+                                            }}
                                         />
+                                        {validationErrors.lastName && (
+                                            <p className="text-red-500 text-xs mt-1">{validationErrors.lastName}</p>
+                                        )}
                                     </div>
                                 </VoiceElement>
                             </div>
@@ -448,23 +502,41 @@ export default function OrderCart() {
                                 description="place order"
                                 className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
                                 disabled={cart.length === 0}
-                                onClick={() => {
-                                    if (cart.length > 0) {
-                                       addOrder()
-                                    }
-                                }}
+                                onClick={addOrder}
                             >
                                 <button
                                     className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
                                     disabled={cart.length === 0}
                                 >
-                                    Place Order
+                                    {cart.length === 0 ? 'Your cart is empty' : 'Place Order'}
                                 </button>
                             </VoiceElement>
                         </div>
                     </div>
                 </div>
             </div>
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-8 rounded-2xl max-w-md w-full">
+                        <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4">Order Placed Successfully! 🎉</h3>
+                        <p className="text-gray-600 mb-6">
+                            Thank you, {custName}! Your order has been placed successfully.
+                        </p>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => {
+                                    setShowSuccessModal(false);
+                                    router.push("/customer/menu");
+                                }}
+                                className="bg-[#3D2B1F] text-[#EED9C4] font-semibold px-4 py-2 rounded-lg hover:bg-[#2a1d15] transition"
+                            >
+                                Continue Shopping
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
