@@ -421,7 +421,7 @@ export default function OrderCart() {
                                 disabled={cart.length === 0}
                                 onClick={() => {
                                     if (cart.length > 0) {
-                                       addOrder()
+                                      
                                     }
                                 }}
                             >
