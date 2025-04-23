@@ -625,25 +625,24 @@ export function Management() {
         }
     };
 
+    // Set references to allow for scrolling functionalities
     const productListRef = useRef(null);
+    const currentStockRef = useRef(null);
+    const manageInventoryRef = useRef(null);
+    const manageEmployeeRef = useRef(null);
 
+    // Function to scroll to different elements
     const scrollToProductList = () => {
         productListRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
-    const currentStockRef = useRef(null);
 
     const scrollToCurrentStock = () => {
         currentStockRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    const manageInventoryRef = useRef(null);
-
     const scrollToManageInventory = () => {
         manageInventoryRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
-    const manageEmployeeRef = useRef(null);
 
     const scrollToManageEmployee = () => {
         manageEmployeeRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -652,6 +651,7 @@ export function Management() {
     const [notification, setNotification] = useState({ message: '', type: '' });
     const timeoutRef = useRef(null);
 
+    // Function to show notification status for updates 
     const showNotification = (message, type = 'Success') => {
         setNotification({ message: `${type}: ${message}`, type });
        

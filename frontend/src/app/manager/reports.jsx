@@ -14,6 +14,7 @@ const COLORS = [
 ];
 
 export default function Reports() {
+    // set states
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [hourlyData, setHourlyData] = useState([]);
     const [loadingChart, setLoadingChart] = useState(false);
@@ -26,18 +27,19 @@ export default function Reports() {
     const [XReportButton, setXReportButton] = useState(false);
     const [ZReportButton, setZReportButton] = useState(false);
 
+    // set reference states for scroll functionalities
     const productUsageRef = useRef(null);
-    
+    const ReportRef= useRef(null);
+
     const scrollToProductUsage = () => {
         productUsageRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-    
-    const ReportRef= useRef(null);
     
     const scrollToXReport = () => {
         ReportRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    // Fetch hourly data from today from the PostgreSQL database
     const fetchHourlyData = async () => {
         setLoadingChart(true);
         try {
@@ -57,6 +59,7 @@ export default function Reports() {
         setLoadingChart(false);
     };
 
+    // Fetch X-Report information from the PostgreSQL database
     const fetchXReport = async () => {
         setLoadingXRep(true);
         try {
@@ -70,6 +73,7 @@ export default function Reports() {
         setLoadingXRep(false);
     };
 
+    // Fetch Z-Report information from the PotgreSQL database
     const fetchZReport = async () => {
         setLoadingZRep(true);
         try {
@@ -88,6 +92,7 @@ export default function Reports() {
         fetchZReport();
     }, [date]);
 
+    // Function when X-Report is regenerated
     const refetchXReport = async () => {
         await fetchXReport();
         await checkZReport();
@@ -97,6 +102,7 @@ export default function Reports() {
         }, 100)
     };
 
+    // Function that handles whenever Z-Report is regenerated
     const refetchZReport = async () => {
         await fetchZReport();
         await updateZReport();
@@ -123,6 +129,7 @@ export default function Reports() {
         }));
     };
     
+    // Function that updates PostgreSQL database whenever the generate button is pressed
     const updateZReport = async () => {
         setLoadingZRep(true);
         try {
@@ -150,6 +157,7 @@ export default function Reports() {
         setLoadingZRep(false);
     };
 
+    // Function that checks the PostgreSQL database if Z-Report has already been run for the day
     const checkZReport = async () => {
         setLoadingXRep(true);
         try {
@@ -180,6 +188,7 @@ export default function Reports() {
     const [notification, setNotification] = useState({ message: '', type: '' });
     const timeoutRef = useRef(null);
 
+    // Functionality to show updates for whenever reports are generated
     const showNotification = (message, type = 'Success') => {
         setNotification({ message: `${message}`, type });
        
@@ -200,7 +209,7 @@ export default function Reports() {
             : 'bg-gray-400';
     };
 
-    console.log(groupedData);
+    //console.log(groupedData);
 
     return (
         <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">
