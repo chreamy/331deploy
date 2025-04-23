@@ -81,7 +81,7 @@ const Nav = ({ userRole }) => {
                         </div>
                     )}
 
-                    <div className="flex items-center justify-center h-full mt-0 -mb-2">
+                    <div className="flex items-center text-grey-700 justify-center h-full mt-0 -mb-2">
                         <TranslateToggle />
                     </div>
                     
@@ -100,7 +100,9 @@ const Nav = ({ userRole }) => {
 
                 {/* Center Title */}
                 <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
-                    ShareTea Customer Portal
+                    {userRole === "customer" && <span>ShareTea Customer Portal</span>}
+                    {userRole === "guest" && <span>ShareTea Portal</span>}
+                    {userRole === "cashier" && <span>ShareTea Cashier Portal</span>}
                 </h1>
 
                 {/* Right Side: Toggle + Cart */}

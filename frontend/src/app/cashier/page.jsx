@@ -2,6 +2,7 @@
 import { SERVER } from "@/app/const";
 import { useEffect, useState } from "react";
 import Nav from "@/app/nav";
+import { FaStopCircle } from "react-icons/fa";
 
 export default function CashierView() {
     const [categories, setCategories] = useState([]);
@@ -10,11 +11,12 @@ export default function CashierView() {
     const [searchTerm, setSearchTerm] = useState("");
     const [order, setOrder] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [options, setOptions] = useState({ toppings: [], modifications: [] });
     const [selectedOptions, setSelectedOptions] = useState({ toppings: [], modifications: {} });
+    const [processingOrder, setProcessStatus] = useState(false);
+    const [showProcessModal, setProcessModal] = useState(false);
 
     useEffect(() => {
         fetch(`${SERVER}/categories`)
@@ -31,10 +33,12 @@ export default function CashierView() {
             });
     }, []);
 
+    // Function used for search bar functionalities 
     const filteredItems = (items[selectedCategory] || []).filter((item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Function used to fetch drink information from backend
     const fetchOptions = async (drink_id) => {
         try {
             const res = await fetch(`${SERVER}/drink-options/${drink_id}`);
@@ -49,6 +53,40 @@ export default function CashierView() {
             setSelectedOptions({ toppings: [], modifications: defaultMods });
         } catch (err) {
             console.error("Error fetching options:", err);
+        }
+    };
+
+    // Modal to show payment processing
+    const handlePayment = () => {
+        setProcessModal(true);    
+    
+        setTimeout(() => {
+            setProcessModal(false);     
+        }, 3000);
+    };
+
+    // Function to send post api request to update the backend with new order
+    const addOrder = async () => {    
+        try {
+            setProcessStatus(true);
+            handlePayment();
+            const response = await fetch(`${SERVER}/newOrderCashier`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(order),
+            });
+        
+            if (!response.ok) {
+                setProcessStatus(false);
+                throw new Error("Failed to add order");
+            }
+            setOrder([]);
+            setProcessStatus(false);
+
+        } catch (error) {
+            console.error("Failed to add order", error);
         }
     };
 
@@ -85,6 +123,7 @@ export default function CashierView() {
         }));
     };
 
+    // Function to handle order creation to add new drinks and modifications 
     const addToOrder = () => {
         const selectedToppingObjs = options.toppings.filter(t =>
             selectedOptions.toppings.includes(t.name)
@@ -100,10 +139,12 @@ export default function CashierView() {
         closeModal();
     };
 
+    // Function to handle order creation by removing drinks
     const removeFromOrder = (index) => {
         setOrder((prev) => prev.filter((_, i) => i !== index));
     };
 
+    // Function to calculate order total
     const subtotal = order.reduce((sum, item) => {
         const toppingTotal = item.toppings?.reduce((acc, t) => acc + Number(t.price || 0), 0) || 0;
         return sum + item.price + toppingTotal;
@@ -137,6 +178,15 @@ export default function CashierView() {
                 </div>
             </div>
 
+            {/* Popup Modal */}
+            {showProcessModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative border-5 border-black">
+                        <p className="text-gray-700 text-center text-lg">Processing Payment...</p>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Sidebar */}
                 <div className="w-full lg:w-1/6 bg-zinc-800 p-4 rounded-xl shadow-md">
@@ -159,7 +209,7 @@ export default function CashierView() {
                 {/* Items and Summary */}
                 <div className="flex-1 flex flex-col lg:flex-row gap-6">
                     {/* Item Grid */}
-                    <div className="w-full lg:w-2/3 bg-zinc-100 rounded-xl p-4 text-black shadow-xl">
+                    <div className="w-full lg:w-3/5 bg-zinc-100 rounded-xl p-6 text-black shadow-xl">
                         <h2 className="text-2xl font-bold mb-4">Select Items</h2>
                         <div className="space-y-4">
                             {filteredItems.map((item, idx) => (
@@ -175,7 +225,7 @@ export default function CashierView() {
                     </div>
 
                     {/* Summary Panel */} 
-                    <div className="w-full lg:w-1/3 bg-zinc-100 rounded-xl p-6 text-black shadow-xl flex flex-col justify-between">
+                    <div className="w-full lg:w-2/5 bg-zinc-100 rounded-xl p-6 text-black shadow-xl flex flex-col justify-between">
                         <div>
                             <h2 className="text-xl font-bold mb-4">Summary</h2>
                             <div className="h-64 overflow-y-auto border p-3 rounded-lg bg-gray-50 space-y-2">
@@ -219,9 +269,18 @@ export default function CashierView() {
                             <p>Subtotal: ${subtotal.toFixed(2)}</p>
                             <p>Tax: ${(subtotal * 0.0825).toFixed(2)}</p>
                             <p className="font-semibold">Total: ${(subtotal + subtotal * 0.0825).toFixed(2)}</p>
-                            <button className="mt-4 w-full bg-[#C2A385] text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition-transform">
+                            <button 
+                                onClick={() => {
+                                    if (order.length > 0) {
+                                       
+                                        addOrder();
+                                    }
+                                }}
+                                className="mt-4 w-full bg-[#C2A385] text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition-transform"
+                            >
                                 Card Checkout
                             </button>
+                            
                         </div>
                     </div>
                 </div>

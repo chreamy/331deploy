@@ -132,10 +132,14 @@ app.post("/updateInventory", async (req, res) => {
 
         else if (quantity === null) {
             await pool.query('UPDATE inventory SET price = ($1) where name = ($2)', [price, name]);
+            await pool.query('UPDATE toppings SET price = ($1) where name = ($2)', [price, name]); 
+            await pool.query('UPDATE drinks SET price = ($1) where name = ($2)', [price, name]); 
         }
 
         else { // update all
             await pool.query('UPDATE inventory SET price = ($1), quantity = ($2) where name = ($3)', [price, quantity, name]);
+            await pool.query('UPDATE toppings SET price = ($1) where name = ($2)', [price, name]); 
+            await pool.query('UPDATE drinks SET price = ($1) where name = ($2)', [price, name]); 
         }
 
         res.status(200).json({
@@ -319,14 +323,14 @@ app.delete("/removeTopping", async (req, res) => {
 app.post("/addInventory", async (req, res) => {
     try {
         const {
-            drinkNameInput,
+            name,
             quantityInput,
             priceInput,
             selectedCategoryInput,
         } = req.body;
 
         if (
-            !drinkNameInput ||
+            !name ||
             !quantityInput ||
             !priceInput ||
             !selectedCategoryInput
@@ -340,7 +344,7 @@ app.post("/addInventory", async (req, res) => {
 
         const drinkCheck = await pool.query(
             "SELECT count(*) FROM drinks where name = ($1)",
-            [drinkNameInput]
+            [name]
         );
         const nameExists = parseInt(drinkCheck.rows[0].count, 10); // convert to int
 
@@ -360,12 +364,12 @@ app.post("/addInventory", async (req, res) => {
 
         await pool.query(
             "INSERT INTO inventory (id, name, quantity, price) VALUES ($1, $2, $3, $4)",
-            [newInventoryId, drinkNameInput, quantityInput, priceInput]
+            [newInventoryId, name, quantityInput, priceInput]
         );
 
         await pool.query(
             "INSERT INTO drinks (id, name, price) VALUES ($1, $2, $3)",
-            [newDrinkId, drinkNameInput, priceInput]
+            [newDrinkId, name, priceInput]
         );
 
         await pool.query(
@@ -389,9 +393,9 @@ app.post("/addInventory", async (req, res) => {
 
 app.post("/addTopping", async (req, res) => {
     try {
-        const { toppingName, toppingPrice, toppingQuantity } = req.body;
+        const { name, toppingPrice, toppingQuantity } = req.body;
 
-        if (!toppingName || !toppingPrice || !toppingQuantity) {
+        if (!name || !toppingPrice || !toppingQuantity) {
             return res.status(400).json({ error: "Missing fields" });
         }
 
@@ -401,7 +405,7 @@ app.post("/addTopping", async (req, res) => {
 
         const toppingCheck = await pool.query(
             "SELECT count(*) FROM toppings where name = ($1)",
-            [toppingName]
+            [name]
         );
         const nameExists = parseInt(toppingCheck.rows[0].count, 10); // convert to int
 
@@ -421,12 +425,12 @@ app.post("/addTopping", async (req, res) => {
 
         await pool.query(
             "INSERT INTO inventory (id, name, quantity, price) VALUES ($1, $2, $3, $4)",
-            [newInventoryId, toppingName, toppingQuantity, toppingPrice]
+            [newInventoryId, name, toppingQuantity, toppingPrice]
         );
 
         await pool.query(
             "INSERT INTO toppings (id, name, price) VALUES ($1, $2, $3)",
-            [newToppingId, toppingName, toppingPrice]
+            [newToppingId, name, toppingPrice]
         );
 
         await pool.query(
@@ -501,12 +505,13 @@ app.get("/hourly-product-usage/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name), EXTRACT(hour FROM o.timestamp) as hour 
+            SELECT distinct name, count(distinct odmt.orderid), EXTRACT(hour FROM o.timestamp) as hour 
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= $1::timestamp 
             AND o.timestamp < ($1::timestamp + interval '1 day')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY hour, name 
             ORDER by name, hour;
         `;
@@ -523,12 +528,13 @@ app.get("/daily-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= $1::timestamp 
             AND o.timestamp < ($1::timestamp + interval '1 day')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -545,12 +551,13 @@ app.get("/weekly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= date_trunc('week', $1::timestamp)
             AND o.timestamp < (date_trunc('week', $1::timestamp) + interval '1 week')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -567,12 +574,13 @@ app.get("/monthly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= date_trunc('month', $1::timestamp)
             AND o.timestamp < (date_trunc('month', $1::timestamp) + interval '1 month')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -589,12 +597,13 @@ app.get("/yearly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(name)
+            SELECT distinct name, count(distinct odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
             WHERE o.timestamp >= date_trunc('year', $1::timestamp)
             AND o.timestamp < (date_trunc('year', $1::timestamp) + interval '1 year')
+            AND odmt.topping_modification_id IN (11,12,13,14)
             GROUP BY name 
             ORDER by name;
         `;
@@ -824,54 +833,248 @@ app.post("/updateZReport", async (req, res) => {
     }
 });
 
+function formatDrinkName(str) {
+    return str
+        .split('-') 
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+        .join(' '); // Join with spaces
+}
 
 app.post('/newOrder', async (req, res) => {
-    const { customer_id, order_date, order_details } = req.body;
-    const empid = 0;
-
-    const newID = await pool.query(
-        "SELECT COALESCE(MAX(orderid), 0) + 1 AS new_id FROM order_drink_modifications_toppings;"
-    );
-    const order_id = newID.rows[0].new_id;
+    const { customerName, cart } = req.body;
 
     try {
+        if (!(Array.isArray(cart) && cart.length > 0)) {
+            res.status(500).json({ error: "Error fetching items in cart" });
+        }
+    
+        const intlDateObj = new Intl.DateTimeFormat('en-US', {
+            timeZone: "America/Chicago",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        });
+        
+        const timestamp = intlDateObj.format(new Date());  
+
+        const empid = 0;
+        
+        const newID = await pool.query(
+            "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM orders;"
+        );
+        const orderId = newID.rows[0].new_id;
+    
+        const sqlCheck = "SELECT COUNT(*) FROM customers WHERE name = $1";
+        const resultCheck = await pool.query(sqlCheck, [customerName]);
+    
+        var custId = 0; 
+        if (resultCheck.rows[0].count === "0") {
+            const userID = await pool.query(
+                "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM customers;"
+            );
+            custId = userID.rows[0].new_id;     
+        }
+        else {
+            const sqlQuery = "SELECT id AS new_id FROM customers where name = $1";
+            const userID = await pool.query(sqlQuery, [customerName]);
+            custId = userID.rows[0].new_id;   
+        }
+
         const insertOrderSQL = `
             INSERT INTO orders (id, customerid, employeeid, timestamp)
             VALUES ($1, $2, $3, $4)
             `;
-        await pool.query(insertOrderSQL, [order_id, customer_id, empid, order_date]);
+        await pool.query(insertOrderSQL, [orderId, custId, empid, timestamp]);
 
-        for (const detail of order_details) {
+        for (const item of cart) {
             const {
-                drink_id,
+                drinkName,
+                drinkPrice,
                 quantity,
-                ice_id,
-                sugar_id,
-                topping_ids = [],
-            } = detail;
+                selectedIce,
+                selectedSugar,
+                selectedToppings = [],
+                totalPrice
+            } = item;
 
-            for (const topping_id of topping_ids) {
-                const insertODMT = `
-                    INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-                    VALUES ($1, $2, $3, $4)
-                `;
-                await pool.query(insertODMT, [order_id, drink_id, topping_id, quantity]);
+            for (let i = 0; i < quantity; i++) {
+                const formattedDrinkName = formatDrinkName(drinkName);
+            
+                const drinkQuery = await pool.query(
+                    "SELECT id FROM drinks WHERE name = $1",
+                    [formattedDrinkName]
+                );
+                    
+                const drinkId = drinkQuery.rows[0].id;
+
+                const iceQuery = await pool.query(
+                    "SELECT id FROM modifications WHERE name = $1",
+                    [selectedIce]
+                );
+                    
+                const iceId = iceQuery.rows[0].id;
+
+                await pool.query(
+                    `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                        VALUES ($1, $2, $3)
+                    `,
+                    [orderId, drinkId, iceId]
+                );
+
+                const sugarQuery = await pool.query(
+                    "SELECT id FROM modifications WHERE name = $1",
+                    [selectedSugar]
+                );
+                
+                const sugarId = sugarQuery.rows[0].id;
+
+                await pool.query(
+                    `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                        VALUES ($1, $2, $3)
+                    `,
+                    [orderId, drinkId, sugarId]
+                );
+
+                await pool.query(
+                    "UPDATE inventory SET quantity = quantity - 1 where name = $1",
+                    [formattedDrinkName]
+                );
+
+                for (const topping of selectedToppings) {
+                    
+                    const toppingQuery = await pool.query(
+                        "SELECT id FROM toppings WHERE name = $1",
+                        [topping.name]
+                    );
+                    
+                    const toppingId = toppingQuery.rows[0].id;
+
+                    await pool.query(
+                        "UPDATE inventory SET quantity = quantity - 1 where id = $1",
+                        [toppingId]
+                    );
+
+                    const insertODMT = `
+                        INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                        VALUES ($1, $2, $3)
+                    `;
+                    await pool.query(insertODMT, [orderId, drinkId, toppingId]);
+                }
             }
+        };
 
-            const insertIce = `
-                INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-                VALUES ($1, $2, $3, $4)
-            `;
-            await pool.query(insertIce, [order_id, drink_id, ice_id, quantity]);
+        res.status(200).json({ message: 'Order placed successfully', orderId });
+    } catch (err) {
+        console.error('Failed to place order:', err);
+        res.status(500).json({ error: 'Failed to place order' });
+    }
+});
 
-            const insertSugar = `
-                INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id, quantity)
-                VALUES ($1, $2, $3, $4)
-            `;
-            await pool.query(insertSugar, [order_id, drink_id, sugar_id, quantity]);
+app.post('/newOrderCashier', async (req, res) => {
+    const order = req.body;
+
+    try {
+        if (!Array.isArray(order)) {
+            res.status(500).json({ error: "Error fetching items in order" });
         }
+    
+        const intlDateObj = new Intl.DateTimeFormat('en-US', {
+            timeZone: "America/Chicago",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        });
+        
+        const timestamp = intlDateObj.format(new Date());  
 
-        res.status(200).json({ message: 'Order placed successfully', order_id });
+        const empid = 0;
+        const custId = 0; 
+
+        const newID = await pool.query(
+            "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM orders;"
+        );
+        const orderId = newID.rows[0].new_id;
+     
+        const insertOrderSQL = `
+            INSERT INTO orders (id, customerid, employeeid, timestamp)
+            VALUES ($1, $2, $3, $4)
+            `;
+        await pool.query(insertOrderSQL, [orderId, custId, empid, timestamp]);
+
+        for (const item of order) {
+            const {
+                id,
+                modifications = [],
+                name,
+                price,
+                toppings = [],
+            } = item;
+
+            const { Ice: iceMod, Sugar: sugarMod } = modifications;
+
+            const iceQuery = await pool.query(
+                "SELECT id FROM modifications WHERE name = $1",
+                [iceMod]
+            );
+                    
+            const iceId = iceQuery.rows[0].id;
+
+            await pool.query(
+                `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                    VALUES ($1, $2, $3)
+                `,
+                [orderId, id, iceId]
+            );
+
+            const sugarQuery = await pool.query(
+                "SELECT id FROM modifications WHERE name = $1",
+                [sugarMod]
+            );
+                
+            const sugarId = sugarQuery.rows[0].id;
+
+            await pool.query(
+                `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                    VALUES ($1, $2, $3)
+                `,
+                [orderId, id, sugarId]
+            );
+            
+            await pool.query(
+                "UPDATE inventory SET quantity = quantity - 1 where name = $1",
+                [name]
+            );
+
+            for (const topping of toppings) {
+                const toppingQuery = await pool.query(
+                    "SELECT id FROM toppings WHERE name = $1",
+                    [topping.name]
+                );
+                    
+                const toppingId = toppingQuery.rows[0].id;
+
+                await pool.query(
+                    "UPDATE inventory SET quantity = quantity - 1 where id = $1",
+                    [toppingId]
+                );
+
+                const insertODMT = `
+                    INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                    VALUES ($1, $2, $3)
+                `;
+                await pool.query(insertODMT, [orderId, id, toppingId]);
+            }  
+        };
+
+        res.status(200).json({ message: 'Order placed successfully', orderId });
     } catch (err) {
         console.error('Failed to place order:', err);
         res.status(500).json({ error: 'Failed to place order' });

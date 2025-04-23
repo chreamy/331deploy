@@ -5,6 +5,7 @@ import Nav from "@/app/nav";
 import { Chart } from "chart.js/auto";
 import datalabels from 'chartjs-plugin-datalabels';
 Chart.register(datalabels);
+import TranslateToggle from "../components/TranslateToggle";
 
 export default function Trends() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -365,23 +366,31 @@ export default function Trends() {
         fetchWeeklyData();
         fetchMonthlyData();
         fetchYearlyData();
-    }, [date, timeframeInput]);
+    }, [timeframeInput]);
+
+    useEffect(() => {
+        fetchDailyData();
+        fetchWeeklyData();
+        fetchMonthlyData();
+        fetchYearlyData();
+        setTimeFrame("");
+    }, [date]);
 
     return (
         <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">
             <div className="sticky top-0 w-full z-50">
-                <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full z-50 shadow-md border-b-[#3D2B1F] border-b-5">
-                    <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
+                <div className="flex justify-between items-center p-2 bg-white sticky top-0 z-50 shadow-md border-b-[#3D2B1F] border-b-5">
+                    <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0">
                         Sales Trends
                     </h1> 
                     {/* Top Navigation */}
                     <div className="flex gap-4">
+                        <a href="/cashier" className="w-40 rounded hover:bg-gray-300 bg-[#EED9C4] text-black text-center inline-block py-5">
+                            Cashier View
+                        </a>
                         <button onClick={scrollToChartRef} className="w-40 py-5 rounded hover:bg-gray-600 bg-black text-white">
                             Popularity Chart
                         </button>
-                        {/* <button onClick={scrollToXReport} className="w-40 rounded hover:bg-gray-400 bg-black text-white">
-                            View Reports
-                        </button> */}
                     </div> 
                 </div>
                 <div className="p-4 flex flex-col items-center">

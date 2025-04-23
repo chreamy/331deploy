@@ -3,6 +3,7 @@ import { SERVER } from "@/app/const";
 import { useState, useEffect, useRef } from "react";
 import Nav from "@/app/nav";
 import { FaPlay, FaPlayCircle } from "react-icons/fa";
+import TranslateToggle from "../components/TranslateToggle";
 
 // Expanded color palette for more variety
 const COLORS = [
@@ -13,6 +14,7 @@ const COLORS = [
 ];
 
 export default function Reports() {
+    // set states
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [hourlyData, setHourlyData] = useState([]);
     const [loadingChart, setLoadingChart] = useState(false);
@@ -25,18 +27,19 @@ export default function Reports() {
     const [XReportButton, setXReportButton] = useState(false);
     const [ZReportButton, setZReportButton] = useState(false);
 
+    // set reference states for scroll functionalities
     const productUsageRef = useRef(null);
-    
+    const ReportRef= useRef(null);
+
     const scrollToProductUsage = () => {
         productUsageRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-    
-    const ReportRef= useRef(null);
     
     const scrollToXReport = () => {
         ReportRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    // Fetch hourly data from today from the PostgreSQL database
     const fetchHourlyData = async () => {
         setLoadingChart(true);
         try {
@@ -56,6 +59,7 @@ export default function Reports() {
         setLoadingChart(false);
     };
 
+    // Fetch X-Report information from the PostgreSQL database
     const fetchXReport = async () => {
         setLoadingXRep(true);
         try {
@@ -69,6 +73,7 @@ export default function Reports() {
         setLoadingXRep(false);
     };
 
+    // Fetch Z-Report information from the PotgreSQL database
     const fetchZReport = async () => {
         setLoadingZRep(true);
         try {
@@ -87,6 +92,7 @@ export default function Reports() {
         fetchZReport();
     }, [date]);
 
+    // Function when X-Report is regenerated
     const refetchXReport = async () => {
         await fetchXReport();
         await checkZReport();
@@ -96,6 +102,7 @@ export default function Reports() {
         }, 100)
     };
 
+    // Function that handles whenever Z-Report is regenerated
     const refetchZReport = async () => {
         await fetchZReport();
         await updateZReport();
@@ -122,6 +129,7 @@ export default function Reports() {
         }));
     };
     
+    // Function that updates PostgreSQL database whenever the generate button is pressed
     const updateZReport = async () => {
         setLoadingZRep(true);
         try {
@@ -149,6 +157,7 @@ export default function Reports() {
         setLoadingZRep(false);
     };
 
+    // Function that checks the PostgreSQL database if Z-Report has already been run for the day
     const checkZReport = async () => {
         setLoadingXRep(true);
         try {
@@ -179,6 +188,7 @@ export default function Reports() {
     const [notification, setNotification] = useState({ message: '', type: '' });
     const timeoutRef = useRef(null);
 
+    // Functionality to show updates for whenever reports are generated
     const showNotification = (message, type = 'Success') => {
         setNotification({ message: `${message}`, type });
        
@@ -199,11 +209,13 @@ export default function Reports() {
             : 'bg-gray-400';
     };
 
+    //console.log(groupedData);
+
     return (
         <div className="h-screen bg-[#3D2B1F] overflow-auto pb-8">
             <div className="sticky top-0 w-full z-50">
                 <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full z-50 shadow-md border-b-[#3D2B1F] border-b-5">
-                   <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
+                   <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0">
                         Manage Reports
                     </h1> 
                     {notification.message && (
@@ -213,6 +225,9 @@ export default function Reports() {
                     )}
                     {/* Top Navigation */}
                     <div className="flex gap-4">
+                        <a href="/cashier" className="w-40 rounded hover:bg-gray-300 bg-[#EED9C4] text-black text-center inline-block py-5">
+                            Cashier View
+                        </a>
                         <button onClick={scrollToProductUsage} className="w-40 rounded hover:bg-gray-600 bg-black text-white">
                             Product Usage
                         </button>
@@ -245,7 +260,7 @@ export default function Reports() {
                         ) : hourlyData.length === 0 ? (
                             <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
                         ) : (
-                            <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] rounded-lg border-2 p-4 border-black mb-4">
+                            <div className="bg-white m-4 mb-0 p-6 flex flex-col h-[600px] w-[1100px] rounded-lg border-2 p-4 border-black mb-4">
                                 <div className="relative h-full">
                                     {/* Y-axis labels */}
                                     <div className="absolute left-4 -top-1 bottom-6 w-8 flex flex-col justify-between">

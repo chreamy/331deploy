@@ -5,6 +5,7 @@ import { Chart } from "chart.js/auto";
 import { FaTrash, FaCheck } from "react-icons/fa";
 import annotationPlugin from 'chartjs-plugin-annotation';
 Chart.register(annotationPlugin);
+import TranslateToggle from "../components/TranslateToggle";
 
 export function Management() {
     // State to trigger whenever information needs to be pulled
@@ -38,6 +39,24 @@ export function Management() {
     const chartRef = useRef(null);
     var chartInstance = useRef(null);
 
+    function formatInput(sentence) {
+        var words = sentence.split(' '); 
+    
+        for (var i = 0; i < words.length; i++) {
+            var word = words[i];  
+            words[i] = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();  
+        }
+    
+        return words.join(' ');  
+    }
+
+    const barColors = [
+        '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+        '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+        '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+        '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'
+    ];
+
     // UseEffect and jschart to make stock bar graphs
     useEffect(() => {
         if (!stockNames.length || !stockQuantities.length) return; // Ensure data is loaded before rendering
@@ -48,13 +67,6 @@ export function Management() {
         if (chartInstance.current) {
             chartInstance.current.destroy();
         }
-
-        const barColors = [
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-    '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-    '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
-    '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'
-        ];
 
         chartInstance.current = new Chart(chartRef.current, {
             type: "bar",
@@ -93,19 +105,6 @@ export function Management() {
                                 yMax: 15,
                                 borderColor: "red", 
                                 borderWidth: 2, 
-                                label: {
-                                    content: 'Low Stock', 
-                                    enabled: true,
-                                    display: true,
-                                    position: "start", 
-                                    font: {
-                                        size: 20,
-                                        weight: "bold",
-                                    },
-                                    yAdjust: -10,
-                                    color: "black",
-                                    backgroundColor: "transparent",
-                                },
                             },
                         },
                     },
@@ -288,8 +287,9 @@ export function Management() {
             return;
         }
 
+        const name = formatInput(drinkNameInput);
         const drinkToInventory = {
-            drinkNameInput,
+            name,
             quantityInput,
             priceInput,
             selectedCategoryInput,
@@ -354,8 +354,9 @@ export function Management() {
             return;
         }
 
+        const name = formatInput(toppingName);
         const toppingToInv = {
-            toppingName,
+            name,
             toppingPrice,
             toppingQuantity,
         };
@@ -484,14 +485,14 @@ export function Management() {
         }
 
         if (
-            itemUpdatePrice < "0"
+            itemUpdatePrice && itemUpdatePrice < "0"
         ) {
             showNotification('Negative item price', 'Error');
             return;
         }
 
         if (
-            itemUpdateQuantity < "0"
+            itemUpdateQuantity && itemUpdateQuantity < "0"
         ) {
             showNotification('Negative quantity', 'Error');
             return;
@@ -624,25 +625,24 @@ export function Management() {
         }
     };
 
+    // Set references to allow for scrolling functionalities
     const productListRef = useRef(null);
+    const currentStockRef = useRef(null);
+    const manageInventoryRef = useRef(null);
+    const manageEmployeeRef = useRef(null);
 
+    // Function to scroll to different elements
     const scrollToProductList = () => {
         productListRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
-    const currentStockRef = useRef(null);
 
     const scrollToCurrentStock = () => {
         currentStockRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    const manageInventoryRef = useRef(null);
-
     const scrollToManageInventory = () => {
         manageInventoryRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
-    const manageEmployeeRef = useRef(null);
 
     const scrollToManageEmployee = () => {
         manageEmployeeRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -651,6 +651,7 @@ export function Management() {
     const [notification, setNotification] = useState({ message: '', type: '' });
     const timeoutRef = useRef(null);
 
+    // Function to show notification status for updates 
     const showNotification = (message, type = 'Success') => {
         setNotification({ message: `${type}: ${message}`, type });
        
@@ -675,7 +676,7 @@ export function Management() {
         <div className="overflow-auto h-screen">
             <div className="flex-1 bg-[#3D2B1F] pb-4">
                 <div className="flex justify-between items-center p-2 bg-white sticky top-0 w-full shadow-md z-50 border-b-[#3D2B1F] border-b-5">
-                    <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-full">
+                    <h1 className="text-3xl text-left font-bold text-black text-center bg-white sticky top-0 w-fit">
                         Management Dashboard
                     </h1> 
                     {notification.message && (
@@ -685,6 +686,9 @@ export function Management() {
                     )}
                     {/* Top Navigation */}
                     <div className="flex gap-4">
+                        <a href="/cashier" className="w-40 rounded hover:bg-gray-300 bg-[#EED9C4] text-black text-center inline-block py-5">
+                            Cashier View
+                        </a>
                         <button onClick={scrollToCurrentStock} className="w-40 rounded hover:bg-gray-600 bg-black text-white">
                             View Stock
                         </button>
@@ -706,6 +710,7 @@ export function Management() {
                         <h1 className="text-2xl font-bold mb-6 text-black text-center">
                         Current Stock
                         </h1>
+                        
                         <canvas
                             width={1200}
                             height={700}
