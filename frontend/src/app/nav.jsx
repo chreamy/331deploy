@@ -81,7 +81,7 @@ const Nav = ({ userRole }) => {
                         </div>
                     )}
 
-                    <div className="flex items-center justify-center h-full mt-0 -mb-2">
+                    <div className="flex items-center text-grey-700 justify-center h-full mt-0 -mb-2">
                         <TranslateToggle />
                     </div>
                     

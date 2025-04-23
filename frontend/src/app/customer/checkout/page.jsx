@@ -30,6 +30,7 @@ export default function OrderCart() {
         firstName: useRef(null),
         lastName: useRef(null)
     };
+    const [orderComplete, setorderComplete] = useState(false);
 
     // Fetch cart data from localStorage when the component mounts
     useEffect(() => {
@@ -108,7 +109,10 @@ export default function OrderCart() {
             if (!response.ok) {
                 throw new Error("Failed to add order");
             }
-        
+            setCart([]);
+            localStorage.setItem("cart", JSON.stringify([]));
+            setorderComplete(true);
+
         } catch (error) {
             console.error("Failed to add order", error);
         }
