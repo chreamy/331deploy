@@ -33,10 +33,12 @@ export default function CashierView() {
             });
     }, []);
 
+    // Function used for search bar functionalities 
     const filteredItems = (items[selectedCategory] || []).filter((item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Function used to fetch drink information from backend
     const fetchOptions = async (drink_id) => {
         try {
             const res = await fetch(`${SERVER}/drink-options/${drink_id}`);
@@ -54,6 +56,7 @@ export default function CashierView() {
         }
     };
 
+    // Modal to show payment processing
     const handlePayment = () => {
         setProcessModal(true);    
     
@@ -62,6 +65,7 @@ export default function CashierView() {
         }, 3000);
     };
 
+    // Function to send post api request to update the backend with new order
     const addOrder = async () => {    
         try {
             setProcessStatus(true);
@@ -119,6 +123,7 @@ export default function CashierView() {
         }));
     };
 
+    // Function to handle order creation to add new drinks and modifications 
     const addToOrder = () => {
         const selectedToppingObjs = options.toppings.filter(t =>
             selectedOptions.toppings.includes(t.name)
@@ -134,10 +139,12 @@ export default function CashierView() {
         closeModal();
     };
 
+    // Function to handle order creation by removing drinks
     const removeFromOrder = (index) => {
         setOrder((prev) => prev.filter((_, i) => i !== index));
     };
 
+    // Function to calculate order total
     const subtotal = order.reduce((sum, item) => {
         const toppingTotal = item.toppings?.reduce((acc, t) => acc + Number(t.price || 0), 0) || 0;
         return sum + item.price + toppingTotal;
