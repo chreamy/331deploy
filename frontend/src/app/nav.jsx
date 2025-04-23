@@ -100,7 +100,9 @@ const Nav = ({ userRole }) => {
 
                 {/* Center Title */}
                 <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
-                    ShareTea Customer Portal
+                    {userRole === "customer" && <span>ShareTea Customer Portal</span>}
+                    {userRole === "guest" && <span>ShareTea Portal</span>}
+                    {userRole === "cashier" && <span>ShareTea Cashier Portal</span>}
                 </h1>
 
                 {/* Right Side: Toggle + Cart */}

@@ -836,7 +836,7 @@ app.post('/newOrder', async (req, res) => {
 
     try {
         if (!(Array.isArray(cart) && cart.length > 0)) {
-            res.status(500).json({ error: "Error fetching items in" });
+            res.status(500).json({ error: "Error fetching items in cart" });
         }
     
         const empid = 0;
@@ -934,6 +934,91 @@ app.post('/newOrder', async (req, res) => {
                     await pool.query(insertODMT, [orderId, drinkId, toppingId]);
                 }
             }
+        };
+
+        res.status(200).json({ message: 'Order placed successfully', orderId });
+    } catch (err) {
+        console.error('Failed to place order:', err);
+        res.status(500).json({ error: 'Failed to place order' });
+    }
+});
+
+app.post('/newOrderCashier', async (req, res) => {
+    const order = req.body;
+
+    try {
+        if (!Array.isArray(order)) {
+            res.status(500).json({ error: "Error fetching items in order" });
+        }
+    
+        const empid = 0;
+        const timestamp = new Date().toISOString().slice(0, 19).replace("T", " "); 
+        const custId = 0; 
+
+        const newID = await pool.query(
+            "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM orders;"
+        );
+        const orderId = newID.rows[0].new_id;
+     
+        const insertOrderSQL = `
+            INSERT INTO orders (id, customerid, employeeid, timestamp)
+            VALUES ($1, $2, $3, $4)
+            `;
+        await pool.query(insertOrderSQL, [orderId, custId, empid, timestamp]);
+
+        for (const item of order) {
+            const {
+                id,
+                modifications = [],
+                name,
+                price,
+                toppings = [],
+            } = item;
+
+            const { Ice: iceMod, Sugar: sugarMod } = modifications;
+
+            const iceQuery = await pool.query(
+                "SELECT id FROM modifications WHERE name = $1",
+                [iceMod]
+            );
+                    
+            const iceId = iceQuery.rows[0].id;
+
+            await pool.query(
+                `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                    VALUES ($1, $2, $3)
+                `,
+                [orderId, id, iceId]
+            );
+
+            const sugarQuery = await pool.query(
+                "SELECT id FROM modifications WHERE name = $1",
+                [sugarMod]
+            );
+                
+            const sugarId = sugarQuery.rows[0].id;
+
+            await pool.query(
+                `   INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                    VALUES ($1, $2, $3)
+                `,
+                [orderId, id, sugarId]
+            );
+
+            for (const topping of toppings) {
+                const toppingQuery = await pool.query(
+                    "SELECT id FROM toppings WHERE name = $1",
+                    [topping.name]
+                );
+                    
+                const toppingId = toppingQuery.rows[0].id;
+
+                const insertODMT = `
+                    INSERT INTO order_drink_modifications_toppings (orderid, drinkid, topping_modification_id)
+                    VALUES ($1, $2, $3)
+                `;
+                await pool.query(insertODMT, [orderId, id, toppingId]);
+            }  
         };
 
         res.status(200).json({ message: 'Order placed successfully', orderId });

@@ -52,6 +52,26 @@ export default function CashierView() {
         }
     };
 
+    const addOrder = async () => {    
+        try {
+            const response = await fetch(`${SERVER}/newOrderCashier`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(order),
+            });
+        
+            if (!response.ok) {
+                throw new Error("Failed to add order");
+            }
+            setOrder([]);
+
+        } catch (error) {
+            console.error("Failed to add order", error);
+        }
+    };
+
     const openModal = (item) => {
         setSelectedItem(item);
         fetchOptions(item.id);
@@ -219,9 +239,17 @@ export default function CashierView() {
                             <p>Subtotal: ${subtotal.toFixed(2)}</p>
                             <p>Tax: ${(subtotal * 0.0825).toFixed(2)}</p>
                             <p className="font-semibold">Total: ${(subtotal + subtotal * 0.0825).toFixed(2)}</p>
-                            <button className="mt-4 w-full bg-[#C2A385] text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition-transform">
+                            <button 
+                                onClick={() => {
+                                    if (order.length > 0) {
+                                       addOrder()
+                                    }
+                                }}
+                                className="mt-4 w-full bg-[#C2A385] text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition-transform"
+                            >
                                 Card Checkout
                             </button>
+                            
                         </div>
                     </div>
                 </div>
