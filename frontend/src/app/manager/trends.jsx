@@ -55,18 +55,15 @@ export default function Trends() {
         const xValues = stockNames;
         const yValues = stockPopCount.map(count => parseInt(count, 10));
 
-        if (pieGraphInstance.current) {
-            pieGraphInstance.current.destroy();
-        }
-        if (pieGraphWeekInstance.current) {
-            pieGraphWeekInstance.current.destroy();
-        }
-        if (pieGraphMonthInstance.current) {
-            pieGraphMonthInstance.current.destroy();
-        }
-        if (pieGraphYearInstance.current) {
-            pieGraphYearInstance.current.destroy();
-        }
+        const destroyAllCharts = () => {
+            [pieGraphInstance, pieGraphWeekInstance, pieGraphMonthInstance, pieGraphYearInstance].forEach((chartRef) => {
+                if (chartRef.current) {
+                    chartRef.current.destroy();
+                }
+            });
+        };
+    
+        destroyAllCharts();
     
         const sliceColors = [
             '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -82,31 +79,74 @@ export default function Trends() {
                 datasets: [
                     {
                         backgroundColor: sliceColors,
-                        data: yValues
-                    }
-                ]
+                        data: yValues,
+                        hoverOffset: 20,
+                    },
+                ],
             },
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
                 cutout: "30%",
+                layout: {
+                    padding: 20
+                },
                 plugins: {
+                    legend: {
+                        display: false, 
+                    },
                     datalabels: {
                         formatter: (value, context) => {
                             const data = context.chart.data.datasets[0].data;
                             const total = data.reduce((acc, val) => acc + val, 0);
-                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            const percentage = ((value / total) * 100).toFixed(2) + "%";
                             return `${percentage}`;
                         },
-                        color: 'white',
+                        color: "white",
                         font: {
                             size: 14,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }
+                            weight: "bold",
+                        },
+                    },
+                },
+            },
         });
+    
+        const labelsContainer = document.getElementById("chart-labels-daily");
+        if (labelsContainer) {
+            labelsContainer.innerHTML = ""; 
+            xValues.forEach((label, index) => {
+                const labelContainer = document.createElement("div");
+                labelContainer.className = "flex items-center gap-2 text-md font-medium text-black cursor-pointer"; 
+
+                const colorBox = document.createElement("div");
+                colorBox.style.backgroundColor = sliceColors[index];
+                colorBox.style.width = "16px";
+                colorBox.style.height = "16px";
+        
+                const labelText = document.createElement("span");
+                labelText.textContent = `${label}`;
+                labelText.className = "whitespace-nowrap";
+
+                labelContainer.addEventListener("mouseenter", () => {
+                    pieGraphInstance.current.setActiveElements([
+                        { datasetIndex: 0, index },
+                    ]);
+                    pieGraphInstance.current.update();
+                });
+
+                labelContainer.addEventListener("mouseleave", () => {
+                    pieGraphInstance.current.setActiveElements([]);
+                    pieGraphInstance.current.update();
+                });
+                
+                labelContainer.appendChild(colorBox);
+                labelContainer.appendChild(labelText),
+
+                labelsContainer.appendChild(labelContainer);
+            });
+        }
+
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
         return () => {
             if (pieGraphInstance.current) {
@@ -132,29 +172,26 @@ export default function Trends() {
     };
 
     useEffect(() => {
-        if (!stockNamesWeek.length || !stockPopCountWeek.length || timeframeInput != "Weekly") return; // Ensure data is loaded before rendering
+        if (!stockNamesWeek.length || !stockPopCountWeek.length || timeframeInput !== "Weekly") return;
     
         const xValues = stockNamesWeek;
-        const yValues = stockPopCountWeek.map(count => parseInt(count, 10));
-
-        if (pieGraphInstance.current) {
-            pieGraphInstance.current.destroy();
-        }
-        if (pieGraphWeekInstance.current) {
-            pieGraphWeekInstance.current.destroy();
-        }
-        if (pieGraphMonthInstance.current) {
-            pieGraphMonthInstance.current.destroy();
-        }
-        if (pieGraphYearInstance.current) {
-            pieGraphYearInstance.current.destroy();
-        }
+        const yValues = stockPopCountWeek.map((count) => parseInt(count, 10));
+    
+        const destroyAllCharts = () => {
+            [pieGraphInstance, pieGraphWeekInstance, pieGraphMonthInstance, pieGraphYearInstance].forEach((chartRef) => {
+                if (chartRef.current) {
+                    chartRef.current.destroy();
+                }
+            });
+        };
+    
+        destroyAllCharts();
     
         const sliceColors = [
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-            '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
-            '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'
+            "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+            "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+            "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
+            "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5",
         ];
     
         pieGraphWeekInstance.current = new Chart(popularityPieWeekRef.current, {
@@ -164,32 +201,76 @@ export default function Trends() {
                 datasets: [
                     {
                         backgroundColor: sliceColors,
-                        data: yValues
-                    }
-                ]
+                        data: yValues,
+                        hoverOffset: 20,
+                    },
+                ],
             },
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
                 cutout: "30%",
+                layout: {
+                    padding: 20
+                },
                 plugins: {
+                    legend: {
+                        display: false, 
+                    },
                     datalabels: {
                         formatter: (value, context) => {
                             const data = context.chart.data.datasets[0].data;
                             const total = data.reduce((acc, val) => acc + val, 0);
-                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            const percentage = ((value / total) * 100).toFixed(2) + "%";
                             return `${percentage}`;
                         },
-                        color: 'white',
+                        color: "white",
                         font: {
                             size: 14,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }
+                            weight: "bold",
+                        },
+                    },
+                },
+            },
         });
+    
+        const labelsContainer = document.getElementById("chart-labels-week");
+        if (labelsContainer) {
+            labelsContainer.innerHTML = ""; 
+            xValues.forEach((label, index) => {
+                const labelContainer = document.createElement("div");
+                labelContainer.className = "flex items-center gap-2 text-md font-medium text-black cursor-pointer"; 
+
+                const colorBox = document.createElement("div");
+                colorBox.style.backgroundColor = sliceColors[index];
+                colorBox.style.width = "16px";
+                colorBox.style.height = "16px";
+        
+                const labelText = document.createElement("span");
+                labelText.textContent = `${label}`;
+                labelText.className = "whitespace-nowrap";
+                
+                labelContainer.addEventListener("mouseenter", () => {
+                    pieGraphWeekInstance.current.setActiveElements([
+                        { datasetIndex: 0, index },
+                    ]);
+                    pieGraphWeekInstance.current.update();
+                });
+
+                labelContainer.addEventListener("mouseleave", () => {
+                    pieGraphWeekInstance.current.setActiveElements([]);
+                    pieGraphWeekInstance.current.update();
+                });
+                
+                labelContainer.appendChild(colorBox);
+                labelContainer.appendChild(labelText),
+
+                labelsContainer.appendChild(labelContainer);
+            });
+        }
+    
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
+
         return () => {
             if (pieGraphWeekInstance.current) {
                 pieGraphWeekInstance.current.destroy();
@@ -214,23 +295,20 @@ export default function Trends() {
     };
 
     useEffect(() => {
-        if (!stockNamesMonth.length || !stockPopCountMonth.length || timeframeInput != "Monthly") return; // Ensure data is loaded before rendering
+        if (!stockNamesMonth.length || !stockPopCountMonth.length || timeframeInput != "Monthly") return; 
     
         const xValues = stockNamesMonth;
         const yValues = stockPopCountMonth.map(count => parseInt(count, 10));
 
-        if (pieGraphMonthInstance.current) {
-            pieGraphMonthInstance.current.destroy();
-        }
-        if (pieGraphWeekInstance.current) {
-            pieGraphWeekInstance.current.destroy();
-        }
-        if (pieGraphInstance.current) {
-            pieGraphInstance.current.destroy();
-        }
-        if (pieGraphYearInstance.current) {
-            pieGraphYearInstance.current.destroy();
-        }
+        const destroyAllCharts = () => {
+            [pieGraphInstance, pieGraphWeekInstance, pieGraphMonthInstance, pieGraphYearInstance].forEach((chartRef) => {
+                if (chartRef.current) {
+                    chartRef.current.destroy();
+                }
+            });
+        };
+    
+        destroyAllCharts();
     
         const sliceColors = [
             '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -246,31 +324,74 @@ export default function Trends() {
                 datasets: [
                     {
                         backgroundColor: sliceColors,
-                        data: yValues
-                    }
-                ]
+                        data: yValues,
+                        hoverOffset: 20,
+                    },
+                ],
             },
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
                 cutout: "30%",
+                layout: {
+                    padding: 20
+                },
                 plugins: {
+                    legend: {
+                        display: false, 
+                    },
                     datalabels: {
                         formatter: (value, context) => {
                             const data = context.chart.data.datasets[0].data;
                             const total = data.reduce((acc, val) => acc + val, 0);
-                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            const percentage = ((value / total) * 100).toFixed(2) + "%";
                             return `${percentage}`;
                         },
-                        color: 'white',
+                        color: "white",
                         font: {
                             size: 14,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }            
+                            weight: "bold",
+                        },
+                    },
+                },
+            },
         });
+    
+        const labelsContainer = document.getElementById("chart-labels-monthly");
+        if (labelsContainer) {
+            labelsContainer.innerHTML = ""; 
+            xValues.forEach((label, index) => {
+                const labelContainer = document.createElement("div");
+                labelContainer.className = "flex items-center gap-2 text-md font-medium text-black cursor-pointer"; 
+
+                const colorBox = document.createElement("div");
+                colorBox.style.backgroundColor = sliceColors[index];
+                colorBox.style.width = "16px";
+                colorBox.style.height = "16px";
+        
+                const labelText = document.createElement("span");
+                labelText.textContent = `${label}`;
+                labelText.className = "whitespace-nowrap";
+                
+                labelContainer.addEventListener("mouseenter", () => {
+                    pieGraphMonthInstance.current.setActiveElements([
+                        { datasetIndex: 0, index },
+                    ]);
+                    pieGraphMonthInstance.current.update();
+                });
+
+                labelContainer.addEventListener("mouseleave", () => {
+                    pieGraphMonthInstance.current.setActiveElements([]);
+                    pieGraphMonthInstance.current.update();
+                });
+                
+                labelContainer.appendChild(colorBox);
+                labelContainer.appendChild(labelText),
+
+                labelsContainer.appendChild(labelContainer);
+            });
+        }
+
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
         return () => {
             if (pieGraphMonthInstance.current) {
@@ -301,18 +422,15 @@ export default function Trends() {
         const xValues = stockNamesYear;
         const yValues = stockPopCountYear.map(count => parseInt(count, 10));
 
-        if (pieGraphMonthInstance.current) {
-            pieGraphMonthInstance.current.destroy();
-        }
-        if (pieGraphWeekInstance.current) {
-            pieGraphWeekInstance.current.destroy();
-        }
-        if (pieGraphInstance.current) {
-            pieGraphInstance.current.destroy();
-        }
-        if (pieGraphYearInstance.current) {
-            pieGraphYearInstance.current.destroy();
-        }
+        const destroyAllCharts = () => {
+            [pieGraphInstance, pieGraphWeekInstance, pieGraphMonthInstance, pieGraphYearInstance].forEach((chartRef) => {
+                if (chartRef.current) {
+                    chartRef.current.destroy();
+                }
+            });
+        };
+    
+        destroyAllCharts();
     
         const sliceColors = [
             '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -328,31 +446,74 @@ export default function Trends() {
                 datasets: [
                     {
                         backgroundColor: sliceColors,
-                        data: yValues
-                    }
-                ]
+                        data: yValues,
+                        hoverOffset: 20,
+                    },
+                ],
             },
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
                 cutout: "30%",
+                layout: {
+                    padding: 20
+                },
                 plugins: {
+                    legend: {
+                        display: false, 
+                    },
                     datalabels: {
                         formatter: (value, context) => {
                             const data = context.chart.data.datasets[0].data;
                             const total = data.reduce((acc, val) => acc + val, 0);
-                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            const percentage = ((value / total) * 100).toFixed(2) + "%";
                             return `${percentage}`;
                         },
-                        color: 'white',
+                        color: "white",
                         font: {
                             size: 14,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }
+                            weight: "bold",
+                        },
+                    },
+                },
+            },
         });
+    
+        const labelsContainer = document.getElementById("chart-labels-year");
+        if (labelsContainer) {
+            labelsContainer.innerHTML = ""; 
+            xValues.forEach((label, index) => {
+                const labelContainer = document.createElement("div");
+                labelContainer.className = "flex items-center gap-2 text-md font-medium text-black cursor-pointer"; 
+                
+                const colorBox = document.createElement("div");
+                colorBox.style.backgroundColor = sliceColors[index];
+                colorBox.style.width = "16px";
+                colorBox.style.height = "16px";
+        
+                const labelText = document.createElement("span");
+                labelText.textContent = `${label}`;
+                labelText.className = "whitespace-nowrap";
+
+                labelContainer.addEventListener("mouseenter", () => {
+                    pieGraphYearInstance.current.setActiveElements([
+                        { datasetIndex: 0, index },
+                    ]);
+                    pieGraphYearInstance.current.update();
+                });
+
+                labelContainer.addEventListener("mouseleave", () => {
+                    pieGraphYearInstance.current.setActiveElements([]);
+                    pieGraphYearInstance.current.update();
+                });
+                
+                labelContainer.appendChild(colorBox);
+                labelContainer.appendChild(labelText),
+
+                labelsContainer.appendChild(labelContainer);
+            });
+        }
+
         popularityChartRef.current?.scrollIntoView({ behavior: "smooth" });
         return () => {
             if (pieGraphYearInstance.current) {
@@ -423,7 +584,7 @@ export default function Trends() {
                     <div className="flex flex-row justify-center items-start gap-x-8">
                         <div className="flex flex-col justify-center items-center bg-white rounded-lg">
                             <div className="mt-4 bg-white w-fit p-2 pb-0 rounded-lg">
-                                <h2 className="text-black text-xl font-bold p-4">{timeframeInput || "Daily"} Popularity Chart</h2>
+                                <h2 className="text-black text-xl font-bold p-4" ref={popularityChartRef}> {timeframeInput || "Daily"} Popularity Chart</h2>
                             </div>
 
                         {loadingPieChart ? (
@@ -433,39 +594,31 @@ export default function Trends() {
                         ) : stockNames.length === 0 && stockNamesWeek.length === 0 && stockNamesMonth.length === 0 && stockNamesYear.length === 0 ? (
                             <div className="text-black bg-white m-4 p-6 rounded-lg mb-0 border-2 p-4 border-black mb-4">No data on current date</div>
                         ) : timeframeInput === "Daily" && stockNames.length > 0 ? (
-                            <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
-                                <div className="relative w-full h-full">
-                                <canvas
-                                    className="w-full h-full"
-                                    ref={popularityPieRef}
-                                />
+                            <div className="bg-white m-4 p-10 rounded-lg border-2 h-[800px] border-black">
+                                <div className="relative w-[1000px] h-[600px] flex flex-col items-center">
+                                    <div id="chart-labels-daily" className="flex flex-wrap justify-center gap-4"></div>
+                                    <canvas className="w-full h-full" ref={popularityPieRef}></canvas>
                                 </div>
                             </div>
                         ) : timeframeInput === "Weekly" && stockNamesWeek.length > 0 ? ( 
-                            <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
-                                <div className="relative w-full h-full">
-                                <canvas
-                                    className="w-full h-full"
-                                    ref={popularityPieWeekRef}
-                                />
+                            <div className="bg-white m-4 p-10 rounded-lg border-2 h-[800px] border-black mb-4">
+                                <div className="relative w-[1000px] h-[600px] flex flex-col items-center">
+                                    <div id="chart-labels-week" className="flex flex-wrap justify-center gap-4"></div>
+                                    <canvas className="w-full h-full" ref={popularityPieWeekRef}></canvas>
                                 </div>
                             </div>
                         ) : timeframeInput === "Monthly" && stockNamesMonth.length > 0 ? (
-                            <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
-                                <div className="relative w-full h-full">
-                                <canvas
-                                    className="w-full h-full"
-                                    ref={popularityPieMonthRef}
-                                />
+                            <div className="bg-white m-4 p-10 rounded-lg border-2 h-[800px] border-black mb-4">
+                                <div className="relative w-[1000px] h-[600px] flex flex-col items-center">
+                                    <div id="chart-labels-monthly" className="flex flex-wrap justify-center gap-4"></div>
+                                    <canvas className="w-full h-full" ref={popularityPieMonthRef}></canvas>
                                 </div>
                             </div>
                         ) : timeframeInput === "Yearly" && stockNamesYear.length > 0 ? (
-                            <div className="bg-white m-4 p-6 rounded-lg border-2 p-4 h-[600px] border-black mb-4" ref={popularityChartRef}>
-                                <div className="relative w-full h-full">
-                                <canvas
-                                    className="w-full h-full"
-                                    ref={popularityPieYearRef}
-                                />
+                            <div className="bg-white m-4 p-10 rounded-lg border-2 h-[800px] border-black mb-4">
+                                <div className="relative w-[1000px] h-[600px] flex flex-col items-center">
+                                    <div id="chart-labels-year" className="flex flex-wrap justify-center gap-4"></div>
+                                    <canvas className="w-full h-full" ref={popularityPieYearRef}></canvas>
                                 </div>
                             </div>
                         ) : (

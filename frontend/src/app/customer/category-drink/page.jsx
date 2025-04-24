@@ -75,20 +75,25 @@ function CategoryContent({ category }) {
                 </h2>
 
                 {/* Search Bar */}
-                <div className="relative">
+                <div className="relative mb-6">
                     <VoiceElement
-                    id="search-input"
-                    description="Search drinks"
-                    isInput={true}
-                    onClick={() => {}}
+                        id="search-input"
+                        description="Search drinks"
+                        isInput={true}
+                        onClick={() => {}}
                     >
-                    <input
+                    <div className="flex justify-center mb-4">
+                    <div className="relative w-full max-w-md">
+                        <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
+                        <input
                         type="text"
                         placeholder="Search drinks..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                        />
+                    </div>
+                    </div>
                     </VoiceElement>
                 </div>
 
