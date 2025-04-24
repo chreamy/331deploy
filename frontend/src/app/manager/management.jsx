@@ -54,7 +54,11 @@ export function Management() {
         '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
         '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
         '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
-        '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'
+        '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5',
+        '#7b9b5e', '#1f77b4', '#b94bc9', '#3d3d6b', '#f26d21',
+        '#fae52f', '#ec6242', '#8fc9d2', '#9a69a1', '#52a9d6',
+        '#c19b87', '#e56f38', '#51b0b5', '#d95c87', '#a1c6d8',
+        '#7d3786', '#f5a742', '#3399cc', '#d3778a', '#bb2c65',
     ];
 
     // UseEffect and jschart to make stock bar graphs
@@ -145,6 +149,49 @@ export function Management() {
                 },
             },
         });
+
+        const labelsContainer = document.getElementById("chart-labels-bar");
+        if (labelsContainer) {
+            labelsContainer.innerHTML = ""; // Clear existing labels
+            xValues.forEach((label, index) => {
+                // Create a container for the label and color box
+                const labelContainer = document.createElement("div");
+                labelContainer.className = "flex items-center gap-2 text-md font-medium text-black cursor-pointer"; // Tailwind classes for styling
+    
+                // Create the color box
+                const colorBox = document.createElement("div");
+                colorBox.style.backgroundColor = barColors[index];
+                colorBox.style.width = "16px";
+                colorBox.style.height = "16px";
+                colorBox.style.borderRadius = "4px"; // Optional: Rounded corners
+                colorBox.style.border = "1px solid #000"; // Optional: Border for better visibility
+    
+                // Create the label text
+                const labelText = document.createElement("span");
+                labelText.textContent = `${label}`;
+                labelText.className = "whitespace-nowrap"; // Prevent text wrapping
+    
+                // Add hover interaction
+                labelContainer.addEventListener("mouseenter", () => {
+                    chartInstance.current.setActiveElements([
+                        { datasetIndex: 0, index },
+                    ]);
+                    chartInstance.current.update();
+                });
+    
+                labelContainer.addEventListener("mouseleave", () => {
+                    chartInstance.current.setActiveElements([]);
+                    chartInstance.current.update();
+                });
+    
+                // Append the color box and label text to the container
+                labelContainer.appendChild(colorBox);
+                labelContainer.appendChild(labelText);
+    
+                // Append the container to the labels container
+                labelsContainer.appendChild(labelContainer);
+            });
+        }
         return () => {
             if (chartInstance.current) {
                 chartInstance.current.destroy();
@@ -706,17 +753,19 @@ export function Management() {
 
                 {/* Display the bar graph showing inventory stock */}
                 <div className="flex justify-center pb-4" ref={currentStockRef}>
-                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mt-10 mb-8 pb-20 pt-5 size-9/10 h-[700px]">
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mt-10 mb-8 pb-20 pt-5 size-9/10 h-[800px]">
                         <h1 className="text-2xl font-bold mb-6 text-black text-center">
                         Current Stock
                         </h1>
-                        
-                        <canvas
-                            width={1200}
-                            height={700}
-                            className="w-full h-auto block"
-                            ref={chartRef}
-                        />
+
+                        <div id="chart-labels-bar" className="flex flex-wrap justify-center gap-4 mb-4"></div>
+
+                        <div className="relative w-full h-[550px]">
+                            <canvas
+                                className="w-full h-full max-w-full max-h-full block"
+                                ref={chartRef}
+                            />
+                        </div>
                     </div>
                 </div>
 
