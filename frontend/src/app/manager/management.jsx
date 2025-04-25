@@ -152,26 +152,20 @@ export function Management() {
 
         const labelsContainer = document.getElementById("chart-labels-bar");
         if (labelsContainer) {
-            labelsContainer.innerHTML = ""; // Clear existing labels
+            labelsContainer.innerHTML = "";
             xValues.forEach((label, index) => {
-                // Create a container for the label and color box
                 const labelContainer = document.createElement("div");
-                labelContainer.className = "flex items-center gap-2 text-md font-medium text-black cursor-pointer"; // Tailwind classes for styling
+                labelContainer.className = "flex items-center gap-2 text-md font-medium text-black cursor-pointer"; 
     
-                // Create the color box
                 const colorBox = document.createElement("div");
                 colorBox.style.backgroundColor = barColors[index];
                 colorBox.style.width = "16px";
                 colorBox.style.height = "16px";
-                colorBox.style.borderRadius = "4px"; // Optional: Rounded corners
-                colorBox.style.border = "1px solid #000"; // Optional: Border for better visibility
-    
-                // Create the label text
+
                 const labelText = document.createElement("span");
                 labelText.textContent = `${label}`;
-                labelText.className = "whitespace-nowrap"; // Prevent text wrapping
+                labelText.className = "whitespace-nowrap"; 
     
-                // Add hover interaction
                 labelContainer.addEventListener("mouseenter", () => {
                     chartInstance.current.setActiveElements([
                         { datasetIndex: 0, index },
@@ -184,11 +178,8 @@ export function Management() {
                     chartInstance.current.update();
                 });
     
-                // Append the color box and label text to the container
                 labelContainer.appendChild(colorBox);
                 labelContainer.appendChild(labelText);
-    
-                // Append the container to the labels container
                 labelsContainer.appendChild(labelContainer);
             });
         }

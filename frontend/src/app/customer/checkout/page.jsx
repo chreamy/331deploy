@@ -675,7 +675,6 @@ export default function OrderCart() {
                             <VoiceElement
                                 id="place-order"
                                 description="place order"
-                                className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
                                 disabled={cart.length === 0}
                                 onClick={addOrder}
                             >

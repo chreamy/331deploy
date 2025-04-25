@@ -15,8 +15,9 @@ export default function CashierView() {
     const [selectedItem, setSelectedItem] = useState(null);
     const [options, setOptions] = useState({ toppings: [], modifications: [] });
     const [selectedOptions, setSelectedOptions] = useState({ toppings: [], modifications: {} });
-    const [processingOrder, setProcessStatus] = useState(false);
+    const [showFailureModal, setFailModal] = useState(false);
     const [showProcessModal, setProcessModal] = useState(false);
+    const [showSuccessModal, setSuccessModal] = useState(false);
 
     useEffect(() => {
         fetch(`${SERVER}/categories`)
@@ -56,20 +57,28 @@ export default function CashierView() {
         }
     };
 
-    // Modal to show payment processing
-    const handlePayment = () => {
-        setProcessModal(true);    
+    // Modal to show success processing
+    const handleSuccess = () => {
+        setSuccessModal(true);    
     
         setTimeout(() => {
-            setProcessModal(false);     
-        }, 3000);
+            setSuccessModal(false);     
+        }, 2000);
+    };
+
+    // Modal to show success processing
+    const handleFailure = () => {
+        setFailModal(true);    
+    
+        setTimeout(() => {
+            setFailModal(false);     
+        }, 2000);
     };
 
     // Function to send post api request to update the backend with new order
     const addOrder = async () => {    
         try {
-            setProcessStatus(true);
-            handlePayment();
+            setProcessModal(true);
             const response = await fetch(`${SERVER}/newOrderCashier`, {
                 method: "POST",
                 headers: {
@@ -79,11 +88,13 @@ export default function CashierView() {
             });
         
             if (!response.ok) {
-                setProcessStatus(false);
+                setProcessModal(false);
+                handleFailure();
                 throw new Error("Failed to add order");
             }
             setOrder([]);
-            setProcessStatus(false);
+            setProcessModal(false);
+            handleSuccess();
 
         } catch (error) {
             console.error("Failed to add order", error);
@@ -183,6 +194,20 @@ export default function CashierView() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative border-5 border-black">
                         <p className="text-gray-700 text-center text-lg">Processing Payment...</p>
+                    </div>
+                </div>
+            )}
+            {showFailureModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative border-5 border-black">
+                        <p className="text-gray-700 text-center text-lg">Error With Processing Order</p>
+                    </div>
+                </div>
+            )}
+            {showSuccessModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative border-5 border-black">
+                        <p className="text-gray-700 text-center text-lg">Order Successfully Placed</p>
                     </div>
                 </div>
             )}

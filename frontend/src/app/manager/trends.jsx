@@ -80,7 +80,7 @@ export default function Trends() {
                     {
                         backgroundColor: sliceColors,
                         data: yValues,
-                        hoverOffset: 20,
+                        hoverOffset: 40,
                     },
                 ],
             },
@@ -202,7 +202,7 @@ export default function Trends() {
                     {
                         backgroundColor: sliceColors,
                         data: yValues,
-                        hoverOffset: 20,
+                        hoverOffset: 40,
                     },
                 ],
             },
@@ -325,7 +325,7 @@ export default function Trends() {
                     {
                         backgroundColor: sliceColors,
                         data: yValues,
-                        hoverOffset: 20,
+                        hoverOffset: 40,
                     },
                 ],
             },
@@ -447,7 +447,7 @@ export default function Trends() {
                     {
                         backgroundColor: sliceColors,
                         data: yValues,
-                        hoverOffset: 20,
+                        hoverOffset: 40,
                     },
                 ],
             },
