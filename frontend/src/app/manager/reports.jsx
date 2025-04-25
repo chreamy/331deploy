@@ -375,7 +375,7 @@ export default function Reports() {
                                 </tbody>
                             </table>
                         ) : (
-                            <div className="text-white">No report data available.</div> // Optional fallback
+                            <div className="text-white">No report data available.</div> 
                         )}
                     </div>
                 )}
