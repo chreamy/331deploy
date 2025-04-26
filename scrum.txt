@@ -75,3 +75,27 @@ Topic: Sprint 2 Final Checks
 - Google translation APIs works
 - Login functions still need to be implemented
 - Reviewed and added stories for new issues that need to be addressed in sprint 3
+
+\* Sprint 3 Meetings *\
+
+Meeting 1: Progress Check
+Topic: Reviewed Current Project Status
+Paavan: Yesterday - Worked on implementing a functional cart, Today - will work on the checkout page, Challenges - none right now
+Christopher: Yesterday - Worked on implementing voice-driven order placement functionalities, Today - will continue working on speech recognition, Challenges - none right now
+Dean: Yesterday - Worked on fixing manager translation functionalities, Today - will work on connecting backend to customer checkout, Challenges - none right now
+Isaac: Yesterday - Worked on implementing user authentication with Google OAuth, Today - will working on the user authentication API, Challenges - none right now
+
+Meeting 2: Sprint Halfway Checkpoint
+Topic: Progress Check
+Paavan: Yesterday - Finalized the checkout page, Today - will work on fixing bugs with the translation API in the customer view, Challenges - none right now
+Christopher: Yesterday - Finished implementation to allow customers to order with speech recognition, Today - will work on fixing manager view bugs, Challenges - none right now
+Dean: Yesterday - Finished backend connection for cashier and customer order placement, Today - will work on fixing code and code reviews, Challenges - none right now
+Isaac: Yesterday - Began working on feature to improve vibrance, Today - will finalize Google OAuth implementation and continue working on improved visibility feature, Challenges - none right now
+
+Meeting 3: Final Sprint Checking
+Topic: Final Project Checks
+- Reviewed the burndown charts and remaining stories from sprint
+- Customer, Manager, and Cashier views work and are fully connected to the backend database 
+- Reviewed remaining stories that must be completed
+- Google translation API bug needs to be fixed
+- Time permitting, visibility features should be fully functional
