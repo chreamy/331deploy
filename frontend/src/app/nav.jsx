@@ -4,6 +4,7 @@ import TranslateToggle from "./components/TranslateToggle";
 import Link from "next/link";
 import { FaHome, FaVolumeUp, FaVolumeMute, FaMicrophone, FaMicrophoneSlash, FaShoppingCart } from "react-icons/fa";
 import { useVoiceCommands } from "./components/VoiceCommandProvider";
+import AuthButton from "./components/AuthButton";
 
 const Nav = ({ userRole }) => {
     const voiceContext = useVoiceCommands();
@@ -47,7 +48,7 @@ const Nav = ({ userRole }) => {
 
     return (
         <nav>
-            <header className="w-full flex justify-center items-center border-b p-4 flex items-center justify-between bg-white shadow-sm rounded-lg">
+            <header className="w-full border-b p-4 flex items-center justify-between bg-white shadow-sm rounded-lg relative">
                 {/* Left Icons */}
                 <div className="flex items-center gap-4">
                     {userRole != "guest" && (
@@ -99,7 +100,7 @@ const Nav = ({ userRole }) => {
                 </div>
 
                 {/* Center Title */}
-                <h1 className="text-xl sm:text-2xl font-semibold text-center text-black flex-1">
+                <h1 className="absolute left-1/2 transform -translate-x-1/2 text-xl sm:text-2xl font-semibold text-black text-center">
                     {userRole === "customer" && <span>ShareTea Customer Portal</span>}
                     {userRole === "guest" && <span>ShareTea Portal</span>}
                     {userRole === "cashier" && <span>ShareTea Cashier Portal</span>}
@@ -120,6 +121,7 @@ const Nav = ({ userRole }) => {
                             <FaShoppingCart />
                         </Link>
                     )}
+                    <AuthButton />
                 </div>
             </header>
         </nav>

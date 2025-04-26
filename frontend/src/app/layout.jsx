@@ -1,7 +1,6 @@
 import "./globals.css";
-import Nav from "./nav";
 import Script from "next/script";
-import TranslateToggle from "./components/TranslateToggle";
+import SessionWrapper from "./SessionWrapper";
 
 export default function RootLayout({ children }) {
     return (
@@ -28,7 +27,9 @@ export default function RootLayout({ children }) {
                 </Script>
             </head>
             <body>
-                {children}
+                <SessionWrapper> {/* ✅ Wrap everything inside this */}
+                    {children}
+                </SessionWrapper>
             </body>
         </html>
     );
