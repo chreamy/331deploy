@@ -1,6 +1,7 @@
 import "./globals.css";
 import Script from "next/script";
 import SessionWrapper from "./SessionWrapper";
+import { HighContrastProvider } from "@/app/components/HighContrastContext";
 
 export default function RootLayout({ children }) {
     return (
@@ -27,9 +28,11 @@ export default function RootLayout({ children }) {
                 </Script>
             </head>
             <body>
-                <SessionWrapper> {/* ✅ Wrap everything inside this */}
+            <HighContrastProvider>
+                <SessionWrapper>
                     {children}
                 </SessionWrapper>
+            </HighContrastProvider>
             </body>
         </html>
     );

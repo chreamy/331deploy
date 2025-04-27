@@ -5,9 +5,11 @@ import Link from "next/link";
 import { FaHome, FaVolumeUp, FaVolumeMute, FaMicrophone, FaMicrophoneSlash, FaShoppingCart } from "react-icons/fa";
 import { useVoiceCommands } from "./components/VoiceCommandProvider";
 import AuthButton from "./components/AuthButton";
+import { useHighContrast } from "./components/HighContrastContext";
 
 const Nav = ({ userRole }) => {
     const voiceContext = useVoiceCommands();
+    const { highContrast, toggleHighContrast } = useHighContrast();
     const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false);
     const [voiceAvailable, setVoiceAvailable] = useState(false);
 
@@ -108,10 +110,15 @@ const Nav = ({ userRole }) => {
 
                 {/* Right Side: Toggle + Cart */}
                 <div className="flex items-center gap-4">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" />
-                        <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600"></div>
-                    </label>
+                <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={highContrast}
+                        onChange={toggleHighContrast}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"></div>
+                </label>
                     {userRole === "customer" && (
                         <Link 
                             href="/customer/cart" 

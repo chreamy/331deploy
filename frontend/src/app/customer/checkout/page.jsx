@@ -6,6 +6,8 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Nav from "@/app/nav";
 import VoiceElement from "@/app/components/VoiceElement";
 import { useVoiceCommands } from "@/app/components/VoiceCommandProvider";
+import HighContrastWrapper from "@/app/components/HighContrastWrapper";
+import { useHighContrast } from "@/app/components/HighContrastContext";
 
 // function to convert drink name to image file format
 function toSnakeCase(str) {
@@ -23,6 +25,7 @@ export default function OrderCart() {
     const router = useRouter();
     const { isListening, lastCommand, setActiveInputField } = useVoiceCommands();
     const [cart, setCart] = useState([]);
+    const { highContrast } = useHighContrast();
     const [validationErrors, setValidationErrors] = useState({});
     const [orderComplete, setorderComplete] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -204,8 +207,12 @@ export default function OrderCart() {
         }, 7000);
     };
 
+    const borderColor = highContrast ? "border-orange-400" : "border-[#C2A385]";
+
     return (
-        <div className="min-h-screen font-[telegraf] p-4 md:p-8 bg-[#3D2B1F]">
+        <HighContrastWrapper>
+        <div className="min-h-screen font-[telegraf] p-4 md:p-8" 
+            style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}>
             <Nav userRole="customer" />
 
             {/* Back Button */}
@@ -215,12 +222,12 @@ export default function OrderCart() {
                 onClick={() => router.back()}
             >
                 <div className="mt-6">
-                    <IoArrowBackCircleOutline className="text-3xl text-[#EED9C4] cursor-pointer" />
+                    <IoArrowBackCircleOutline className="text-3xl cursor-pointer" />
                 </div>
             </VoiceElement>
 
             {/* Cart Header */}
-            <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center text-[#EED9C4] drop-shadow-md">
+            <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center drop-shadow-md">
                 Checkout
             </h2>
 
@@ -234,7 +241,8 @@ export default function OrderCart() {
                                 key={index}
                                 id={`cart-item-${index}`}
                                 description={`${item.drinkName} quantity ${item.quantity}`}
-                                className="border border-[#C2A385] rounded-2xl p-6 bg-white shadow-md hover:shadow-xl transition"
+                                className={`border rounded-2xl p-6 shadow-md hover:shadow-xl transition ${borderColor}`}
+                                style={{ borderColor: "var(--border)", backgroundColor: "var(--background)", color: "var(--foreground)" }}
                             >
                                 <div className="flex items-center gap-6">
                                     <img
@@ -249,15 +257,15 @@ export default function OrderCart() {
                                     />
 
                                     <div className="flex-1">
-                                        <h3 className="text-xl text-gray-600 font-semibold">
+                                        <h3 className="text-xl font-semibold">
                                             {formatDrinkName(item.drinkName)}
                                         </h3>
-                                        <h3 className="text-xl text-gray-600 font-semibold">
+                                        <h3 className="text-xl font-semibold">
                                             ${item.totalPrice}
                                         </h3>
 
                                         {/* Modifications */}
-                                        <ul className="mt-2 text-sm text-gray-600">
+                                        <ul className="mt-2 text-sm">
                                             {item.selectedIce && (
                                                 <li>
                                                     Ice Level:{" "}
@@ -273,7 +281,7 @@ export default function OrderCart() {
                                         </ul>
 
                                         {/* Toppings */}
-                                        <div className="mt-3 text-sm text-gray-600">
+                                        <div className="mt-3 text-sm">
                                             <strong>Toppings:</strong>
                                             {item.selectedToppings &&
                                             item.selectedToppings.length > 0 ? (
@@ -300,7 +308,7 @@ export default function OrderCart() {
 
                                         {/* Quantity Controls */}
                                         <div className="mt-3 flex items-center gap-3">
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm">
                                                 Quantity:
                                             </p>
                                             <VoiceElement
@@ -362,7 +370,7 @@ export default function OrderCart() {
 
                 {/* Middle Column - Contact Info */}
                 <div className="lg:w-1/3">
-                    <div className="border border-[#C2A385] rounded-2xl p-6 bg-white shadow-md">
+                    <div className="border rounded-2xl p-6 bg-white shadow-md">
                         <h2 className="text-2xl font-bold mb-6 text-[#3D2B1F]">
                             CONTACT
                         </h2>
@@ -717,5 +725,6 @@ export default function OrderCart() {
                 </div>
             )}
         </div>
+        </HighContrastWrapper>
     );
 }
