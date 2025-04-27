@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-    --background: #0a0a0a;
-    --foreground: #ffffff;
+    --background: #3D2B1F;
+    --foreground: #EED9C4;
 }
 @font-face {
     font-family: "telegraf";
@@ -15,13 +15,6 @@
     --color-foreground: var(--foreground);
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ffffff;
-    }
 }
 
 body {
@@ -97,4 +90,9 @@ body {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+.high-contrast {
+  --background: #000000;
+  --foreground: #FFFFFF;
 }
