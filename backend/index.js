@@ -501,7 +501,7 @@ app.get("/hourly-product-usage/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(distinct odmt.orderid), EXTRACT(hour FROM o.timestamp) as hour 
+            SELECT distinct name, count(odmt.orderid), EXTRACT(hour FROM o.timestamp) as hour 
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
@@ -524,7 +524,7 @@ app.get("/daily-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(distinct odmt.orderid)
+            SELECT distinct name, count(odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
@@ -547,7 +547,7 @@ app.get("/weekly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(distinct odmt.orderid)
+            SELECT distinct name, count(odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
@@ -570,7 +570,7 @@ app.get("/monthly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(distinct odmt.orderid)
+            SELECT distinct name, count(odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 
@@ -593,7 +593,7 @@ app.get("/yearly-product-popularity/:date", async (req, res) => {
     try {
         const { date } = req.params;
         const query = `
-            SELECT distinct name, count(distinct odmt.orderid)
+            SELECT distinct name, count(odmt.orderid)
             FROM order_drink_modifications_toppings odmt 
             JOIN drinks d ON odmt.drinkid = d.id 
             JOIN orders o ON odmt.orderid = o.id 

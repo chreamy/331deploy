@@ -152,10 +152,18 @@ export default function OrderCart() {
                                             {/* Delete */}
                                             <VoiceElement
                                                 id={`delete-item-${index}`}
-                                                description={`Delete ${formatDrinkName(item.drinkName)}`}
+                                                description={`Delete ${formatDrinkName(
+                                                    item.drinkName
+                                                )}`}
                                                 onClick={() => deleteItem(index)}
                                             >
-                                                <button className="text-red-500 font-bold hover:underline cursor-pointer">
+                                                <button
+                                                    className={`font-bold hover:underline cursor-pointer ${
+                                                        highContrast
+                                                            ? "text-yellow-200"
+                                                            : "text-red-500"
+                                                    }`}
+                                                >
                                                     Delete
                                                 </button>
                                             </VoiceElement>
