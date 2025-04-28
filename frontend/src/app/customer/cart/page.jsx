@@ -57,8 +57,8 @@ export default function OrderCart() {
     // 🎨 Conditional styles
     const bgColor = highContrast ? "bg-black" : "bg-[#3D2B1F]";
     const textColor = highContrast ? "text-white" : "text-[#EED9C4]";
-    const borderColor = highContrast ? "border-orange-400" : "border-[#C2A385]";
-    const buttonBg = highContrast ? "bg-orange-400" : "bg-[#EED9C4]";
+    const borderColor = highContrast ? "border-yellow-300" : "border-[#C2A385]";
+    const buttonBg = highContrast ? "bg-yellow-300 text-black hover:bg-yellow-400" : "bg-[#EED9C4]";
     const buttonText = highContrast ? "text-black" : "text-[#3D2B1F]";
     const cardBg = highContrast ? "bg-black" : "bg-white";
     const cardText = highContrast ? "text-white" : "text-gray-900";
@@ -167,12 +167,12 @@ export default function OrderCart() {
                             {/* Buttons */}
                             <div className="mt-6 flex justify-center gap-4">
                                 <VoiceElement id="add-more-items" description="Add more items" onClick={navigateToMenu}>
-                                    <button className={`font-semibold px-6 py-3 rounded-lg shadow hover:opacity-80 ${buttonBg} ${buttonText}`}>
+                                    <button className={`font-semibold px-6 py-3 rounded-lg shadow transform hover:scale-105 ${buttonBg} ${buttonText}`}>
                                         Add More Items
                                     </button>
                                 </VoiceElement>
                                 <VoiceElement id="proceed-to-checkout" description="Proceed to checkout" onClick={navigateToCheckout}>
-                                    <button className={`font-semibold px-6 py-3 rounded-lg shadow hover:opacity-80 ${buttonBg} ${buttonText}`}>
+                                    <button className={`font-semibold px-6 py-3 rounded-lg shadow transform hover:scale-105 ${buttonBg} ${buttonText}`}>
                                         Proceed to Checkout
                                     </button>
                                 </VoiceElement>

@@ -117,7 +117,7 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
 
                     <div className="flex justify-center mb-4">
                         <div className="relative w-full max-w-md">
-                            <FaSearch className="absolute top-2.5 left-3 text-gray-400" />
+                            <FaSearch className="absolute top-2.5 left-3" />
                             <input
                                 type="text"
                                 placeholder="Search modifications or toppings..."
