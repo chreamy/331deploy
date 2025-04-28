@@ -92,7 +92,7 @@ const Nav = ({ userRole }) => {
                         <a href="/">
                             <button      
                                 onClick={handleLogout}                   
-                                className="bg-black text-white text-lg px-3 py-1 -my-2 rounded-xl hover:bg-gray-800 transition-all"
+                                className="bg-black text-white text-lg px-3 py-1 -my-2 rounded-xl hover:bg-gray-800 transition-all cursor-pointer"
                                 title="Log Off"
                             >
                                 Log Off
@@ -110,15 +110,17 @@ const Nav = ({ userRole }) => {
 
                 {/* Right Side: Toggle + Cart */}
                 <div className="flex items-center gap-4">
-                <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={highContrast}
-                        onChange={toggleHighContrast}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"></div>
-                </label>
+                {(userRole === "customer" || userRole === "guest") && (
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={highContrast}
+                            onChange={toggleHighContrast}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"></div>
+                    </label>
+                )}
                     {userRole === "customer" && (
                         <Link 
                             href="/customer/cart" 

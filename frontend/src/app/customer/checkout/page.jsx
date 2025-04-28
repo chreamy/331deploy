@@ -926,7 +926,7 @@ export default function OrderCart() {
                                 onClick={addOrder}
                             >
                                 <button
-                                    className={`w-full font-semibold px-6 py-3 rounded-lg shadow transition ${
+                                    className={`w-full font-semibold px-6 py-3 rounded-lg shadow transition cursor-pointer ${
                                         cart.length === 0
                                             ? highContrast
                                                 ? "bg-orange-500 text-white cursor-not-allowed"
