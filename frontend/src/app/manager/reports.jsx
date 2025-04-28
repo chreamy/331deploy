@@ -283,7 +283,7 @@ export default function Reports() {
                                                     preserveAspectRatio="none"
                                                 >
                                                     <path
-                                                        d={hours.slice(11, 24).map((value, hour) => {
+                                                        d={hours.slice(10, 24).map((value, hour) => {
                                                             const x = (hour / 12) * 100;
                                                             //console.log(hour);
                                                             const y = 100 - (value / maxValue) * 100;
@@ -300,7 +300,7 @@ export default function Reports() {
 
                                     {/* X-axis labels */}
                                     <div className="absolute -bottom-1 left-4 -right-2 flex justify-between">
-                                        {Array.from({length: 13}, (_, i) => i + 11).map((hour) => (
+                                        {Array.from({length: 14}, (_, i) => i + 10).map((hour) => (
                                             <div key={hour} className="text-black text-xs" style={{ transform: 'rotate(-45deg)', transformOrigin: 'left' }}>
                                                 {hour}:00
                                             </div>
