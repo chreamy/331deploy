@@ -466,37 +466,6 @@ app.post("/addEmployee", async (req, res) => {
     }
 });
 
-app.post("/add-item", (req, res) => {
-    const { name, quantity, price } = req.body;
-
-    // check that all the required fields exist
-    if (!name || !quantity || !price) {
-        return res.status(400).json({ error: "Missing field(s)" });
-    }
-
-    // Insert the new item into the database
-    //const query = 'INSERT INTO inventory (name, quantity, price) VALUES (?, ?, ?)';
-    // db.execute(query, [name, quantity, price], (err, result) => {
-    //   if (err) {
-    //     console.error('Error inserting data: ', err);
-    //     return res.status(500).json({ error: 'Failed to add item' });
-    //   }
-
-    pool.query("SELECT COUNT(*) FROM inventory", (err, results) => {
-        if (err) {
-            console.error("Error executing query:", err);
-            return res.status(500).json({ error: "Failed to add item" });
-        }
-        //console.log("Inventory count:", results[0].inventory_count);
-    });
-
-    res.status(200).json({
-        message: "Item added successfully",
-        item: { id: result.insertId, name, quantity, price },
-    });
-});
-//});
-
 app.get("/hourly-product-usage/:date", async (req, res) => {
     try {
         const { date } = req.params;
@@ -629,22 +598,24 @@ app.get("/x-report/:date", async (req, res) => {
 
         const sqlXReport = `
             WITH unique_drinks AS (
-                SELECT orderid, drinkid, MAX(d.price) AS drink_price
+                SELECT odmt.orderid, odmt.drinkid, d.price AS drink_price
                 FROM order_drink_modifications_toppings odmt
                 JOIN drinks d ON odmt.drinkid = d.id
-                GROUP BY orderid, drinkid
+                WHERE odmt.topping_modification_id BETWEEN 11 AND 14
             ),
             topping_prices AS (
                 SELECT odmt.orderid, SUM(t.price) AS total_topping_price
                 FROM order_drink_modifications_toppings odmt
                 JOIN toppings t ON odmt.topping_modification_id = t.id
-                WHERE odmt.topping_modification_id BETWEEN 0 AND 10
+                WHERE odmt.topping_modification_id BETWEEN 11 AND 14
                 GROUP BY odmt.orderid
             )
             SELECT
                 EXTRACT(hour FROM o.timestamp) AS hour_of_day,
                 COUNT(DISTINCT o.id) AS num_orders,
-                SUM(ud.total_drink_price + COALESCE(tp.total_topping_price, 0)) AS order_total
+                SUM(
+                    COALESCE(ud.total_drink_price, 0) + COALESCE(tp.total_topping_price, 0)
+                ) AS order_total
             FROM orders o
             LEFT JOIN (
                 SELECT orderid, SUM(drink_price) AS total_drink_price
@@ -705,17 +676,21 @@ app.get("/z-report/:date", async (req, res) => {
 
         const sqlDrinksRevenue = `
             WITH OrderList AS (
-                SELECT id FROM orders WHERE DATE(timestamp) = $1
+                SELECT id 
+                FROM orders 
+                WHERE DATE(timestamp) = $1
             ),
-            UniqueDrinks AS (
-                SELECT DISTINCT odmt.orderid, odmt.drinkid
+            FilteredDrinks AS (
+                SELECT odmt.orderid, odmt.drinkid
                 FROM order_drink_modifications_toppings odmt
                 JOIN OrderList ol ON odmt.orderid = ol.id
+                WHERE odmt.topping_modification_id BETWEEN 11 AND 14 
             )
-            SELECT COUNT(*) AS total_drinks,
-                   SUM(d.price) AS total_drink_revenue
-            FROM UniqueDrinks ud
-            JOIN drinks d ON ud.drinkid = d.id;
+            SELECT 
+                COUNT(*) AS total_drinks,  
+                SUM(d.price) AS total_drink_revenue  
+            FROM FilteredDrinks fd
+            JOIN drinks d ON fd.drinkid = d.id;
         `;
 
         const resultDrinksRevenue = await pool.query(sqlDrinksRevenue, [date]);
