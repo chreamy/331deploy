@@ -9,6 +9,7 @@ import Nav from "@/app/nav";
 import VoiceLayer from "@/app/components/VoiceLayer";
 import VoiceElement from "@/app/components/VoiceElement";
 import HighContrastWrapper from "@/app/components/HighContrastWrapper";
+import { useHighContrast } from "@/app/components/HighContrastContext";
 
 function toSnakeCase(str) {
     return str.toLowerCase().replace(/ /g, "-");
@@ -19,6 +20,7 @@ function CategoryContent({ category }) {
     const [search, setSearch] = useState("");
     const [drinks, setDrinks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { highContrast: isHighContrast } = useHighContrast(); // Use global high-contrast context
 
     useEffect(() => {
         if (!category) return;
@@ -51,9 +53,13 @@ function CategoryContent({ category }) {
     return (
         <HighContrastWrapper>
             <VoiceLayer>
-                <div className="min-h-screen font-[telegraf] p-4 md:p-8"
-                    style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
-                    
+                <div
+                    className="min-h-screen font-[telegraf] p-4 md:p-8"
+                    style={{
+                        backgroundColor: isHighContrast ? "var(--background)" : "#3D2B1F",
+                        color: isHighContrast ? "var(--foreground)" : "#EED9C4", // Light text for dark background
+                    }}
+                >
                     <Nav userRole="customer" />
 
                     <div className="mt-8">
@@ -66,14 +72,24 @@ function CategoryContent({ category }) {
                             >
                                 <IoArrowBackCircleOutline
                                     className="text-3xl cursor-pointer"
-                                    style={{ color: 'var(--foreground)' }}
+                                    style={{
+                                        color: isHighContrast
+                                            ? "var(--foreground)"
+                                            : "#EED9C4",
+                                    }}
                                 />
                             </VoiceElement>
                         </div>
 
                         {/* Category Header */}
-                        <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center drop-shadow-md"
-                            style={{ color: 'var(--foreground)' }}>
+                        <h2
+                            className="text-3xl font-extrabold mt-0 mb-6 text-center drop-shadow-md"
+                            style={{
+                                color: isHighContrast
+                                    ? "var(--foreground)"
+                                    : "#EED9C4",
+                            }}
+                        >
                             {category || "Drinks"}
                         </h2>
 
@@ -87,19 +103,36 @@ function CategoryContent({ category }) {
                             >
                                 <div className="flex justify-center mb-4">
                                     <div className="relative w-full max-w-md">
-                                        <FaSearch className="absolute top-2.5 left-3"
-                                            style={{ color: 'var(--foreground)' }}
+                                        <FaSearch
+                                            className="absolute top-2.5 left-3"
+                                            style={{
+                                                color: isHighContrast
+                                                    ? "var(--foreground)"
+                                                    : "black",
+                                            }}
                                         />
                                         <input
                                             type="text"
                                             placeholder="Search drinks..."
                                             value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 text-white"
+                                            onChange={(e) =>
+                                                setSearch(e.target.value)
+                                            }
+                                            className={`w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                                                isHighContrast
+                                                    ? ""
+                                                    : "bg-gray-100 text-black border-[#C2A385]"
+                                            }`}
                                             style={{
-                                                backgroundColor: "var(--card-bg)",
-                                                borderColor: "var(--border-color)",
-                                                color: "var(--foreground)"
+                                                backgroundColor: isHighContrast
+                                                    ? "var(--card-bg)"
+                                                    : "#F3F4F6", // bg-gray-100
+                                                borderColor: isHighContrast
+                                                    ? "var(--border-color)"
+                                                    : "#C2A385",
+                                                color: isHighContrast
+                                                    ? "var(--foreground)"
+                                                    : "#000000",
                                             }}
                                         />
                                     </div>
@@ -109,11 +142,25 @@ function CategoryContent({ category }) {
 
                         {/* Loading or No Drinks */}
                         {loading ? (
-                            <p className="text-center text-lg font-semibold" style={{ color: 'var(--foreground)' }}>
+                            <p
+                                className="text-center text-lg font-semibold"
+                                style={{
+                                    color: isHighContrast
+                                        ? "var(--foreground)"
+                                        : "#EED9C4",
+                                }}
+                            >
                                 Loading...
                             </p>
                         ) : filteredDrinks.length === 0 ? (
-                            <p className="text-center text-lg font-semibold" style={{ color: 'var(--foreground)' }}>
+                            <p
+                                className="text-center text-lg font-semibold"
+                                style={{
+                                    color: isHighContrast
+                                        ? "var(--foreground)"
+                                        : "#EED9C4",
+                                }}
+                            >
                                 No drinks found.
                             </p>
                         ) : (
@@ -123,31 +170,75 @@ function CategoryContent({ category }) {
                                         key={index}
                                         id={`drink-${toSnakeCase(drink.name)}`}
                                         description={drink.name}
-                                        onClick={() => handleDrinkSelect(drink.name, drink.price)}
+                                        onClick={() =>
+                                            handleDrinkSelect(
+                                                drink.name,
+                                                drink.price
+                                            )
+                                        }
                                     >
                                         <div
-                                            className="rounded-2xl p-6 text-center shadow-lg hover:scale-105 hover:shadow-2xl transition-transform cursor-pointer"
+                                            className={`rounded-2xl p-6 text-center shadow-lg hover:scale-105 hover:shadow-2xl transition-transform cursor-pointer ${
+                                                isHighContrast
+                                                    ? ""
+                                                    : "bg-white text-gray-900 border border-[#C2A385] hover:bg-[#EED9C4]"
+                                            }`}
                                             style={{
-                                                backgroundColor: "var(--card-bg)",
-                                                border: "2px solid var(--border-color)",
-                                                color: "var(--foreground)"
+                                                backgroundColor: isHighContrast
+                                                    ? "var(--card-bg)"
+                                                    : "#ffffff",
+                                                border: isHighContrast
+                                                    ? "2px solid var(--border-color)"
+                                                    : "1px solid #C2A385",
+                                                color: isHighContrast
+                                                    ? "var(--foreground)"
+                                                    : "#111827", // text-gray-900
                                             }}
                                         >
                                             {/* Drink Image */}
                                             <div className="w-full h-48 flex justify-center items-center">
                                                 <img
-                                                    src={`/drink-images/${toSnakeCase(drink.name)}.png`}
+                                                    src={`/drink-images/${toSnakeCase(
+                                                        drink.name
+                                                    )}.png`}
                                                     alt={drink.name}
                                                     className="max-w-full max-h-full object-contain rounded-md border"
-                                                    style={{ borderColor: "var(--border-color)" }}
+                                                    style={{
+                                                        borderColor: isHighContrast
+                                                            ? "var(--border-color)"
+                                                            : "#C2A385", // Match card border
+                                                    }}
                                                 />
                                             </div>
 
                                             {/* Drink Name and Price */}
                                             <div className="flex justify-center items-center mt-2">
-                                                <p className="text-xl font-semibold">{drink.name}</p>
-                                                <p className="ml-4 text-lg font-medium"
-                                                    style={{ color: 'var(--foreground)' }}>
+                                                <p
+                                                    className={`text-xl font-semibold ${
+                                                        isHighContrast
+                                                            ? ""
+                                                            : "text-gray-900"
+                                                    }`}
+                                                    style={{
+                                                        color: isHighContrast
+                                                            ? "var(--foreground)"
+                                                            : "#111827",
+                                                    }}
+                                                >
+                                                    {drink.name}
+                                                </p>
+                                                <p
+                                                    className={`ml-4 text-lg font-medium ${
+                                                        isHighContrast
+                                                            ? ""
+                                                            : "text-black"
+                                                    }`}
+                                                    style={{
+                                                        color: isHighContrast
+                                                            ? "var(--foreground)"
+                                                            : "#000000",
+                                                    }}
+                                                >
                                                     ${drink.price.toFixed(2)}
                                                 </p>
                                             </div>
@@ -167,11 +258,17 @@ export default function CategoryPage() {
     return (
         <Suspense
             fallback={
-                <div className="min-h-screen font-[telegraf] p-4 md:p-8 flex items-center justify-center"
-                    style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}>
+                <div
+                    className="min-h-screen font-[telegraf] p-4 md:p-8 flex items-center justify-center"
+                    style={{
+                        backgroundColor: "var(--background)",
+                        color: "var(--foreground)",
+                    }}
+                >
                     <div className="text-xl">Loading...</div>
                 </div>
-            }>
+            }
+        >
             <CategoryWithParams />
         </Suspense>
     );

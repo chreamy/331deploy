@@ -207,7 +207,7 @@ export default function OrderCart() {
         }, 7000);
     };
 
-    const borderColor = highContrast ? "border-orange-400" : "border-[#C2A385]";
+    // const borderColor = highContrast ? "border-orange-400" : "border-[#C2A385]";
 
     return (
         <HighContrastWrapper>
@@ -241,98 +241,119 @@ export default function OrderCart() {
                                 key={index}
                                 id={`cart-item-${index}`}
                                 description={`${item.drinkName} quantity ${item.quantity}`}
-                                className={`border rounded-2xl p-6 shadow-md hover:shadow-xl transition ${borderColor}`}
-                                style={{ borderColor: "var(--border)", backgroundColor: "var(--background)", color: "var(--foreground)" }}
+                                className={`border rounded-2xl p-6 shadow-md hover:shadow-xl transition ${
+                                    highContrast ? "border-yellow-300" : "border-[#C2A385]"
+                                } ${highContrast ? "" : "bg-white"}`}
+                                style={{
+                                    borderColor: highContrast ? "var(--border)" : "#C2A385",
+                                    backgroundColor: highContrast ? "var(--background)" : "#ffffff",
+                                    color: highContrast ? "var(--foreground)" : "#4B5563" // text-gray-600
+                                }}
                             >
                                 <div className="flex items-center gap-6">
                                     <img
                                         src={
                                             item.photo ||
-                                            `/drink-images/${toSnakeCase(
-                                                item.drinkName
-                                            )}.png`
+                                            `/drink-images/${toSnakeCase(item.drinkName)}.png`
                                         }
                                         alt={item.drinkName}
                                         className="w-24 h-24 object-contain rounded-md"
                                     />
 
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold">
+                                        <h3
+                                            className={`text-xl font-semibold ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                        >
                                             {formatDrinkName(item.drinkName)}
                                         </h3>
-                                        <h3 className="text-xl font-semibold">
+                                        <h3
+                                            className={`text-xl font-semibold ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                        >
                                             ${item.totalPrice}
                                         </h3>
 
                                         {/* Modifications */}
-                                        <ul className="mt-2 text-sm">
+                                        <ul
+                                            className={`mt-2 text-sm ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                        >
                                             {item.selectedIce && (
-                                                <li>
-                                                    Ice Level:{" "}
-                                                    {item.selectedIce}
-                                                </li>
+                                                <li>Ice Level: {item.selectedIce}</li>
                                             )}
                                             {item.selectedSugar && (
-                                                <li>
-                                                    Sugar Level:{" "}
-                                                    {item.selectedSugar}
-                                                </li>
+                                                <li>Sugar Level: {item.selectedSugar}</li>
                                             )}
                                         </ul>
 
                                         {/* Toppings */}
-                                        <div className="mt-3 text-sm">
+                                        <div
+                                            className={`mt-3 text-sm ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                        >
                                             <strong>Toppings:</strong>
                                             {item.selectedToppings &&
                                             item.selectedToppings.length > 0 ? (
                                                 <ul className="list-disc list-inside">
-                                                    {item.selectedToppings.map(
-                                                        (top, i) => (
-                                                            <li key={i}>
-                                                                {top.name}: +$
-                                                                {(
-                                                                    top.price ||
-                                                                    0
-                                                                ).toFixed(2)}
-                                                            </li>
-                                                        )
-                                                    )}
+                                                    {item.selectedToppings.map((top, i) => (
+                                                        <li key={i}>
+                                                            {top.name}: +${(top.price || 0).toFixed(2)}
+                                                        </li>
+                                                    ))}
                                                 </ul>
                                             ) : (
-                                                <span>
-                                                    {" "}
-                                                    No Toppings (Default)
-                                                </span>
+                                                <span> No Toppings (Default)</span>
                                             )}
                                         </div>
 
                                         {/* Quantity Controls */}
                                         <div className="mt-3 flex items-center gap-3">
-                                            <p className="text-sm">
+                                            <p
+                                                className={`text-sm ${
+                                                    highContrast ? "" : "text-gray-600"
+                                                }`}
+                                            >
                                                 Quantity:
                                             </p>
                                             <VoiceElement
                                                 id={`decrease-${index}`}
                                                 description={`decrease ${item.drinkName} quantity`}
-                                                onClick={() =>
-                                                    updateQuantity(index, -1)
-                                                }
+                                                onClick={() => updateQuantity(index, -1)}
                                             >
-                                                <button className="px-2 py-1 bg-[#EED9C4] rounded text-sm text-gray-600 hover:bg-[#cda37f]">
+                                                <button
+                                                    className={`px-2 py-1 rounded text-sm ${
+                                                        highContrast
+                                                            ? "bg-yellow-300 text-black hover:bg-yellow-400"
+                                                            : "bg-[#EED9C4] text-gray-600 hover:bg-[#cda37f]"
+                                                    }`}
+                                                >
                                                     -
                                                 </button>
                                             </VoiceElement>
-                                            <span className="text-lg text-gray-600 font-medium">
+                                            <span
+                                                className={`text-lg font-medium ${
+                                                    highContrast ? "" : "text-gray-600"
+                                                }`}
+                                            >
                                                 {item.quantity}
                                             </span>
                                             <VoiceElement
                                                 id={`increase-${index}`}
                                                 description={`increase ${item.drinkName} quantity`}
-                                                onClick={() =>
-                                                    updateQuantity(index, 1)
-                                                }
+                                                onClick={() => updateQuantity(index, 1)}
                                             >
-                                                <button className="px-2 py-1 bg-[#EED9C4] rounded text-sm text-gray-600 hover:bg-[#cda37f]">
+                                                <button
+                                                    className={`px-2 py-1 rounded text-sm ${
+                                                        highContrast
+                                                            ? "bg-yellow-300 text-black hover:bg-yellow-400"
+                                                            : "bg-[#EED9C4] text-gray-600 hover:bg-[#cda37f]"
+                                                    }`}
+                                                >
                                                     +
                                                 </button>
                                             </VoiceElement>
@@ -345,7 +366,11 @@ export default function OrderCart() {
                                         description={`delete ${item.drinkName}`}
                                         onClick={() => deleteItem(index)}
                                     >
-                                        <button className="text-red-500 font-bold hover:underline cursor-pointer">
+                                        <button
+                                            className={`font-bold hover:underline cursor-pointer ${
+                                                highContrast ? "text-yellow-200" : "text-red-500"
+                                            }`}
+                                        >
                                             Delete
                                         </button>
                                     </VoiceElement>
@@ -361,7 +386,13 @@ export default function OrderCart() {
                             description="add more items"
                             onClick={() => router.push("/customer/menu")}
                         >
-                            <button className="bg-[#EED9C4] text-black font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#cda37f] transition">
+                            <button
+                                className={`font-semibold px-6 py-3 rounded-lg shadow transition transform hover:scale-105 ${
+                                    highContrast
+                                        ? "bg-yellow-300 text-black hover:bg-yellow-400"
+                                        : "bg-[#EED9C4] text-black hover:bg-[#cda37f]"
+                                }`}
+                            >
                                 Add More Items
                             </button>
                         </VoiceElement>
@@ -370,20 +401,56 @@ export default function OrderCart() {
 
                 {/* Middle Column - Contact Info */}
                 <div className="lg:w-1/3">
-                    <div className="border rounded-2xl p-6 bg-white shadow-md">
-                        <h2 className="text-2xl font-bold mb-6 text-[#3D2B1F]">
+                    <div
+                        className={`border rounded-2xl p-6 shadow-md ${
+                            highContrast ? "border-yellow-300" : "border-[#C2A385] bg-white"
+                        }`}
+                        style={{
+                            borderColor: highContrast ? "border-yellow-300" : "#C2A385",
+                            backgroundColor: highContrast ? "var(--background)" : "#ffffff",
+                        }}
+                    >
+                        <h2
+                            className={`text-2xl font-bold mb-6 ${
+                                highContrast ? "" : "text-[#3D2B1F]"
+                            }`}
+                            style={{ color: highContrast ? "var(--foreground)" : "#3D2B1F" }}
+                        >
                             CONTACT
                         </h2>
 
                         <div className="space-y-6">
                             {/* Country Code */}
-                            <div className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-lg">
-                                <span className="text-gray-600">Country</span>
+                            <div
+                                className={`flex items-center justify-between p-3 rounded-lg ${
+                                    highContrast ? "bg-orange-500" : "bg-[#F5F5F5]"
+                                }`}
+                            >
+                                <span
+                                    className={highContrast ? "" : "text-gray-600"}
+                                    style={{ color: highContrast ? "var(--foreground)" : "#4B5563" }}
+                                >
+                                    Country
+                                </span>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-gray-800 font-medium">
+                                    <span
+                                        className={`font-medium ${
+                                            highContrast ? "" : "text-gray-800"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#1F2937",
+                                        }}
+                                    >
                                         +1
                                     </span>
-                                    <span className="text-gray-800 font-medium">
+                                    <span
+                                        className={`font-medium ${
+                                            highContrast ? "" : "text-gray-800"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#1F2937",
+                                        }}
+                                    >
                                         United States
                                     </span>
                                 </div>
@@ -396,7 +463,14 @@ export default function OrderCart() {
                                 isInput={true}
                             >
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                    <label
+                                        className={`block text-sm font-medium mb-1 ${
+                                            highContrast ? "" : "text-gray-600"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#4B5563",
+                                        }}
+                                    >
                                         Phone number
                                     </label>
                                     <input
@@ -407,20 +481,36 @@ export default function OrderCart() {
                                         className={`w-full py-2 pl-7 pr-3 border ${
                                             validationErrors.phone
                                                 ? "border-red-500"
+                                                : highContrast
+                                                ? "border-orange-400"
                                                 : "border-[#C2A385]"
-                                        } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
+                                        } rounded-lg focus:outline-none ${
+                                            highContrast ? "" : "text-gray-600"
+                                        } focus:ring-1 focus:ring-[#3D2B1F]`}
                                         value={contactInfo.phone}
                                         onChange={(e) => {
-                                            console.log('Phone input onChange event:', e.target.value);
+                                            console.log("Phone input onChange event:", e.target.value);
                                             handleInputChange("phone", e.target.value);
                                         }}
                                         onFocus={(e) => {
-                                            console.log('Phone input focused');
+                                            console.log("Phone input focused");
                                             handleInputFocus("phone");
+                                        }}
+                                        style={{
+                                            borderColor: validationErrors.phone
+                                                ? "#EF4444"
+                                                : highContrast
+                                                ? "var(--border)"
+                                                : "#C2A385",
+                                            color: highContrast ? "var(--foreground)" : "#4B5563",
                                         }}
                                     />
                                     {validationErrors.phone && (
-                                        <p className="text-red-500 text-xs mt-1">
+                                        <p
+                                            className={`text-xs mt-1 ${
+                                                highContrast ? "text-red-400" : "text-red-500"
+                                            }`}
+                                        >
                                             {validationErrors.phone}
                                         </p>
                                     )}
@@ -434,7 +524,14 @@ export default function OrderCart() {
                                 isInput={true}
                             >
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                    <label
+                                        className={`block text-sm font-medium mb-1 ${
+                                            highContrast ? "" : "text-gray-600"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#4B5563",
+                                        }}
+                                    >
                                         Email address for receipt
                                     </label>
                                     <input
@@ -443,20 +540,36 @@ export default function OrderCart() {
                                         className={`w-full py-2 pl-7 pr-3 border ${
                                             validationErrors.email
                                                 ? "border-red-500"
+                                                : highContrast
+                                                ? "border-orange-400"
                                                 : "border-[#C2A385]"
-                                        } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
+                                        } rounded-lg focus:outline-none ${
+                                            highContrast ? "" : "text-gray-600"
+                                        } focus:ring-1 focus:ring-[#3D2B1F]`}
                                         value={contactInfo.email}
                                         onChange={(e) => {
-                                            console.log('Email input onChange event:', e.target.value);
+                                            console.log("Email input onChange event:", e.target.value);
                                             handleInputChange("email", e.target.value);
                                         }}
                                         onFocus={(e) => {
-                                            console.log('Email input focused');
+                                            console.log("Email input focused");
                                             handleInputFocus("email");
+                                        }}
+                                        style={{
+                                            borderColor: validationErrors.email
+                                                ? "#EF4444"
+                                                : highContrast
+                                                ? "var(--border)"
+                                                : "#C2A385",
+                                            color: highContrast ? "var(--foreground)" : "#4B5563",
                                         }}
                                     />
                                     {validationErrors.email && (
-                                        <p className="text-red-500 text-xs mt-1">
+                                        <p
+                                            className={`text-xs mt-1 ${
+                                                highContrast ? "text-red-400" : "text-red-500"
+                                            }`}
+                                        >
                                             {validationErrors.email}
                                         </p>
                                     )}
@@ -471,7 +584,14 @@ export default function OrderCart() {
                                     isInput={true}
                                 >
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label
+                                            className={`block text-sm font-medium mb-1 ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                            style={{
+                                                color: highContrast ? "var(--foreground)" : "#4B5563",
+                                            }}
+                                        >
                                             First name
                                         </label>
                                         <input
@@ -480,20 +600,39 @@ export default function OrderCart() {
                                             className={`w-full py-2 pl-7 pr-3 border ${
                                                 validationErrors.firstName
                                                     ? "border-red-500"
+                                                    : highContrast
+                                                    ? "border-orange-400"
                                                     : "border-[#C2A385]"
-                                            } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
+                                            } rounded-lg focus:outline-none ${
+                                                highContrast ? "" : "text-gray-600"
+                                            } focus:ring-1 focus:ring-[#3D2B1F]`}
                                             value={contactInfo.firstName}
                                             onChange={(e) => {
-                                                console.log('First name input onChange event:', e.target.value);
+                                                console.log(
+                                                    "First name input onChange event:",
+                                                    e.target.value
+                                                );
                                                 handleInputChange("firstName", e.target.value);
                                             }}
                                             onFocus={(e) => {
-                                                console.log('First name input focused');
+                                                console.log("First name input focused");
                                                 handleInputFocus("firstName");
+                                            }}
+                                            style={{
+                                                borderColor: validationErrors.firstName
+                                                    ? "#EF4444"
+                                                    : highContrast
+                                                    ? "var(--border)"
+                                                    : "#C2A385",
+                                                color: highContrast ? "var(--foreground)" : "#4B5563",
                                             }}
                                         />
                                         {validationErrors.firstName && (
-                                            <p className="text-red-500 text-xs mt-1">
+                                            <p
+                                                className={`text-xs mt-1 ${
+                                                    highContrast ? "text-red-400" : "text-red-500"
+                                                }`}
+                                            >
                                                 {validationErrors.firstName}
                                             </p>
                                         )}
@@ -505,7 +644,14 @@ export default function OrderCart() {
                                     isInput={true}
                                 >
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label
+                                            className={`block text-sm font-medium mb-1 ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                            style={{
+                                                color: highContrast ? "var(--foreground)" : "#4B5563",
+                                            }}
+                                        >
                                             Last name
                                         </label>
                                         <input
@@ -514,20 +660,39 @@ export default function OrderCart() {
                                             className={`w-full py-2 pl-7 pr-3 border ${
                                                 validationErrors.lastName
                                                     ? "border-red-500"
+                                                    : highContrast
+                                                    ? "border-orange-400"
                                                     : "border-[#C2A385]"
-                                            } rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]`}
+                                            } rounded-lg focus:outline-none ${
+                                                highContrast ? "" : "text-gray-600"
+                                            } focus:ring-1 focus:ring-[#3D2B1F]`}
                                             value={contactInfo.lastName}
                                             onChange={(e) => {
-                                                console.log('Last name input onChange event:', e.target.value);
+                                                console.log(
+                                                    "Last name input onChange event:",
+                                                    e.target.value
+                                                );
                                                 handleInputChange("lastName", e.target.value);
                                             }}
                                             onFocus={(e) => {
-                                                console.log('Last name input focused');
+                                                console.log("Last name input focused");
                                                 handleInputFocus("lastName");
+                                            }}
+                                            style={{
+                                                borderColor: validationErrors.lastName
+                                                    ? "#EF4444"
+                                                    : highContrast
+                                                    ? "var(--border)"
+                                                    : "#C2A385",
+                                                color: highContrast ? "var(--foreground)" : "#4B5563",
                                             }}
                                         />
                                         {validationErrors.lastName && (
-                                            <p className="text-red-500 text-xs mt-1">
+                                            <p
+                                                className={`text-xs mt-1 ${
+                                                    highContrast ? "text-red-400" : "text-red-500"
+                                                }`}
+                                            >
                                                 {validationErrors.lastName}
                                             </p>
                                         )}
@@ -541,15 +706,33 @@ export default function OrderCart() {
                 {/* Right Column - Checkout Summary */}
                 <div className="lg:w-1/3 space-y-6">
                     {/* Checkout Summary Section */}
-                    <div className="border border-[#C2A385] rounded-2xl p-6 bg-white shadow-md">
-                        <h2 className="text-2xl font-bold mb-4 text-[#3D2B1F]">
+                    <div
+                        className={`border rounded-2xl p-6 shadow-md ${
+                            highContrast ? "border-yellow-300" : "border-[#C2A385] bg-white"
+                        }`}
+                        style={{
+                            borderColor: highContrast ? "border-yellow-300" : "#C2A385",
+                            backgroundColor: highContrast ? "var(--background)" : "#ffffff",
+                        }}
+                    >
+                        <h2
+                            className={`text-2xl font-bold mb-4 ${
+                                highContrast ? "" : "text-[#3D2B1F]"
+                            }`}
+                            style={{ color: highContrast ? "var(--foreground)" : "#3D2B1F" }}
+                        >
                             Order Summary
                         </h2>
 
                         <div className="space-y-4">
                             {/* Tip Options */}
                             <div>
-                                <h3 className="text-lg font-semibold text-[#3D2B1F] mb-2">
+                                <h3
+                                    className={`text-lg font-semibold mb-2 ${
+                                        highContrast ? "" : "text-[#3D2B1F]"
+                                    }`}
+                                    style={{ color: highContrast ? "var(--foreground)" : "#3D2B1F" }}
+                                >
                                     Add a Tip
                                 </h3>
                                 <div className="grid grid-cols-3 gap-2 mb-2">
@@ -561,34 +744,38 @@ export default function OrderCart() {
                                                 id={`tip-${tip}`}
                                                 description={`${tip}`}
                                                 onClick={() => {
-                                                    if (
-                                                        selectedTip ===
-                                                        percentage
-                                                    ) {
+                                                    if (selectedTip === percentage) {
                                                         setSelectedTip(null);
                                                         setTipAmount(0);
                                                     } else {
-                                                        handleTipSelect(
-                                                            percentage
-                                                        );
+                                                        handleTipSelect(percentage);
                                                     }
                                                 }}
                                                 className={`py-2 flex justify-center items-center cursor-pointer rounded-lg transition ${
                                                     selectedTip === percentage
-                                                        ? "bg-[#3D2B1F] text-[#EED9C4]"
+                                                        ? highContrast
+                                                            ? "bg-yellow-300 text-black"
+                                                            : "bg-[#3D2B1F] text-[#EED9C4]"
+                                                        : highContrast
+                                                        ? "bg-yellow-300 text-black hover:bg-yellow-400"
                                                         : "bg-[#EED9C4] text-[#3D2B1F] hover:bg-[#cda37f]"
                                                 }`}
                                             >
-                                                <button className="text-center">
-                                                    {tip}
-                                                </button>
+                                                <button className="text-center">{tip}</button>
                                             </VoiceElement>
                                         );
                                     })}
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="relative flex-1">
-                                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">
+                                        <span
+                                            className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                            style={{
+                                                color: highContrast ? "var(--foreground)" : "#4B5563",
+                                            }}
+                                        >
                                             $
                                         </span>
                                         <input
@@ -596,26 +783,25 @@ export default function OrderCart() {
                                             min="0"
                                             step="0.01"
                                             placeholder="0.00"
-                                            className="w-full py-2 pl-7 pr-3 border border-[#C2A385] rounded-lg focus:outline-none text-gray-600 focus:ring-1 focus:ring-[#3D2B1F]"
-                                            value={
-                                                customTip !== null
-                                                    ? customTip
-                                                    : ""
-                                            }
+                                            className={`w-full py-2 pl-7 pr-3 border ${
+                                                highContrast
+                                                    ? "border-orange-400"
+                                                    : "border-[#C2A385]"
+                                            } rounded-lg focus:outline-none ${
+                                                highContrast ? "" : "text-gray-600"
+                                            } focus:ring-1 focus:ring-[#3D2B1F]`}
+                                            value={customTip !== null ? customTip : ""}
                                             onChange={(e) => {
-                                                const value = parseFloat(
-                                                    e.target.value
-                                                );
-                                                if (
-                                                    !isNaN(value) &&
-                                                    value >= 0
-                                                ) {
+                                                const value = parseFloat(e.target.value);
+                                                if (!isNaN(value) && value >= 0) {
                                                     setCustomTip(value);
-                                                } else if (
-                                                    e.target.value === ""
-                                                ) {
+                                                } else if (e.target.value === "") {
                                                     setCustomTip(null);
                                                 }
+                                            }}
+                                            style={{
+                                                borderColor: highContrast ? "var(--border)" : "#C2A385",
+                                                color: highContrast ? "var(--foreground)" : "#4B5563",
                                             }}
                                         />
                                     </div>
@@ -623,12 +809,19 @@ export default function OrderCart() {
                                         id="apply-custom-tip"
                                         description="apply custom tip"
                                         onClick={() =>
-                                            customTip !== null &&
-                                            handleTipSelect(customTip, true)
+                                            customTip !== null && handleTipSelect(customTip, true)
                                         }
                                     >
                                         <button
-                                            className="py-2 px-3 bg-[#EED9C4] rounded-lg text-[#3D2B1F] hover:bg-[#cda37f] transition"
+                                            className={`py-2 px-3 rounded-lg transition ${
+                                                highContrast
+                                                    ? customTip === null
+                                                        ? "bg-yellow-300 text-black cursor-not-allowed"
+                                                        : "bg-yellow-300 text-black hover:bg-yellow-400"
+                                                    : customTip === null
+                                                    ?  "bg-[#E5C7A8] text-[#3D2B1F] cursor-not-allowed"
+                                                    : "bg-[#EED9C4] text-[#3D2B1F] hover:bg-[#cda37f]"
+                                            }`}
                                             disabled={customTip === null}
                                         >
                                             Apply
@@ -640,41 +833,87 @@ export default function OrderCart() {
                             {/* Order Totals */}
                             <div className="space-y-2 pt-4 border-t border-gray-200">
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">
+                                    <span
+                                        className={highContrast ? "" : "text-gray-600"}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#4B5563",
+                                        }}
+                                    >
                                         Subtotal
                                     </span>
-                                    <span className="text-[#3D2B1F] font-medium">
+                                    <span
+                                        className={`font-medium ${
+                                            highContrast ? "" : "text-[#3D2B1F]"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#3D2B1F",
+                                        }}
+                                    >
                                         ${calculateTotal()}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Tax</span>
-                                    <span className="text-[#3D2B1F] font-medium">
+                                    <span
+                                        className={highContrast ? "" : "text-gray-600"}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#4B5563",
+                                        }}
+                                    >
+                                        Tax
+                                    </span>
+                                    <span
+                                        className={`font-medium ${
+                                            highContrast ? "" : "text-[#3D2B1F]"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#3D2B1F",
+                                        }}
+                                    >
                                         ${(calculateTotal() * 0.08).toFixed(2)}
                                     </span>
                                 </div>
-                                {/* Tip Line - Only shows if tip is selected */}
                                 {tipAmount > 0 && (
                                     <div className="flex justify-between">
-                                        <span className="text-gray-600">
+                                        <span
+                                            className={highContrast ? "" : "text-gray-600"}
+                                            style={{
+                                                color: highContrast ? "var(--foreground)" : "#4B5563",
+                                            }}
+                                        >
                                             Tip
                                         </span>
-                                        <span className="text-[#3D2B1F] font-medium">
+                                        <span
+                                            className={`font-medium ${
+                                                highContrast ? "" : "text-[#3D2B1F]"
+                                            }`}
+                                            style={{
+                                                color: highContrast ? "var(--foreground)" : "#3D2B1F",
+                                            }}
+                                        >
                                             ${tipAmount.toFixed(2)}
                                         </span>
                                     </div>
                                 )}
                                 <div className="flex justify-between pt-2 border-t border-gray-200">
-                                    <span className="text-lg font-bold text-[#3D2B1F]">
+                                    <span
+                                        className={`text-lg font-bold ${
+                                            highContrast ? "" : "text-[#3D2B1F]"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#3D2B1F",
+                                        }}
+                                    >
                                         Order Total
                                     </span>
-                                    <span className="text-lg font-bold text-[#3D2B1F]">
-                                        $
-                                        {(
-                                            parseFloat(calculateTotal()) *
-                                                1.08 +
-                                            tipAmount
-                                        ).toFixed(2)}
+                                    <span
+                                        className={`text-lg font-bold ${
+                                            highContrast ? "" : "text-[#3D2B1F]"
+                                        }`}
+                                        style={{
+                                            color: highContrast ? "var(--foreground)" : "#3D2B1F",
+                                        }}
+                                    >
+                                        ${(parseFloat(calculateTotal()) * 1.08 + tipAmount).toFixed(2)}
                                     </span>
                                 </div>
                             </div>
@@ -687,12 +926,18 @@ export default function OrderCart() {
                                 onClick={addOrder}
                             >
                                 <button
-                                    className="w-full bg-[#3D2B1F] text-[#EED9C4] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#2a1d15] transition mt-4"
+                                    className={`w-full font-semibold px-6 py-3 rounded-lg shadow transition ${
+                                        cart.length === 0
+                                            ? highContrast
+                                                ? "bg-orange-500 text-white cursor-not-allowed"
+                                                : "bg-[#E5C7A8] text-[#3D2B1F] cursor-not-allowed"
+                                            : highContrast
+                                            ? "bg-orange-500 text-white hover:bg-orange-300"
+                                            : "bg-[#3D2B1F] text-[#EED9C4] hover:bg-[#2a1d15]"
+                                    }`}
                                     disabled={cart.length === 0}
                                 >
-                                    {cart.length === 0
-                                        ? "Your cart is empty"
-                                        : "Place Order"}
+                                    {cart.length === 0 ? "Your cart is empty" : "Place Order"}
                                 </button>
                             </VoiceElement>
                         </div>
