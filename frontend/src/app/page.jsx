@@ -91,15 +91,15 @@ export default function BubbleTeaShop() {
                 </div>
 
                 {/* Weather Section */}
-                <div className="text-center mt-4 mb-8">
+                <div className="flex justify-center items-center gap-8 mt-4 mb-8">
                     {weather && (
-                        <div className="relative group inline-block">
+                        <>
                             <div className="flex flex-col items-center">
                                 {imageSrc && (
                                     <img
                                         src={imageSrc}
                                         alt={weather.weather[0].description}
-                                        className="w-20 h-20 rounded-full border-2"
+                                        className="w-24 h-24 rounded-full border-2"
                                         style={{ 
                                             borderColor: isHighContrast ? "var(--border-color)" : "white" 
                                         }}
@@ -110,18 +110,20 @@ export default function BubbleTeaShop() {
                                 </p>
                             </div>
 
-                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-max rounded-xl px-4 py-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
-                                style={{ 
+                            <div 
+                                className="rounded-xl px-6 py-4 shadow-lg"
+                                style={{
                                     backgroundColor: isHighContrast ? "var(--card-bg)" : "#ffffff",
                                     color: isHighContrast ? "var(--foreground)" : "#000000",
-                                    border: `2px solid ${isHighContrast ? "var(--border-color)" : "##e5e7eb"}`
-                                }}>
-                                <h1 className="text-xl font-bold">{Time}</h1>
-                                <h2 className="text-lg mb-1">Weather in {weather.name}</h2>
-                                <p>Temp: {((weather.main.temp * 9) / 5 + 32).toFixed(0)}°F</p>
-                                <p>Feels Like: {((weather.main.feels_like * 9) / 5 + 32).toFixed(0)}°F</p>
+                                    border: `2px solid ${isHighContrast ? "var(--border-color)" : "#e5e7eb"}`
+                                }}
+                            >
+                                <h1 className="text-xl font-bold mb-1">{Time}</h1>
+                                <h2 className="text-lg font-semibold mb-2">Weather in {weather.name}</h2>
+                                <p className="text-base">Temp: {((weather.main.temp * 9) / 5 + 32).toFixed(0)}°F</p>
+                                <p className="text-base">Feels Like: {((weather.main.feels_like * 9) / 5 + 32).toFixed(0)}°F</p>
                             </div>
-                        </div>
+                        </>
                     )}
                 </div>
 
