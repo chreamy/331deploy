@@ -112,9 +112,9 @@ export default function BubbleTeaShop() {
 
                             <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-max rounded-xl px-4 py-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
                                 style={{ 
-                                    backgroundColor: isHighContrast ? "var(--card-bg)" : "bg-white",
-                                    color: isHighContrast ? "var(--foreground)" : "text-gray-900",
-                                    border: `2px solid ${isHighContrast ? "var(--border-color)" : "#e5e7eb"}`
+                                    backgroundColor: isHighContrast ? "var(--card-bg)" : "#ffffff",
+                                    color: isHighContrast ? "var(--foreground)" : "#000000",
+                                    border: `2px solid ${isHighContrast ? "var(--border-color)" : "##e5e7eb"}`
                                 }}>
                                 <h1 className="text-xl font-bold">{Time}</h1>
                                 <h2 className="text-lg mb-1">Weather in {weather.name}</h2>
