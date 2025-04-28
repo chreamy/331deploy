@@ -110,28 +110,44 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
                             <IoArrowBackCircleOutline className={`text-3xl cursor-pointer ${highContrast ? "text-yellow-300" : "text-[#EED9C4]"}`} />
                         </VoiceElement>
                     </div>
-
-                    <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center drop-shadow-md font-[Roboto]">
+                    
+                    <h2 className="text-3xl font-extrabold mt-0 mb-6 text-center drop-shadow-md">
                         Modifications
                     </h2>
 
-                    <div className="flex justify-center mb-4">
-                        <div className="relative w-full max-w-md">
-                            <FaSearch className="absolute top-2.5 left-3" />
-                            <input
-                                type="text"
-                                placeholder="Search modifications or toppings..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className={`w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${highContrast ? "bg-black text-white border-yellow-300 focus:ring-yellow-300" : "focus:ring-blue-500 text-white"}`}
-                            />
+                    <div className="relative mb-6">
+                        <div className="flex justify-center mb-4">
+                            <div className="relative w-full max-w-md">
+                                <FaSearch
+                                    className="absolute top-2.5 left-3"
+                                    style={{
+                                        color: highContrast ? "var(--foreground)" : "black",
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Search modifications or toppings..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                                        highContrast
+                                            ? ""
+                                            : "bg-gray-100 text-black border-[#C2A385]"
+                                    }`}
+                                    style={{
+                                        backgroundColor: highContrast ? "var(--card-bg)" : "#F3F4F6", // bg-gray-100
+                                        borderColor: highContrast ? "var(--border-color)" : "#C2A385",
+                                        color: highContrast ? "var(--foreground)" : "#000000",
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-6 flex-grow">
                         {/* Drink Image and Action Buttons */}
                         <div className="w-full md:w-1/3 flex flex-col items-center">
-                            <h3 className="text-3xl font-extrabold mt-0 mb-6 text-center drop-shadow-md font-[Roboto]">
+                            <h3 className="text-3xl font-extrabold mt-0 mb-6 text-center drop-shadow-md">
                                 {formatDrinkName(drinkName)}
                             </h3>
                             <img
