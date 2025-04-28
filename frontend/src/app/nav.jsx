@@ -110,18 +110,42 @@ const Nav = ({ userRole }) => {
 
                 {/* Right Side: Toggle + Cart */}
                 <div className="flex items-center gap-4">
-                <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={highContrast}
-                        onChange={toggleHighContrast}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"></div>
-                </label>
+                    <div className="flex flex-col items-center group">
+                        <span className="text-xs font-medium text-gray-700 mb-1 group-hover:underline">
+                            High Contrast
+                        </span>
+                        <label
+                            className="relative inline-flex items-center cursor-pointer"
+                            title="Toggle High Contrast Mode"
+                        >
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={highContrast}
+                                onChange={toggleHighContrast}
+                                aria-label="Toggle High Contrast Mode"
+                            />
+                            <div
+                                className={`w-14 h-7 bg-gray-300 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300 ease-in-out flex items-center relative ${
+                                    highContrast ? "justify-end" : "justify-start"
+                                } p-1`}
+                            >
+                                <div
+                                    className="w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ease-in-out peer-checked:translate-x-7"
+                                ></div>
+                                <span
+                                    className={`absolute text-xs font-semibold text-gray-700 ${
+                                        highContrast ? "left-2" : "right-2"
+                                    }`}
+                                >
+                                    {highContrast ? "ON" : "OFF"}
+                                </span>
+                            </div>
+                        </label>
+                    </div>
                     {userRole === "customer" && (
-                        <Link 
-                            href="/customer/cart" 
+                        <Link
+                            href="/customer/cart"
                             className="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer"
                             title="Cart"
                         >
