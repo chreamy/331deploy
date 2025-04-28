@@ -170,9 +170,9 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
                                         Shop More
                                     </button>
                                 </VoiceElement>
-                                <VoiceElement id="buy-now" description="Buy now" onClick={handleBuyNow}>
+                                <VoiceElement id="buy-now" description="Purchase" onClick={handleBuyNow}>
                                     <button className={`w-full rounded-md py-2 px-4 font-bold transition-all transform hover:scale-105 ${highContrast ? "bg-yellow-300 text-black hover:bg-yellow-400" : "bg-gray-200 text-black hover:bg-blue-500 hover:text-white"}`}>
-                                        Buy Now
+                                        Purchase
                                         <span className="ml-2 font-extrabold text-back-1000 text-xl stroke-text">
                                             ${getTotalPrice()}
                                         </span>
