@@ -102,7 +102,12 @@ export default function OrderCart() {
                                                 <h3 className="text-xl font-semibold">{formatDrinkName(item.drinkName)}</h3>
                                                 <h3 className="text-xl font-semibold">${item.totalPrice}</h3>
 
-                                                {/* Modifications */}
+                                                {/* Size */}
+                                                <ul className="mt-1 text-sm">
+                                                    {item.selectedSize && <li>Size: {item.selectedSize}</li>}
+                                                </ul>
+
+                                                {/* Ice & Sugar Modifications */}
                                                 <ul className="mt-2 text-sm">
                                                     {item.selectedIce && <li>Ice Level: {item.selectedIce}</li>}
                                                     {item.selectedSugar && <li>Sugar Level: {item.selectedSugar}</li>}
@@ -120,7 +125,7 @@ export default function OrderCart() {
                                                             ))}
                                                         </ul>
                                                     ) : (
-                                                        <span> No Toppings (Default)</span>
+                                                        <span> No Extra Toppings</span>
                                                     )}
                                                 </div>
 

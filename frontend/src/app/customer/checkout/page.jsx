@@ -276,7 +276,18 @@ export default function OrderCart() {
                                             ${item.totalPrice}
                                         </h3>
 
-                                        {/* Modifications */}
+                                        {/* Size */}
+                                        <ul
+                                            className={`mt-1 text-sm ${
+                                                highContrast ? "" : "text-gray-600"
+                                            }`}
+                                        >
+                                            {item.selectedSize && (
+                                                <li>Size: {item.selectedSize}</li>
+                                            )}
+                                        </ul>
+
+                                        {/* Ice & Sugar Modifications */}
                                         <ul
                                             className={`mt-2 text-sm ${
                                                 highContrast ? "" : "text-gray-600"
@@ -307,7 +318,7 @@ export default function OrderCart() {
                                                     ))}
                                                 </ul>
                                             ) : (
-                                                <span> No Toppings (Default)</span>
+                                                <span> No Extra Toppings</span>
                                             )}
                                         </div>
 

@@ -26,8 +26,9 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
     const [loading, setLoading] = useState(true);
     const [modifications, setModifications] = useState([]);
     const [toppings, setToppings] = useState([]);
-    const [selectedIce, setSelectedIce] = useState("");
-    const [selectedSugar, setSelectedSugar] = useState("");
+    const [selectedSize, setSelectedSize] = useState("Medium"); // Default to Medium
+    const [selectedIce, setSelectedIce] = useState("Full Ice"); // Default to Full Ice
+    const [selectedSugar, setSelectedSugar] = useState("100% Sugar"); // Default to 100% Sugar
     const [selectedToppings, setSelectedToppings] = useState([]);
 
     useEffect(() => {
@@ -82,8 +83,9 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
         const cartItem = {
             drinkName,
             drinkPrice,
-            selectedIce: selectedIce || "Full Ice",
-            selectedSugar: selectedSugar || "100% Sugar",
+            selectedSize: selectedSize || "Medium", // Default to Medium if not selected
+            selectedIce: selectedIce || "Full Ice", // Default to Full Ice if not selected
+            selectedSugar: selectedSugar || "100% Sugar", // Default to 100% Sugar if not selected
             selectedToppings: selectedToppingObjects,
             quantity: 1,
             totalPrice: getTotalPrice(),
@@ -183,6 +185,29 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
 
                         {/* Modifications */}
                         <div className="w-full md:w-2/3 flex-grow space-y-6">
+                            {/* Drink Size */}
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Size:</h3>
+                                <div className="grid w-[500px] grid-cols-4 gap-0">
+                                    {filteredMods.filter((mod) => ['Small', 'Medium', 'Large'].includes(mod.name)).map((mod, idx) => (
+                                        <VoiceElement key={idx} id={`size-${toSnakeCase(mod.name)}`} description={mod.name} onClick={() => setSelectedSize(mod.name)}>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="drinkSize"
+                                                    value={mod.name}
+                                                    checked={selectedSize === mod.name}
+                                                    onClick={(e) => { if (selectedSize === mod.name) { e.target.checked = false; setSelectedSize(""); }}}
+                                                    onChange={() => setSelectedSize(mod.name)}
+                                                    className={`w-5 h-5 ${highContrast ? "accent-yellow-300" : ""}`}
+                                                />
+                                                <span>{mod.name}</span>
+                                            </div>
+                                        </VoiceElement>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Ice Levels */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2">Ice Level:</h3>
                                 <div className="grid w-[500px] grid-cols-4 gap-0">
@@ -204,7 +229,7 @@ function DrinkDetailsContent({ drinkName, drinkPrice }) {
                                     ))}
                                 </div>
                             </div>
-
+                            {/* Sugar Levels */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2">Sugar Level:</h3>
                                 <div className="grid w-[500px] grid-cols-4 gap-0">
